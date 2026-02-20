@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zuordnungsspiel Bedarfsgemeinschaft</title>
+	<style>
+	/* ===== RESET ===== */
+*{ box-sizing:border-box; }
+
+body{
+  margin:0;
+  font-family:"Segoe UI",Arial,sans-serif;
+  overflow-x:hidden;
+}
+
+/* ===== THEME VARIABLEN ===== */
+body.theme-blue{
+  --main:#38bdf8;
+  --bg1:#0f2027;
+  --bg2:#020617;
+  --text:#eaf4ff;
+}
+
+body.theme-amber{
+  --main:#ffb300;
+  --bg1:#2b1600;
+  --bg2:#050200;
+  --text:#ffe9c4;
+}
+
+body.theme-green{
+  --main:#22c55e;
+  --bg1:#052e1b;
+  --bg2:#020617;
+  --text:#dcfce7;
+}
+
+body{
+  color:var(--text);
+}
+
+/* ===== GRID ===== */
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  background-image:
+    linear-gradient(color-mix(in srgb,var(--main),transparent 80%) 1px, transparent 1px),
+    linear-gradient(90deg,color-mix(in srgb,var(--main),transparent 80%) 1px, transparent 1px);
+  background-size:40px 40px;
+}
+
+/* ===== BACKGROUND ===== */
+#bg-canvas{
+  position:fixed;
+  inset:0;
+  z-index:-1;
+  background:radial-gradient(circle at top,var(--bg1),var(--bg2));
+}
+
+/* ===== APP ===== */
+.app{
+  position:relative;
+  max-width:620px;
+  margin:40px auto;
+  padding:22px;
+  border-radius:18px;
+  background:rgba(20,40,60,.45);
+  backdrop-filter:blur(16px);
+  border:1px solid var(--main);
+  box-shadow:0 0 25px color-mix(in srgb,var(--main),transparent 40%);
+}
+
+/* HUD corners */
+.app::before,.app::after{
+  content:"";
+  position:absolute;
+  width:40px;
+  height:40px;
+  border:2px solid var(--main);
+}
+
+.app::before{ top:-2px; left:-2px; border-right:none; border-bottom:none;}
+.app::after{ bottom:-2px; right:-2px; border-left:none; border-top:none;}
+
+/* ===== HEADINGS ===== */
+h1{ text-align:center; color:var(--main);}
+h4{ text-align:center;}
+
+/* ===== CASE ===== */
+#case-text{
+  background:rgba(0,0,0,.35);
+  padding:14px;
+  border-radius:14px;
+  margin-bottom:18px;
+  border:1px solid var(--main);
+}
+
+/* ===== PERSON ===== */
+.person{
+  padding:14px;
+  border-radius:14px;
+  cursor:pointer;
+  border:1px solid rgba(255,255,255,.25);
+  transition:.25s;
+}
+
+.person:hover{
+  box-shadow:0 0 15px var(--main);
+}
+
+.person.selected{
+  border-color:var(--main);
+  box-shadow:0 0 25px var(--main);
+  background:color-mix(in srgb,var(--main),transparent 70%);
+}
+
+/* ===== BUTTON ===== */
+button{
+  width:100%;
+  padding:14px;
+  margin-top:10px;
+  border-radius:30px;
+  font-weight:bold;
+  cursor:pointer;
+  border:1px solid var(--main);
+  background:linear-gradient(135deg,var(--main),white);
+  color:#001018;
+}
+
+/* ===== THEME SWITCHER ===== */
+.theme-switcher{
+  max-width:620px;
+  margin:20px auto 0;
+  display:flex;
+  gap:10px;
+}
+
+.theme-switcher button{
+  flex:1;
+}
+
+/* ===== PARAGRAFEN-HIGHLIGHT (THEME-UNABHÄNGIG) ===== */
+.norm{
+  display:inline-block;
+  padding:4px 10px;
+  margin:0 3px;
+  border-radius:12px;
+  font-weight:700;
+  font-size:0.95em;
+  color:#1a0d00;
+  background:linear-gradient(135deg,#fff3a3,#ffcc33);
+  box-shadow:
+    0 0 12px rgba(255,200,0,0.8),
+    0 0 25px rgba(255,200,0,0.35);
+}
+
+/* ===== FEEDBACK PANEL (DEUTLICHE BOXEN) ===== */
+
+#feedback{
+  margin-top:28px;
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+}
+
+/* einzelne Box */
+.feedback-item{
+  padding:18px 20px;
+  border-radius:18px;
+  line-height:1.55;
+  font-size:1rem;
+
+  background:rgba(0,0,0,0.35);
+  border:1px solid color-mix(in srgb,var(--main),transparent 55%);
+  box-shadow:
+    0 0 18px color-mix(in srgb,var(--main),transparent 65%),
+    inset 0 0 18px rgba(255,255,255,0.04);
+
+  backdrop-filter:blur(12px);
+}
+
+/* Name stärker hervorheben */
+.feedback-item strong{
+  display:block;
+  font-size:1.08rem;
+  margin-bottom:6px;
+}
+
+/* korrekt */
+.feedback-correct{
+  background:linear-gradient(
+    135deg,
+    color-mix(in srgb,var(--main),transparent 78%),
+    color-mix(in srgb,var(--main),transparent 88%)
+  );
+}
+
+/* falsch */
+.feedback-wrong{
+  background:linear-gradient(
+    135deg,
+    rgba(239,68,68,0.28),
+    rgba(220,38,38,0.18)
+  );
+}
+
+.feedback-item{
+  border:1px solid color-mix(in srgb,var(--main),transparent 60%);
+  background:color-mix(in srgb,var(--main),transparent 85%);
+}
+
+/* ===== VISUELLE DIFFERENZIERUNG RICHTIG / FALSCH ===== */
+
+/* gemeinsame Basis */
+.feedback-correct,
+.feedback-wrong{
+  position:relative;
+  padding-left:22px;
+}
+
+/* linker Statusstreifen */
+.feedback-correct::before,
+.feedback-wrong::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  width:6px;
+  border-radius:12px 0 0 12px;
+}
+
+/* RICHTIG */
+.feedback-correct{
+  background:linear-gradient(
+    135deg,
+    rgba(34,197,94,0.25),
+    rgba(34,197,94,0.12)
+  );
+  border:1px solid rgba(34,197,94,0.5);
+  box-shadow:0 0 18px rgba(34,197,94,0.35);
+}
+
+.feedback-correct::before{
+  background:#22c55e;
+  box-shadow:0 0 12px #22c55e;
+}
+
+/* FALSCH */
+.feedback-wrong{
+  background:linear-gradient(
+    135deg,
+    rgba(239,68,68,0.25),
+    rgba(239,68,68,0.12)
+  );
+  border:1px solid rgba(239,68,68,0.5);
+  box-shadow:0 0 18px rgba(239,68,68,0.35);
+}
+
+.feedback-wrong::before{
+  background:#ef4444;
+  box-shadow:0 0 12px #ef4444;
+}
+
+/* Theme-Buttons Layout */
+.theme-switcher button{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  letter-spacing:1px;
+  font-size:0.75rem;
+  text-transform:uppercase;
+	font-weight:600;
+  letter-spacing:1px;
+}
+
+/* Icon-Grundform */
+.mode-icon{
+  width:12px;
+  height:12px;
+  border-radius:50%;
+  display:inline-block;
+  box-shadow:0 0 10px currentColor;
+}
+
+/* Farbzuweisung */
+/* Blau */
+.btn-blue{
+  border:1px solid rgba(56,189,248,0.45);
+  background:rgba(56,189,248,0.08);
+	color:#7dd3fc;
+}
+
+.btn-blue .mode-icon{
+  background:#38bdf8;
+  color:#38bdf8;
+}
+
+/* Amber */
+.btn-amber{
+  border:1px solid rgba(255,179,0,0.45);
+  background:rgba(255,179,0,0.08);
+	color:#ffd27a;
+}
+
+.btn-amber .mode-icon{
+  background:#ffb300;
+  color:#ffb300;
+}
+
+/* Grün */
+.btn-green{
+  border:1px solid rgba(34,197,94,0.45);
+  background:rgba(34,197,94,0.08);
+	color:#86efac;
+}
+
+.btn-green .mode-icon{
+  background:#22c55e;
+  color:#22c55e;
+}
+
+/* ===== CREATOR LINE ===== */
+.creator-line{
+  margin-top:28px;
+  text-align:center;
+  font-size:0.75rem;
+  letter-spacing:1.6px;
+  text-transform:uppercase;
+
+  color:color-mix(in srgb,var(--main),white 40%);
+  opacity:0.8;
+
+  border-top:1px solid color-mix(in srgb,var(--main),transparent 70%);
+  padding-top:12px;
+}
+
+/* obere Variante */
+.creator-top{
+  margin-top:0;
+  margin-bottom:14px;
+  padding-bottom:10px;
+  padding-top:0;
+
+  border-top:none;
+  border-bottom:1px solid color-mix(in srgb,var(--main),transparent 70%);
+}
+	</style>
+</head>
+		<body class="theme-blue">
+
+  <canvas id="bg-canvas"></canvas>
+
+  <main class="app">
+		
+		<div class="creator-line creator-top">
+  BG-TRAINING TERMINAL • created by Bjørn F.
+</div>
+		
+		<div class="theme-switcher">
+  <button class="btn-blue" onclick="setTheme('blue')">
+    <span class="mode-icon"></span> SCAN MODE
+  </button>
+
+  <button class="btn-amber" onclick="setTheme('amber')">
+    <span class="mode-icon"></span> ANALYSE MODE
+  </button>
+
+  <button class="btn-green" onclick="setTheme('green')">
+    <span class="mode-icon"></span> DATA MODE
+  </button>
+</div>
+
+    <h1>Bedarfsgemeinschaft – Personen zuordnen</h1>
+		
+		<h4>Tippe auf die Person(en), die eine Bedarfsgemeinschaft bilden.</h4>
+
+    <section id="case-text">
+      <!-- Falltext wird per JS eingesetzt -->
+    </section>
+
+    <section id="persons" class="persons">
+      <!-- Personen-Karten kommen per JS -->
+    </section>
+
+    <button id="check-btn">Antwort prüfen</button>
+
+    <section id="feedback">
+      <!-- Rückmeldung + Begründung -->
+    </section>
+		
+		<button id="restart-btn" style="display:none;">Neu starten</button>
+		
+		<button onclick="nextCase()">Nächster Fall</button>
+
+  </main>
+
+  <script src="BG-script.js"></script>
+</body>
+</html>
