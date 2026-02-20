@@ -1,0 +1,1363 @@
+<!DOCTYPE html>
+
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <meta name="description" content="Interaktiver SGB II Vermögensrechner im Terminal-Design">
+  <title>SGB II Vermögensanrechnung – § 12 Terminal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg-dark: #050a0a;
+  --bg-panel: rgba(8, 18, 14, 0.93);
+  --primary: #ff7b00;
+  --primary-dim: rgba(255, 123, 0, 0.08);
+  --primary-glow: rgba(255, 123, 0, 0.55);
+  --primary-mid: rgba(255, 123, 0, 0.35);
+  --text-main: #e8dfc0;
+  --text-dim: #8a7a5a;
+  --success: #6dffb3;
+  --warning: #ffe066;
+  --danger: #ff4444;
+  --border: rgba(255, 123, 0, 0.35);
+  --hex: rgba(255, 123, 0, 0.06);
+  --font-tech: "Orbitron", sans-serif;
+  --font-mono: "Roboto Mono", monospace;
+}
+
+[data-theme="blue"] {
+  --primary: #00d4ff;
+  --primary-dim: rgba(0, 212, 255, 0.08);
+  --primary-glow: rgba(0, 212, 255, 0.55);
+  --primary-mid: rgba(0, 212, 255, 0.3);
+  --text-main: #c8e8f8;
+  --text-dim: #5a7a8a;
+  --border: rgba(0, 212, 255, 0.3);
+  --hex: rgba(0, 212, 255, 0.05);
+}
+
+[data-theme="green"] {
+  --primary: #00ff88;
+  --primary-dim: rgba(0, 255, 136, 0.08);
+  --primary-glow: rgba(0, 255, 136, 0.55);
+  --primary-mid: rgba(0, 255, 136, 0.3);
+  --text-main: #c8f0d8;
+  --text-dim: #5a8a6a;
+  --border: rgba(0, 255, 136, 0.3);
+  --hex: rgba(0, 255, 136, 0.05);
+}
+
+.status-offen { color: var(--text-dim); }
+.status-bestanden { color: var(--success); }
+.status-fehlerhaft { color: var(--danger); }
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  font-family: var(--font-tech);
+  min-height: 100vh;
+  overflow-x: hidden;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── HINTERGRUND ─── */
+#bg-canvas {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  z-index: -2;
+}
+
+/* Visor lens curvature overlay */
+.visor-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: radial-gradient(ellipse at 50% 40%,
+    transparent 30%,
+    rgba(0,0,0,0.25) 65%,
+    rgba(0,0,0,0.75) 100%
+  );
+  pointer-events: none;
+  z-index: 997;
+}
+
+/* Edge lens refraction shimmer */
+.visor-rim {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background:
+    linear-gradient(to bottom, rgba(255,123,0,0.07) 0%, transparent 8%),
+    linear-gradient(to top,    rgba(255,123,0,0.07) 0%, transparent 8%),
+    linear-gradient(to right,  rgba(255,123,0,0.04) 0%, transparent 6%),
+    linear-gradient(to left,   rgba(255,123,0,0.04) 0%, transparent 6%);
+  pointer-events: none;
+  z-index: 998;
+  transition: background 0.5s;
+}
+
+[data-theme="blue"] .visor-rim {
+  background:
+    linear-gradient(to bottom, rgba(0,212,255,0.07) 0%, transparent 8%),
+    linear-gradient(to top,    rgba(0,212,255,0.07) 0%, transparent 8%),
+    linear-gradient(to right,  rgba(0,212,255,0.04) 0%, transparent 6%),
+    linear-gradient(to left,   rgba(0,212,255,0.04) 0%, transparent 6%);
+}
+[data-theme="green"] .visor-rim {
+  background:
+    linear-gradient(to bottom, rgba(0,255,136,0.07) 0%, transparent 8%),
+    linear-gradient(to top,    rgba(0,255,136,0.07) 0%, transparent 8%),
+    linear-gradient(to right,  rgba(0,255,136,0.04) 0%, transparent 6%),
+    linear-gradient(to left,   rgba(0,255,136,0.04) 0%, transparent 6%);
+}
+
+/* ─── SCANLINES (moving) ─── */
+.scanlines {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 200%;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 2px,
+    rgba(0,0,0,0.18) 2px,
+    rgba(0,0,0,0.18) 4px
+  );
+  pointer-events: none;
+  z-index: 1001;
+  opacity: 0.65;
+  animation: scanroll 8s linear infinite;
+}
+@keyframes scanroll {
+  0%   { transform: translateY(0); }
+  100% { transform: translateY(-50%); }
+}
+
+/* Noise canvas sits above everything except top-bar */
+#noise-canvas {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 1002;
+  opacity: 1;
+  mix-blend-mode: screen;
+}
+
+/* ─── HUD CORNER BRACKETS ─── */
+/* Applied to .terminal-window */
+.hud-frame {
+  position: relative;
+}
+.hud-frame::before,
+.hud-frame::after,
+.hud-frame .hud-corner-br,
+.hud-frame .hud-corner-bl {
+  content: "";
+  position: absolute;
+  width: 28px; height: 28px;
+  pointer-events: none;
+  z-index: 10;
+}
+/* Top-left */
+.hud-frame::before {
+  top: -2px; left: -2px;
+  border-top: 3px solid var(--primary);
+  border-left: 3px solid var(--primary);
+  box-shadow: -2px -2px 8px var(--primary-glow);
+}
+/* Top-right */
+.hud-frame::after {
+  top: -2px; right: -2px;
+  border-top: 3px solid var(--primary);
+  border-right: 3px solid var(--primary);
+  box-shadow: 2px -2px 8px var(--primary-glow);
+}
+.hud-corner-br {
+  bottom: -2px; right: -2px;
+  border-bottom: 3px solid var(--primary);
+  border-right: 3px solid var(--primary);
+  box-shadow: 2px 2px 8px var(--primary-glow);
+}
+.hud-corner-bl {
+  bottom: -2px; left: -2px;
+  border-bottom: 3px solid var(--primary);
+  border-left: 3px solid var(--primary);
+  box-shadow: -2px 2px 8px var(--primary-glow);
+}
+
+/* ─── TOP BAR / VISOR HEADER ─── */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 20px;
+  background: rgba(0,0,0,0.88);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(8px);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+/* Visor mode label left */
+.visor-mode {
+  font-size: 0.6rem;
+  letter-spacing: 3px;
+  color: var(--primary);
+  text-transform: uppercase;
+  opacity: 0.7;
+  font-family: var(--font-mono);
+}
+
+/* Tick marks decoration on top bar */
+.top-bar-ticks {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+.top-bar-ticks span {
+  display: block;
+  height: 12px;
+  width: 2px;
+  background: var(--primary);
+  opacity: 0.4;
+}
+.top-bar-ticks span:nth-child(3) { opacity: 0.9; height: 18px; }
+
+.theme-switch {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.theme-btn {
+  background: transparent;
+  border: 1px solid var(--text-dim);
+  color: var(--text-dim);
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: 0.3s;
+  display: grid;
+  place-items: center;
+  font-size: 0.7rem;
+  position: relative;
+}
+.theme-btn:hover, .theme-btn:focus {
+  border-color: var(--text-main);
+  color: var(--text-main);
+  outline: none;
+}
+.theme-btn.active {
+  border-color: var(--primary);
+  color: var(--primary);
+  box-shadow: 0 0 10px var(--primary-glow), inset 0 0 6px var(--primary-dim);
+}
+/* Pulse ring on active theme btn */
+.theme-btn.active::after {
+  content: "";
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  border: 1px solid var(--primary);
+  opacity: 0.3;
+  animation: pulse-ring 2s infinite;
+}
+@keyframes pulse-ring {
+  0%   { transform: scale(1);    opacity: 0.3; }
+  50%  { transform: scale(1.15); opacity: 0.1; }
+  100% { transform: scale(1);    opacity: 0.3; }
+}
+
+/* ─── MAIN CONTAINER ─── */
+.container {
+  max-width: 920px;
+  margin: 24px auto;
+  padding: 0 18px;
+  padding-bottom: 60px;
+}
+
+.terminal-window {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  box-shadow:
+    0 0 40px rgba(0,0,0,0.7),
+    inset 0 0 60px var(--primary-dim),
+    0 0 1px var(--primary-mid);
+  position: relative;
+  backdrop-filter: blur(12px);
+  border-radius: 2px;
+}
+
+/* Inner hex texture */
+.terminal-window::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle, var(--hex) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none;
+  border-radius: 2px;
+  opacity: 1;
+}
+
+.terminal-header {
+  padding: 18px 24px 14px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(0,0,0,0.5) 0%, transparent 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  gap: 4px;
+}
+
+/* Central horizontal rule decoration */
+.terminal-header::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--primary), transparent);
+  box-shadow: 0 0 10px var(--primary);
+}
+
+.terminal-title {
+  font-size: 1.25rem;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 6px;
+  text-shadow: 0 0 14px var(--primary-glow), 0 0 40px var(--primary-mid);
+  text-align: center;
+}
+
+.terminal-subtitle {
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  text-align: center;
+  letter-spacing: 2px;
+}
+
+/* Decorative hex badges flanking title */
+.header-badge {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px; height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.25;
+}
+.header-badge.left  { left: 20px; }
+.header-badge.right { right: 20px; }
+.header-badge svg { width: 100%; height: 100%; fill: var(--primary); }
+
+.terminal-content {
+  padding: 24px;
+  position: relative;
+}
+
+/* ─── PROGRESS (ARC STYLE) ─── */
+.progress-container {
+  margin-bottom: 28px;
+}
+.progress-text {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  font-family: var(--font-mono);
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+
+/* HUD-style segmented progress */
+.progress-bar {
+  height: 6px;
+  background: rgba(255,255,255,0.05);
+  width: 100%;
+  position: relative;
+  display: flex;
+  gap: 3px;
+}
+.progress-seg {
+  flex: 1;
+  background: rgba(255,255,255,0.05);
+  position: relative;
+  overflow: hidden;
+}
+.progress-seg.filled {
+  background: var(--primary);
+  box-shadow: 0 0 8px var(--primary);
+}
+.progress-seg.filled::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 60%, rgba(255,255,255,0.25));
+}
+
+/* ─── CASE BOX ─── */
+.case-box {
+  background: rgba(0,0,0,0.4);
+  border-left: 2px solid var(--primary);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  padding: 14px 16px;
+  margin-bottom: 24px;
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+  color: var(--text-main);
+  line-height: 1.65;
+  position: relative;
+}
+/* Corner notch */
+.case-box::before {
+  content: "";
+  position: absolute;
+  top: 0; right: 0;
+  width: 0; height: 0;
+  border-style: solid;
+  border-width: 0 16px 16px 0;
+  border-color: transparent var(--primary) transparent transparent;
+  opacity: 0.4;
+}
+
+/* ─── TABLE ─── */
+.table-wrapper {
+  overflow-x: auto;
+  margin-bottom: 28px;
+  border: 1px solid var(--border);
+  background: rgba(0,0,0,0.25);
+}
+
+.asset-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+}
+.asset-table th {
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  padding: 10px 14px;
+  color: var(--primary);
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  letter-spacing: 2px;
+  background: rgba(0,0,0,0.3);
+  white-space: nowrap;
+}
+.asset-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  color: var(--text-main);
+}
+.asset-table tr:last-child td { border-bottom: none; }
+.asset-amount {
+  text-align: right;
+  color: var(--success);
+  font-weight: bold;
+  white-space: nowrap;
+  text-shadow: 0 0 6px rgba(109,255,179,0.4);
+}
+
+/* ─── QUESTIONS ─── */
+.question-group {
+  margin-bottom: 32px;
+  opacity: 0;
+  transform: translateY(12px);
+  animation: fadeUp 0.45s forwards;
+}
+@keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+.q-label {
+  font-size: 0.65rem;
+  color: var(--warning);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+  display: block;
+  font-weight: bold;
+  font-family: var(--font-mono);
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(255,230,102,0.15);
+}
+
+.q-title {
+  font-size: 0.95rem;
+  margin-bottom: 14px;
+  font-weight: 500;
+  color: var(--text-main);
+  line-height: 1.5;
+}
+
+.options-grid {
+  display: grid;
+  gap: 10px;
+}
+
+/* HUD-style option button */
+.option-btn {
+  background: rgba(0,0,0,0.35);
+  border: 1px solid var(--border);
+  padding: 13px 16px;
+  text-align: left;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+  transition: all 0.2s;
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 50px;
+  user-select: none;
+  overflow: hidden;
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+}
+
+/* Sweep shimmer on hover */
+.option-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, var(--primary-dim) 50%, transparent 100%);
+  transform: translateX(-100%);
+  transition: transform 0.4s;
+}
+.option-btn:hover::before { transform: translateX(100%); }
+
+.option-btn:hover {
+  background: var(--primary-dim);
+  border-color: var(--primary);
+  color: var(--text-main);
+}
+.option-btn:active { background: var(--primary-dim); }
+
+.option-btn.selected {
+  background: rgba(0,0,0,0.5);
+  border-color: var(--primary);
+  color: var(--primary);
+  box-shadow: inset 3px 0 0 var(--primary), 0 0 12px var(--primary-dim);
+}
+
+/* Targeting reticle indicator */
+.checkbox-indicator {
+  width: 16px; height: 16px;
+  border: 1px solid var(--text-dim);
+  flex-shrink: 0;
+  margin-left: 12px;
+  transition: 0.2s;
+  position: relative;
+  transform: rotate(45deg);
+}
+.option-btn.selected .checkbox-indicator {
+  background: var(--primary);
+  border-color: var(--primary);
+  box-shadow: 0 0 10px var(--primary);
+}
+.option-btn.selected .checkbox-indicator::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border: 1px solid var(--primary);
+  opacity: 0.3;
+  animation: target-pulse 1.5s infinite;
+}
+@keyframes target-pulse {
+  0%, 100% { transform: scale(1);   opacity: 0.3; }
+  50%       { transform: scale(1.3); opacity: 0;   }
+}
+
+/* ─── INPUT ─── */
+.input-wrapper {
+  margin-top: 10px;
+  padding: 12px;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--border);
+  position: relative;
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+}
+.input-wrapper::after {
+  content: "€";
+  position: absolute;
+  right: 22px; top: 50%;
+  transform: translateY(-50%);
+  color: var(--primary);
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.calc-input {
+  background: rgba(0,0,0,0.6);
+  border: 1px solid var(--primary);
+  color: var(--success);
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  padding: 10px 40px 10px 14px;
+  width: 100%;
+  outline: none;
+  text-align: right;
+  border-radius: 0;
+  appearance: none;
+  text-shadow: 0 0 8px rgba(109,255,179,0.5);
+}
+.calc-input::placeholder { color: #333; }
+.calc-input:focus {
+  box-shadow: 0 0 20px var(--primary-dim), inset 0 0 10px rgba(109,255,179,0.05);
+}
+
+/* ─── CONTROLS ─── */
+.controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+.btn-main {
+  padding: 15px;
+  background: transparent;
+  border: 1px solid var(--primary);
+  color: var(--primary);
+  font-family: var(--font-tech);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.25s;
+  min-height: 52px;
+  display: grid;
+  place-items: center;
+  position: relative;
+  overflow: hidden;
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+}
+.btn-main::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--primary) 0%, transparent 50%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.btn-main:hover::before  { opacity: 0.15; }
+.btn-main:hover, .btn-main:focus {
+  background: var(--primary-dim);
+  box-shadow: 0 0 20px var(--primary-glow), inset 0 0 15px var(--primary-dim);
+  color: var(--text-main);
+  outline: none;
+}
+.btn-main:disabled {
+  border-color: #2a2a2a;
+  color: #333;
+  cursor: not-allowed;
+  box-shadow: none;
+  background: transparent;
+}
+.btn-main:disabled::before { display: none; }
+
+/* ─── FEEDBACK ─── */
+.feedback-area {
+  margin-top: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.feedback-card {
+  padding: 14px 16px;
+  border: 1px solid;
+  font-family: var(--font-mono);
+  font-size: 0.83rem;
+  background: rgba(0,0,0,0.6);
+  animation: slideIn 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+.feedback-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  width: 3px;
+  background: currentColor;
+}
+@keyframes slideIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+
+.fb-correct { border-color: var(--success); color: var(--success); }
+.fb-wrong   { border-color: var(--danger);  color: var(--danger);  }
+
+.math-detail {
+  display: block;
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: rgba(255,255,255,0.04);
+  color: var(--text-main);
+  border-left: 2px solid currentColor;
+  line-height: 1.5;
+  font-size: 0.82rem;
+}
+
+/* ─── MOBILE ─── */
+@media (max-width: 600px) {
+  .container { margin: 10px auto; padding: 0 10px; }
+  .terminal-content { padding: 14px; }
+  .terminal-title { font-size: 1rem; letter-spacing: 3px; }
+  .controls { grid-template-columns: 1fr; }
+  .asset-table th, .asset-table td { padding: 8px 10px; font-size: 0.78rem; }
+  .option-btn { padding: 11px 12px; font-size: 0.83rem; }
+  .header-badge { display: none; }
+}
+</style>
+
+</head>
+<body data-theme="orange">
+
+<canvas id="bg-canvas"></canvas>
+<canvas id="noise-canvas"></canvas>
+
+<div class="scanlines"></div>
+<div class="visor-overlay"></div>
+<div class="visor-rim"></div>
+
+<div class="top-bar">
+  <div class="visor-mode">Visor</div>
+  <div class="top-bar-ticks">
+    <span></span><span></span><span></span><span></span><span></span>
+  </div>
+  <div class="theme-switch">
+    <button class="theme-btn" onclick="setTheme('blue')"   aria-label="Theme Blau">●</button>
+    <button class="theme-btn active" onclick="setTheme('orange')" aria-label="Theme Orange">●</button>
+    <button class="theme-btn" onclick="setTheme('green')"  aria-label="Theme Grün">●</button>
+  </div>
+  <div class="top-bar-ticks">
+    <span></span><span></span><span></span><span></span><span></span>
+  </div>
+  <div class="visor-mode">Mode</div>
+</div>
+
+<div class="container">
+  <main class="terminal-window hud-frame">
+    <!-- HUD corner elements -->
+    <span class="hud-corner-br"></span>
+    <span class="hud-corner-bl"></span>
+
+```
+<header class="terminal-header">
+  <!-- Hex badges -->
+  <span class="header-badge left">
+    <svg viewBox="0 0 100 100"><polygon points="50,5 95,27.5 95,72.5 50,95 5,72.5 5,27.5"/></svg>
+  </span>
+  <span class="header-badge right">
+    <svg viewBox="0 0 100 100"><polygon points="50,5 95,27.5 95,72.5 50,95 5,72.5 5,27.5"/></svg>
+  </span>
+  <div class="terminal-title">SGB II</div>
+  <div class="terminal-subtitle">§ 12 – Terminal Vermögen</div>
+</header>
+
+<div class="terminal-content" id="app-content"></div>
+```
+
+  </main>
+</div>
+
+<script>
+// =============================================
+// KONFIGURATION & DATEN
+// =============================================
+const cases = [
+  {
+    id: 1,
+    text: "Herr Nowak (41, alleinstehend, eLb) stellt einen Weiterbewilligungsantrag auf Bürgergeld (Bezug seit 01.01.2023). Er gibt folgende Werte an:",
+    assets: [
+      { name: "Sparbuch", val: 1200 },
+      { name: "PKW (Verkehrswert)", val: 5800 },
+      { name: "Aktien-Depot", val: 8500 }
+    ],
+    steps: [
+      {
+        type: "multi",
+        label: "Schritt 1: Verwertbares Vermögen nach <br>§ 12 Abs. 1 S. 1 SGB II",
+        text: "Was zählt hier zum grundsätzlich zu berücksichtigenden Vermögen?",
+        options: [
+          { txt: "Sparbuch", correct: true  },
+          { txt: "PKW", correct: true  },
+          { txt: "Aktien-Depot", correct: true  }
+        ],
+        explain: "Alle Vermögenswerte sind hier grundsätzlich verwertbar."
+      },
+      {
+        type: "single",
+        label: "Schritt 2: Schonvermögen",
+        text: "Welcher Gegenstand ist vollständig geschützt (nicht zu berücksichtigen?",
+        options: [
+          { txt: "PKW", correct: true  },
+          { txt: "Sparbuch bis 15.000 €",               correct: false },
+          { txt: "Aktien-Depot, da unter 40.000 €", correct: false }
+        ],
+        explain: "Ein angemessenes Kraftfahrzeug für jede erwerbsfähige Person in der Bedarfsgemeinschaft ist nicht als Vermögen zu berücksichtigen. Ist ein Verkaufserlös abzüglich ggf. noch bestehender Kreditverbindlichkeiten von maximal 15.000,00 EUR erreichbar, ist von Angemessenheit auszugehen."
+      },
+      {
+        type: "input",
+        label: "Schritt 3: Berechnung",
+        text: "Wie hoch ist das anzurechnende Vermögen (nach Abzug Freibetrag)?",
+        hint: "Sparbuch + Aktien - 15.000 €",
+        correctVal: 0,
+        altCorrectVal: -5300,
+        explain: "Gesamt: 9.700 € (1.200 + 8.500). Freibetrag: 15.000 €. Da das Vermögen unter dem Freibetrag liegt, ergibt sich kein anzurechnendes Vermögen."
+      }
+    ]
+  },
+  {
+    id: 2,
+    text: "Ehepaar Kowalski (beide 45) stellt erstmalig einen Antrag auf Bürgergeld. Vermögenssituation:",
+    assets: [
+      { name: "Gemeinschaftskonto", val: 42000 },
+      { name: "Riester-Rente (Frau K.)", val: 9200  },
+      { name: "Schmuck (Erbstück)", val: 6500  }
+    ],
+    steps: [
+      {
+        type: "multi",
+        label: "Schritt 1: Verwertbares Vermögen nach <br> § 12 Abs. 1 S. 1 SGB II",
+        text: "Was zählt hier zum grundsätzlich zu berücksichtigenden Vermögen?",
+        options: [
+          { txt: "Gemeinschaftskonto", correct: true },
+          { txt: "Riester-Rente", correct: true },
+          { txt: "Schmuck (Erbstück)", correct: true }
+        ],
+        explain: "Alle angegebenen Vermögenswerte sind grundsätzlich verwertbar."
+      },
+      {
+        type: "multi",
+        label: "Schritt 2: Schonvermögen",
+        text: "Welche Gegenstände sind vollständig geschützt (nicht zu berücksichtigen)?",
+        options: [
+          { txt: "Gemeinschaftskonto", correct: false },
+          { txt: "Riester-Rente", correct: true  },
+          { txt: "Schmuck (Erbstück)", correct: true  }
+        ],
+        explain: "Die Riesterrente (§ 12 Abs. 1 S. 2 Nr. 3 SGB II) und angemessene Erbstücke (§ 12 Abs. 1 S. 2 Nr. 7 i.V.m. Fachlicher Weisung) sind geschützt."
+      },
+      {
+        type: "input",
+        label: "Schritt 3: Berechnung",
+        text: "Wie hoch ist das anzurechnende Vermögen (nach Abzug Freibetrag)?",
+        correctVal: 0,
+        altCorrectVal: -13000,
+        explain: "42.000 € (Konto) abzüglich 55.000 € Karenzzeit-Freibetrag (40.000 + 15.000). Ergebnis ist negativ bzw. 0 €."
+      }
+    ]
+  },
+  {
+    id: 3,
+    text: "Herr Schubert (alleinstehend, 49, eLb) stellt einen Weiterbewilligungsantrag auf Bürgergeld (Bezug seit 1. Juli 2024). In der Anlage VM macht er folgende Angaben:",
+    assets: [
+      { name: "Bargeld", val: 150   },
+      { name: "Fernseher (115 Zoll) Samsung Neo QLED 4K", val: 7500  },
+      { name: "PKW (gepfändet)", val: 12500 }
+    ],
+    steps: [
+      {
+        type: "multi",
+        label: "Schritt 1: Verwertbares Vermögen nach <br> § 12 Abs. 1 S. 1 SGB II",
+        text: "Was zählt hier zum grundsätzlich zu berücksichtigenden Vermögen?",
+        options: [
+          { txt: "Bargeld", correct: true  },
+          { txt: "Fernseher", correct: true  },
+          { txt: "PKW", correct: false }
+        ],
+        explain: "Der PKW ist gepfändet und deshalb nicht verwertbar."
+      },
+      {
+        type: "multi",
+        label: "Schritt 2: Schonvermögen",
+        text: "Welche Gegenstände sind vollständig geschützt (nicht zu berücksichtigen)?",
+        options: [
+          { txt: "Bargeld", correct: false },
+          { txt: "Fernseher", correct: true  },
+          { txt: "PKW", correct: false }
+        ],
+        explain: "Der Fernseher (§ 12 Abs. 1 S. 2 Nr. 1 SGB II i.V.m. Fachlicher Weisung) ist geschützt."
+      },
+      {
+        type: "input",
+        label: "Schritt 3: Berechnung",
+        text: "Wie hoch ist das anzurechnende Vermögen (nach Abzug Freibetrag)?",
+        correctVal: 0,
+        altCorrectVal: -14850,
+        explain: "150 € Bargeld abzüglich 15.000 € Freibetrag ergibt kein anzurechnendes Vermögen."
+      }
+    ]
+  },
+  {
+    id: 4,
+    text: "Herr Svensson (24, eLb) stellt einen Weiterbewilligungsantrag auf Bürgergeld (Bezug seit 1. Dezember 2024). Zur Bedarfsgemeinschaft gehört der Sohn (2). Herr Svensson wohnt mit seinem Sohn in einer Eigentumswohnung. Zum Vermögen macht er folgende Angaben:",
+    assets: [
+      { name: "Tagesgeldkonto", val: 15000  },
+      { name: "Bausparvertrag", val: 17500  },
+      { name: "Eigentumswohnung (75qm)", val: 200000 }
+    ],
+    steps: [
+      {
+        type: "multi",
+        label: "Schritt 1: Verwertbares Vermögen nach <br> § 12 Abs. 1 S. 1 SGB II",
+        text: "Was zählt hier zum grundsätzlich zu berücksichtigenden Vermögen?",
+        options: [
+          { txt: "Tagesgeldkonto", correct: true },
+          { txt: "Bausparvertrag", correct: true },
+          { txt: "Eigentumswohnung", correct: true }
+        ],
+        explain: "Alle Vermögenswerte sind verwertbar."
+      },
+      {
+        type: "multi",
+        label: "Schritt 2: Schonvermögen",
+        text: "Welche Gegenstände sind vollständig geschützt (nicht zu berücksichtigen)?",
+        options: [
+          { txt: "Tagesgeldkonto", correct: false },
+          { txt: "Bausparvertrag", correct: false },
+          { txt: "Eigentumswohnung", correct: true  }
+        ],
+        explain: "Eine selbst genutzte Eigentumswohnung von bis zu 130 Quadratmetern ist nicht als Vermögen zu berücksichtigen."
+      },
+      {
+        type: "input",
+        label: "Schritt 3: Berechnung",
+        text: "Wie hoch ist das anzurechnende Vermögen (nach Abzug Freibetrag)?",
+        correctVal: 2500,
+        explain: "32.500 € (15.000 + 17.500) abzüglich 30.000 € Freibetrag ergibt ein anzurechnendes Vermögen in Höhe von 2.500 €."
+      }
+    ]
+  },
+	{
+    id: 5,
+    text: "Ehepaar Kowalski stellt nach einem Jahr Bezug von Bürgergeld erneut einen Antrag auf Leistungen zur Sicherung des Lebensunterhalts nach dem SGB II. Vermögenssituation:",
+    assets: [
+      { name: "Gemeinschaftskonto", val: 32000 },
+      { name: "Riester-Rente (Frau K.)", val: 9900  },
+      { name: "Schmuck (Erbstück)", val: 6500  },
+			{ name: "Geschirrspüler Siemens iQ500", val: 1000  }
+    ],
+    steps: [
+      {
+        type: "multi",
+        label: "Schritt 1: Verwertbares Vermögen nach<br> § 12 Abs. 1 S. 1 SGB II",
+        text: "Was zählt hier zum grundsätzlich zu berücksichtigenden Vermögen?",
+        options: [
+          { txt: "Gemeinschaftskonto", correct: true },
+          { txt: "Riester-Rente", correct: true },
+          { txt: "Schmuck (Erbstück)", correct: true },
+					{ txt: "Geschirrspüler", correct: true }
+        ],
+        explain: "Alle angegebenen Vermögenswerte sind grundsätzlich verwertbar."
+      },
+      {
+        type: "multi",
+        label: "Schritt 2: Schonvermögen",
+        text: "Welche Gegenstände sind vollständig geschützt (nicht zu berücksichtigen)?",
+        options: [
+          { txt: "Gemeinschaftskonto", correct: false },
+          { txt: "Riester-Rente", correct: true  },
+          { txt: "Schmuck (Erbstück)", correct: true  },
+					{ txt: "Geschirrspüler", correct: true  }
+        ],
+        explain: "Die Riesterrente (§ 12 Abs. 1 S. 2 Nr. 3 SGB II) und angemessene Erbstücke (§ 12 Abs. 1 S. 2 Nr. 7 i.V.m. Fachlicher Weisung) sind geschützt. Der Geschirrspüler ist als angemessener Hausrat zu werten und wird somit auch nicht berücksichtigt (§ 12 Abs. 1 S. 2 Nr. 1 i.V.m. Fachlicher Weisung)"
+      },
+      {
+        type: "input",
+        label: "Schritt 3: Berechnung",
+        text: "Wie hoch ist das anzurechnende Vermögen (nach Abzug Freibetrag)?",
+        correctVal: 2000,
+        explain: "32.000 € (Konto) abzüglich 30.000 € Freibetrag (15.000 + 15.000). Es ergibt sich ein anzurechnendes Vermögen von 2.000€."
+      }
+    ]
+  }
+];
+
+// =============================================
+// STATE & LOGIC
+// =============================================
+let currentCaseIndex = 0;
+let caseStatus = "Offen";
+
+function init() {
+  renderCase();
+  requestAnimationFrame(animateCanvas);
+}
+
+function renderCase() {
+  const data = cases[currentCaseIndex];
+  const content = document.getElementById('app-content');
+
+  // Segmented progress bar
+  let segs = '';
+  for (let i = 0; i < cases.length; i++) {
+    segs += `<div class="progress-seg ${i < currentCaseIndex ? 'filled' : ''}"></div>`;
+  }
+
+  let html = `
+    <div class="progress-container">
+      <div class="progress-text">
+        <span>Fall-Akte ${currentCaseIndex + 1} / ${cases.length}</span>
+        <span id="progress-status" class="status-${caseStatus.toLowerCase()}">Status: ${caseStatus}</span>
+      </div>
+      <div class="progress-bar">${segs}</div>
+    </div>
+  `;
+
+  html += `
+    <div class="case-box">
+      <strong>Sachverhalt:</strong><br>${data.text}
+    </div>
+  `;
+
+  html += `<div class="table-wrapper"><table class="asset-table"><thead><tr><th>Vermögensgegenstand</th><th style="text-align:right">Wert</th></tr></thead><tbody>`;
+  data.assets.forEach(a => {
+    html += `<tr><td>${a.name}</td><td class="asset-amount">${a.val.toLocaleString('de-DE')} €</td></tr>`;
+  });
+  html += `</tbody></table></div>`;
+
+  html += `<div id="questions-container">`;
+  data.steps.forEach((step, idx) => { html += renderStep(step, idx); });
+  html += `</div>`;
+
+  html += `
+    <div class="feedback-area" id="feedback-area"></div>
+    <div class="controls">
+      <button class="btn-main" onclick="checkCase()" id="btn-check">Fall Prüfen</button>
+      <button class="btn-main" onclick="nextCase()" id="btn-next" disabled>Nächster Fall</button>
+    </div>
+  `;
+
+  content.innerHTML = html;
+}
+
+function renderStep(step, stepIdx) {
+  let html = `
+    <div class="question-group">
+      <span class="q-label">${step.label}</span>
+      <div class="q-title">${step.text}</div>
+  `;
+
+  if (step.type === 'input') {
+    html += `
+      <div class="input-wrapper">
+        <input type="text" inputmode="decimal" class="calc-input"
+               id="input-${stepIdx}" placeholder="Betrag in € eingeben" />
+      </div>
+    `;
+  } else {
+    html += `<div class="options-grid">`;
+    step.options.forEach((opt, optIdx) => {
+      html += `
+        <button class="option-btn" id="opt-${stepIdx}-${optIdx}"
+                onclick="selectOption(${stepIdx}, ${optIdx}, '${step.type}')">
+          ${opt.txt}
+          <span class="checkbox-indicator"></span>
+        </button>
+      `;
+    });
+    html += `</div>`;
+  }
+  html += `</div>`;
+  return html;
+}
+
+window.selectOption = function(stepIdx, optIdx, type) {
+  if (document.getElementById('btn-check').disabled) return;
+  const btn = document.getElementById(`opt-${stepIdx}-${optIdx}`);
+  if (type === 'multi') {
+    btn.classList.toggle('selected');
+  } else {
+    document.querySelectorAll(`[id^='opt-${stepIdx}-']`).forEach(el => el.classList.remove('selected'));
+    btn.classList.add('selected');
+  }
+}
+
+window.checkCase = function() {
+  const data = cases[currentCaseIndex];
+  const fbArea = document.getElementById('feedback-area');
+  fbArea.innerHTML = '';
+  let allCorrect = true;
+
+  data.steps.forEach((step, stepIdx) => {
+    let stepCorrect = false;
+    let userValDisplay = "";
+
+    if (step.type === 'multi') {
+      let wrongSelection = false, missedCorrect = false;
+      step.options.forEach((o, oIdx) => {
+        const el = document.getElementById(`opt-${stepIdx}-${oIdx}`);
+        const isSel = el.classList.contains('selected');
+        if (o.correct && !isSel) missedCorrect = true;
+        if (!o.correct && isSel) wrongSelection = true;
+        if (o.correct) el.style.borderColor = "var(--success)";
+        if (isSel && !o.correct) el.style.borderColor = "var(--danger)";
+      });
+      stepCorrect = !wrongSelection && !missedCorrect;
+
+    } else if (step.type === 'single') {
+      let selectedIdx = -1;
+      step.options.forEach((o, oIdx) => {
+        const el = document.getElementById(`opt-${stepIdx}-${oIdx}`);
+        if (el.classList.contains('selected')) selectedIdx = oIdx;
+        if (o.correct) el.style.borderColor = "var(--success)";
+      });
+      if (selectedIdx !== -1 && step.options[selectedIdx].correct) stepCorrect = true;
+
+    } else if (step.type === 'input') {
+      const inp = document.getElementById(`input-${stepIdx}`);
+      let userVal = parseFloat(inp.value.replace(',', '.'));
+      userValDisplay = isNaN(userVal) ? "keine Eingabe" : userVal.toLocaleString('de-DE') + " €";
+      if (!isNaN(userVal)) {
+        if (Math.abs(userVal - step.correctVal) < 1.0) stepCorrect = true;
+        if (step.altCorrectVal !== undefined && Math.abs(userVal - step.altCorrectVal) < 1.0) stepCorrect = true;
+      }
+      inp.disabled = true;
+      inp.style.borderColor = stepCorrect ? "var(--success)" : "var(--danger)";
+    }
+
+    const fbCard = document.createElement('div');
+    fbCard.className = `feedback-card ${stepCorrect ? 'fb-correct' : 'fb-wrong'}`;
+    let icon  = stepCorrect ? '✅' : '❌';
+    let title = `<strong>${step.label}</strong>`;
+    if (step.type === 'input' && !stepCorrect) {
+      title += `<br>Ihre Eingabe: ${userValDisplay} <br>Lösung: ${step.correctVal} €`;
+    } else {
+      title += `: ${stepCorrect ? 'Korrekt' : 'Fehlerhaft'}`;
+    }
+    fbCard.innerHTML = `<div>${icon} ${title}</div><span class="math-detail">${step.explain}</span>`;
+    fbArea.appendChild(fbCard);
+    if (!stepCorrect) allCorrect = false;
+  });
+
+  document.getElementById('btn-check').disabled = true;
+  document.getElementById('btn-next').disabled  = false;
+  document.querySelectorAll('.option-btn').forEach(b => b.style.pointerEvents = 'none');
+
+  caseStatus = allCorrect ? "Bestanden" : "Fehlerhaft";
+  document.getElementById("progress-status").textContent = "Status: " + caseStatus;
+  document.getElementById("progress-status").className   =
+    "status-" + caseStatus.toLowerCase();
+
+  fbArea.scrollIntoView({ behavior: 'smooth' });
+}
+
+window.nextCase = function() {
+  if (currentCaseIndex < cases.length - 1) {
+    currentCaseIndex++;
+    caseStatus = "Offen";
+    renderCase();
+    window.scrollTo(0, 0);
+  } else {
+    showResults();
+  }
+}
+
+function showResults() {
+  document.getElementById('app-content').innerHTML = `
+    <div style="text-align:center; padding: 40px 0;">
+      <h1 style="color:var(--primary); letter-spacing:4px;">Simulation Beendet</h1>
+      <div style="font-size:4rem; margin:20px 0; text-shadow:0 0 30px var(--primary)">DONE</div>
+      <p style="color:var(--text-dim); margin-bottom:30px; font-family:var(--font-mono)">Alle Fälle wurden bearbeitet.</p>
+      <button class="btn-main" onclick="location.reload()" style="width:100%">Neustart</button>
+    </div>
+  `;
+}
+
+// =============================================
+// THEME
+// =============================================
+let currentThemeColor = [255, 123, 0]; // Default orange
+
+window.setTheme = function(theme) {
+  document.body.setAttribute('data-theme', theme);
+  document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  const colors = {
+    blue:   [0, 212, 255],
+    orange: [255, 123, 0],
+    green:  [0, 255, 136]
+  };
+  currentThemeColor = colors[theme];
+}
+
+// =============================================
+// CANVAS — HEX GRID + ENERGY PULSES
+// =============================================
+const canvas = document.getElementById('bg-canvas');
+const ctx    = canvas.getContext('2d');
+
+function resize() {
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resize);
+resize();
+
+// Pre-compute hex grid vertices
+const HEX_SIZE = 38;
+const hexes = [];
+
+function buildGrid() {
+  hexes.length = 0;
+  const W = canvas.width, H = canvas.height;
+  const w = HEX_SIZE * 2;
+  const h = Math.sqrt(3) * HEX_SIZE;
+  const cols = Math.ceil(W / (w * 0.75)) + 2;
+  const rows = Math.ceil(H / h) + 2;
+  for (let r = -1; r < rows; r++) {
+    for (let c = -1; c < cols; c++) {
+      const x = c * w * 0.75;
+      const y = r * h + (c % 2 === 0 ? 0 : h / 2);
+      hexes.push({ x, y, phase: Math.random() * Math.PI * 2 });
+    }
+  }
+}
+buildGrid();
+window.addEventListener('resize', buildGrid);
+
+function hexPath(cx, cy, size) {
+  ctx.beginPath();
+  for (let i = 0; i < 6; i++) {
+    const a = Math.PI / 180 * (60 * i - 30);
+    const px = cx + size * Math.cos(a);
+    const py = cy + size * Math.sin(a);
+    i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+  }
+  ctx.closePath();
+}
+
+let t = 0;
+
+function animateCanvas() {
+  t += 0.008;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  const [r, g, b] = currentThemeColor;
+
+  hexes.forEach(h => {
+    const pulse = (Math.sin(t + h.phase) + 1) / 2; // 0–1
+    const alpha = 0.03 + pulse * 0.07;
+    hexPath(h.x, h.y, HEX_SIZE - 2);
+    ctx.strokeStyle = `rgba(${r},${g},${b},${alpha})`;
+    ctx.lineWidth   = 0.8;
+    ctx.stroke();
+  });
+
+  // Sweep line (horizontal scan)
+  const sweepY = (t * 80) % canvas.height;
+  const sweepGrad = ctx.createLinearGradient(0, sweepY - 60, 0, sweepY + 60);
+  sweepGrad.addColorStop(0,   `rgba(${r},${g},${b},0)`);
+  sweepGrad.addColorStop(0.5, `rgba(${r},${g},${b},0.04)`);
+  sweepGrad.addColorStop(1,   `rgba(${r},${g},${b},0)`);
+  ctx.fillStyle = sweepGrad;
+  ctx.fillRect(0, sweepY - 60, canvas.width, 120);
+
+  requestAnimationFrame(animateCanvas);
+}
+
+// =============================================
+// NOISE CANVAS — Aggressive animated grain + glitch
+// =============================================
+const noiseCvs = document.getElementById('noise-canvas');
+const nCtx     = noiseCvs.getContext('2d');
+
+function resizeNoise() {
+  noiseCvs.width  = window.innerWidth;
+  noiseCvs.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeNoise);
+resizeNoise();
+
+let noiseFrame = 0;
+// Pre-allocate ImageData once per resize (updated on resize event too)
+let noiseImg = nCtx.createImageData(noiseCvs.width, noiseCvs.height);
+
+window.addEventListener('resize', () => {
+  noiseImg = nCtx.createImageData(noiseCvs.width, noiseCvs.height);
+});
+
+function drawNoise() {
+  noiseFrame++;
+  const W = noiseCvs.width;
+  const H = noiseCvs.height;
+  const data = noiseImg.data;
+  const [r, g, b] = currentThemeColor;
+
+  // Base grain — every pixel gets random luminance
+  // Update every frame for maximum aggression
+  for (let i = 0; i < data.length; i += 4) {
+    const lum = Math.random();
+    if (lum > 0.82) {
+      // Tinted bright speckle
+      const intensity = (lum - 0.82) / 0.18; // 0–1
+      data[i]     = r * intensity * 0.6;
+      data[i + 1] = g * intensity * 0.6;
+      data[i + 2] = b * intensity * 0.6;
+      data[i + 3] = Math.floor(intensity * 55 + Math.random() * 15);
+    } else if (lum < 0.06) {
+      // Dark dropout pixel
+      data[i]     = 0;
+      data[i + 1] = 0;
+      data[i + 2] = 0;
+      data[i + 3] = Math.floor(Math.random() * 40);
+    } else {
+      data[i + 3] = 0; // transparent
+    }
+  }
+
+  nCtx.putImageData(noiseImg, 0, 0);
+
+  // ── Glitch bands: random horizontal slices that shift/tint ──
+  // Fire a new glitch band every ~18 frames on average
+  if (Math.random() < 0.055) {
+    const bandY  = Math.random() * H;
+    const bandH  = 2 + Math.random() * 14;
+    const shift  = (Math.random() - 0.5) * 18;
+    const alpha  = 0.08 + Math.random() * 0.18;
+
+    // Coloured horizontal tear
+    nCtx.save();
+    nCtx.fillStyle = `rgba(${r},${g},${b},${alpha})`;
+    nCtx.fillRect(0, bandY, W, bandH);
+
+    // Pixel-shift duplicate (translucent copy offset sideways)
+    const slice = nCtx.getImageData(0, bandY, W, bandH);
+    nCtx.putImageData(slice, shift, bandY);
+    nCtx.restore();
+  }
+
+  // ── Brief full-screen flash roughly every 4 s ──
+  if (Math.random() < 0.004) {
+    nCtx.save();
+    nCtx.fillStyle = `rgba(${r},${g},${b},0.04)`;
+    nCtx.fillRect(0, 0, W, H);
+    nCtx.restore();
+  }
+
+  requestAnimationFrame(drawNoise);
+}
+
+drawNoise();
+
+init();
+</script>
+
+</body>
+</html>
