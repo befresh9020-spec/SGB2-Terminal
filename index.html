@@ -950,6 +950,98 @@ body {
   .system-status { gap: 12px; font-size: 0.58rem; }
   .footer-bar { font-size: 0.55rem; }
 }
+
+/* ─── CARD LAUNCH ANIMATION ─── */
+.module-card.launching {
+  pointer-events: none;
+}
+
+/* Scan-Streifen */
+.module-card .card-scan {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: 2px;
+}
+.module-card .card-scan::before {
+  content: "";
+  position: absolute;
+  left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    var(--primary-mid) 20%,
+    var(--primary) 50%,
+    var(--primary-mid) 80%,
+    transparent 100%);
+  box-shadow: 0 0 18px var(--primary-glow), 0 0 40px var(--primary);
+  top: -4px;
+  opacity: 0;
+  transition: none;
+}
+.module-card.launching .card-scan::before {
+  animation: card-scan-run 0.45s ease-in forwards;
+}
+
+@keyframes card-scan-run {
+  0%   { top: -4px;  opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { top: calc(100% + 4px); opacity: 0; }
+}
+
+/* Overlay-Blitz */
+.module-card .card-flash-overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--primary);
+  opacity: 0;
+  z-index: 19;
+  pointer-events: none;
+  border-radius: 2px;
+}
+.module-card.launching .card-flash-overlay {
+  animation: card-flash-pulse 0.5s ease forwards;
+}
+@keyframes card-flash-pulse {
+  0%   { opacity: 0; }
+  30%  { opacity: 0.18; }
+  60%  { opacity: 0.08; }
+  80%  { opacity: 0.22; }
+  100% { opacity: 0.05; }
+}
+
+/* Ecken-Burst */
+.module-card.launching .card-corner {
+  animation: corner-burst 0.5s ease forwards;
+}
+@keyframes corner-burst {
+  0%   { box-shadow: none; }
+  40%  { box-shadow: 0 0 20px var(--primary-glow), 0 0 40px var(--primary); }
+  100% { box-shadow: 0 0 8px var(--primary-glow); }
+}
+
+/* Ganzseitiger Wipe beim Verlassen */
+#page-wipe {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: var(--primary);
+  clip-path: inset(50% 50%);
+  pointer-events: none;
+  opacity: 0;
+}
+#page-wipe.wipe-active {
+  animation: page-wipe-anim 0.5s cubic-bezier(0.7,0,1,1) forwards;
+}
+@keyframes page-wipe-anim {
+  0%   { opacity: 0.9; clip-path: inset(50% 0); }
+  40%  { opacity: 1;   clip-path: inset(0% 0);  }
+  100% { opacity: 1;   clip-path: inset(0% 0);  }
+}
+
 </style>
 
 </head>
@@ -1417,6 +1509,39 @@ function drawNoise() {
   }
 
   runBoot();
+})();
+</script>
+
+<script>
+// ─── CARD CLICK ANIMATION ───
+(function() {
+  // Seite: Wipe-Div einfügen
+  const wipe = document.createElement('div');
+  wipe.id = 'page-wipe';
+  document.body.appendChild(wipe);
+
+  // Jede Karte: Scan + Flash-Elemente einfügen
+  document.querySelectorAll('.module-card').forEach(card => {
+    card.insertAdjacentHTML('afterbegin',
+      '<div class="card-scan"></div><div class="card-flash-overlay"></div>'
+    );
+
+    card.addEventListener('click', function(e) {
+      e.preventDefault();
+      const href = this.getAttribute('href');
+      if (!href || this.classList.contains('launching')) return;
+
+      this.classList.add('launching');
+
+      // Kurzes Warten → dann Seiten-Wipe → Navigation
+      setTimeout(() => {
+        wipe.classList.add('wipe-active');
+        setTimeout(() => {
+          window.location.href = href;
+        }, 480);
+      }, 300);
+    });
+  });
 })();
 </script>
 
