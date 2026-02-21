@@ -1,487 +1,653 @@
 <!DOCTYPE html>
+
 <html lang="de">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Zuordnungsspiel Bedarfsgemeinschaft</title>
-	<style>
-	/* ===== RESET ===== */
-*{ box-sizing:border-box; }
 
-body{
-  margin:0;
-  font-family:"Segoe UI",Arial,sans-serif;
-  overflow-x:hidden;
-}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Mono:wght@300;400;600&display=swap" rel="stylesheet">
 
-/* ===== THEME VARIABLEN ===== */
-body.theme-blue{
-  --main:#38bdf8;
-  --bg1:#0f2027;
-  --bg2:#020617;
-  --text:#eaf4ff;
-}
+  <style>
+    /* ═══════════════════════════════════════════════
+       BG-TRAINING TERMINAL — STYLESHEET
+       by Bjørn F.  |  dark HUD / visor aesthetic
+       ═══════════════════════════════════════════════ */
 
-body.theme-amber{
-  --main:#ffb300;
-  --bg1:#2b1600;
-  --bg2:#050200;
-  --text:#ffe9c4;
-}
+    /* ─── CSS CUSTOM PROPERTIES (default: blue) ─── */
+    :root {
+      --bg-dark:      #050a0a;
+      --bg-panel:     rgba(8, 18, 14, 0.93);
+      --primary:      #00d4ff;
+      --primary-dim:  rgba(0, 212, 255, 0.08);
+      --primary-glow: rgba(0, 212, 255, 0.55);
+      --primary-mid:  rgba(0, 212, 255, 0.30);
+      --text-main:    #c8e8f8;
+      --text-dim:     #5a7a8a;
+      --success:      #6dffb3;
+      --danger:       #ff4444;
+      --border:       rgba(0, 212, 255, 0.30);
+      --hex:          rgba(0, 212, 255, 0.05);
+      --font-tech:    "Orbitron", sans-serif;
+      --font-mono:    "Roboto Mono", monospace;
+    }
 
-body.theme-green{
-  --main:#22c55e;
-  --bg1:#052e1b;
-  --bg2:#020617;
-  --text:#dcfce7;
-}
+    /* ─── THEMES ─── */
+    body.theme-blue {
+      --primary:      #00d4ff;
+      --primary-dim:  rgba(0, 212, 255, 0.08);
+      --primary-glow: rgba(0, 212, 255, 0.55);
+      --primary-mid:  rgba(0, 212, 255, 0.30);
+      --text-main:    #c8e8f8;
+      --text-dim:     #5a7a8a;
+      --border:       rgba(0, 212, 255, 0.30);
+      --hex:          rgba(0, 212, 255, 0.05);
+    }
+    body.theme-amber {
+      --primary:      #ff7b00;
+      --primary-dim:  rgba(255, 123, 0, 0.08);
+      --primary-glow: rgba(255, 123, 0, 0.55);
+      --primary-mid:  rgba(255, 123, 0, 0.35);
+      --text-main:    #e8dfc0;
+      --text-dim:     #8a7a5a;
+      --border:       rgba(255, 123, 0, 0.35);
+      --hex:          rgba(255, 123, 0, 0.06);
+    }
+    body.theme-green {
+      --primary:      #00ff88;
+      --primary-dim:  rgba(0, 255, 136, 0.08);
+      --primary-glow: rgba(0, 255, 136, 0.55);
+      --primary-mid:  rgba(0, 255, 136, 0.30);
+      --text-main:    #c8f0d8;
+      --text-dim:     #5a8a6a;
+      --border:       rgba(0, 255, 136, 0.30);
+      --hex:          rgba(0, 255, 136, 0.05);
+    }
 
-body{
-  color:var(--text);
-}
+    /* ─── RESET ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* ===== GRID ===== */
-body::after{
-  content:"";
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  background-image:
-    linear-gradient(color-mix(in srgb,var(--main),transparent 80%) 1px, transparent 1px),
-    linear-gradient(90deg,color-mix(in srgb,var(--main),transparent 80%) 1px, transparent 1px);
-  background-size:40px 40px;
-}
+    /* ─── BASE ─── */
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-tech);
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
 
-/* ===== BACKGROUND ===== */
-#bg-canvas{
-  position:fixed;
-  inset:0;
-  z-index:-1;
-  background:radial-gradient(circle at top,var(--bg1),var(--bg2));
-}
+    /* ─── CANVAS BACKGROUND ─── */
+    #bg-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: -2;
+    }
 
-/* ===== APP ===== */
-.app{
-  position:relative;
-  max-width:620px;
-  margin:40px auto;
-  padding:22px;
-  border-radius:18px;
-  background:rgba(20,40,60,.45);
-  backdrop-filter:blur(16px);
-  border:1px solid var(--main);
-  box-shadow:0 0 25px color-mix(in srgb,var(--main),transparent 40%);
-}
+    /* ─── SCANLINES (moving) ─── */
+    body::after {
+      content: "";
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 200%;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent       0px,
+        transparent       2px,
+        rgba(0,0,0,0.16)  2px,
+        rgba(0,0,0,0.16)  4px
+      );
+      pointer-events: none;
+      z-index: 1001;
+      opacity: 0.55;
+      animation: scanroll 8s linear infinite;
+    }
+    @keyframes scanroll {
+      to { transform: translateY(-50%); }
+    }
 
-/* HUD corners */
-.app::before,.app::after{
-  content:"";
-  position:absolute;
-  width:40px;
-  height:40px;
-  border:2px solid var(--main);
-}
+    /* ─── VISOR EDGE GLOW ─── */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background:
+        linear-gradient(to bottom, var(--primary-dim) 0%, transparent 7%),
+        linear-gradient(to top,    var(--primary-dim) 0%, transparent 7%);
+      pointer-events: none;
+      z-index: 998;
+      transition: background 0.5s;
+    }
 
-.app::before{ top:-2px; left:-2px; border-right:none; border-bottom:none;}
-.app::after{ bottom:-2px; right:-2px; border-left:none; border-top:none;}
+    /* ─── SCROLLBAR ─── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--primary-mid); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
 
-/* ===== HEADINGS ===== */
-h1{ text-align:center; color:var(--main);}
-h4{ text-align:center;}
+    /* ─── APP WRAPPER ─── */
+    .app {
+      position: relative;
+      max-width: 700px;
+      margin: 32px auto;
+      padding: 24px 24px 48px;
+      z-index: 10;
+      background: var(--bg-panel);
+      background-image: radial-gradient(circle, var(--hex) 1px, transparent 1px);
+      background-size: 28px 28px;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      box-shadow:
+        0 0 60px rgba(0,0,0,0.75),
+        inset 0 0 80px var(--primary-dim),
+        0 0 1px var(--primary-mid);
+      backdrop-filter: blur(14px);
+    }
 
-/* ===== CASE ===== */
-#case-text{
-  background:rgba(0,0,0,.35);
-  padding:14px;
-  border-radius:14px;
-  margin-bottom:18px;
-  border:1px solid var(--main);
-}
+    /* HUD corner brackets — top */
+    .app::before,
+    .app::after {
+      content: "";
+      position: absolute;
+      width: 26px; height: 26px;
+      pointer-events: none;
+      z-index: 10;
+    }
+    .app::before {
+      top: -2px; left: -2px;
+      border-top: 2px solid var(--primary);
+      border-left: 2px solid var(--primary);
+      box-shadow: -2px -2px 10px var(--primary-glow);
+    }
+    .app::after {
+      top: -2px; right: -2px;
+      border-top: 2px solid var(--primary);
+      border-right: 2px solid var(--primary);
+      box-shadow: 2px -2px 10px var(--primary-glow);
+    }
 
-/* ===== PERSON ===== */
-.person{
-  padding:14px;
-  border-radius:14px;
-  cursor:pointer;
-  border:1px solid rgba(255,255,255,.25);
-  transition:.25s;
-}
+    /* HUD corner brackets — bottom */
+    .hud-corner-bl,
+    .hud-corner-br {
+      position: absolute;
+      width: 26px; height: 26px;
+      pointer-events: none;
+      z-index: 10;
+    }
+    .hud-corner-bl {
+      bottom: -2px; left: -2px;
+      border-bottom: 2px solid var(--primary);
+      border-left: 2px solid var(--primary);
+      box-shadow: -2px 2px 10px var(--primary-glow);
+    }
+    .hud-corner-br {
+      bottom: -2px; right: -2px;
+      border-bottom: 2px solid var(--primary);
+      border-right: 2px solid var(--primary);
+      box-shadow: 2px 2px 10px var(--primary-glow);
+    }
 
-.person:hover{
-  box-shadow:0 0 15px var(--main);
-}
+    /* ─── CREATOR LINE ─── */
+    .creator-line {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--primary);
+      opacity: 0.55;
+      text-align: center;
+      padding: 6px 0 10px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
 
-.person.selected{
-  border-color:var(--main);
-  box-shadow:0 0 25px var(--main);
-  background:color-mix(in srgb,var(--main),transparent 70%);
-}
+    /* ─── THEME SWITCHER ─── */
+    .theme-switcher {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .theme-switcher button {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      font-family: var(--font-tech);
+      font-size: 0.62rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 7px 14px;
+      cursor: pointer;
+      transition: all 0.25s;
+      clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+      position: relative;
+      overflow: hidden;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .theme-switcher button::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, var(--primary-dim), transparent);
+      transform: translateX(-100%);
+      transition: transform 0.4s;
+    }
+    .theme-switcher button:hover::before { transform: translateX(100%); }
+    .theme-switcher button:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      box-shadow: 0 0 14px var(--primary-glow);
+      background: var(--primary-dim);
+    }
 
-/* ===== BUTTON ===== */
-button{
-  width:100%;
-  padding:14px;
-  margin-top:10px;
-  border-radius:30px;
-  font-weight:bold;
-  cursor:pointer;
-  border:1px solid var(--main);
-  background:linear-gradient(135deg,var(--main),white);
-  color:#001018;
-}
+    /* Mode-icon dot */
+    .mode-icon {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+    .btn-blue  .mode-icon { background: #00d4ff; box-shadow: 0 0 6px #00d4ff; }
+    .btn-amber .mode-icon { background: #ff7b00; box-shadow: 0 0 6px #ff7b00; }
+    .btn-green .mode-icon { background: #00ff88; box-shadow: 0 0 6px #00ff88; }
+    .btn-blue  { color: #7dd3fc; }
+    .btn-amber { color: #ffd27a; }
+    .btn-green { color: #86efac; }
 
-/* ===== THEME SWITCHER ===== */
-.theme-switcher{
-  max-width:620px;
-  margin:20px auto 0;
-  display:flex;
-  gap:10px;
-}
+    /* ─── HEADINGS ─── */
+    h1 {
+      font-size: 1.2rem;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: var(--primary);
+      text-shadow: 0 0 16px var(--primary-glow), 0 0 40px var(--primary-mid);
+      text-align: center;
+      padding: 0 0 14px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 4px;
+      position: relative;
+    }
+    h1::after {
+      content: "";
+      position: absolute;
+      bottom: -1px; left: 50%;
+      transform: translateX(-50%);
+      width: 50%; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--primary), transparent);
+      box-shadow: 0 0 10px var(--primary);
+    }
+    h4 {
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      letter-spacing: 2px;
+      font-weight: 400;
+      margin: 10px 0 22px;
+      text-transform: uppercase;
+    }
 
-.theme-switcher button{
-  flex:1;
-}
+    /* ─── BACK BUTTON ─── */
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      margin-bottom: 20px;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      font-family: var(--font-tech);
+      font-size: 0.62rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      text-decoration: none;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+      transition: color 0.25s, border-color 0.25s, box-shadow 0.25s, background 0.25s;
+      user-select: none;
+    }
+    .btn-back::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, var(--primary-dim), transparent);
+      transform: translateX(-100%);
+      transition: transform 0.4s;
+      pointer-events: none;
+    }
+    .btn-back:hover::before { transform: translateX(100%); }
+    .btn-back:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: var(--primary-dim);
+      box-shadow: 0 0 16px var(--primary-glow), inset 0 0 10px var(--primary-dim);
+    }
+    .btn-back-arrow {
+      display: inline-block;
+      transition: transform 0.25s;
+    }
+    .btn-back:hover .btn-back-arrow {
+      transform: translateX(-4px);
+      text-shadow: 0 0 8px var(--primary);
+    }
+    .btn-back-ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: var(--primary);
+      opacity: 0;
+      transform: scale(0);
+      pointer-events: none;
+      width: 10px; height: 10px;
+    }
+    .btn-back-ripple.active {
+      animation: ripple-anim 0.5s ease-out forwards;
+    }
+    @keyframes ripple-anim {
+      0%   { transform: scale(0);  opacity: 0.5; }
+      100% { transform: scale(25); opacity: 0;   }
+    }
 
-/* ===== PARAGRAFEN-HIGHLIGHT (THEME-UNABHÄNGIG) ===== */
-.norm{
-  display:inline-block;
-  padding:4px 10px;
-  margin:0 3px;
-  border-radius:12px;
-  font-weight:700;
-  font-size:0.95em;
-  color:#1a0d00;
-  background:linear-gradient(135deg,#fff3a3,#ffcc33);
-  box-shadow:
-    0 0 12px rgba(255,200,0,0.8),
-    0 0 25px rgba(255,200,0,0.35);
-}
+    /* ─── CASE TEXT ─── */
+    #case-text {
+      background: rgba(0, 0, 0, 0.40);
+      border-left: 2px solid var(--primary);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      padding: 14px 18px;
+      margin-bottom: 24px;
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      color: var(--text-main);
+      line-height: 1.70;
+      position: relative;
+    }
+    #case-text::before {
+      content: "";
+      position: absolute;
+      top: 0; right: 0;
+      border-style: solid;
+      border-width: 0 16px 16px 0;
+      border-color: transparent var(--primary) transparent transparent;
+      opacity: 0.45;
+    }
 
-/* ===== FEEDBACK PANEL (DEUTLICHE BOXEN) ===== */
+    /* ─── PERSONS GRID ─── */
+    .persons {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .person {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--border);
+      padding: 14px 12px;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      color: var(--text-dim);
+      cursor: pointer;
+      transition: all 0.22s;
+      position: relative;
+      overflow: hidden;
+      clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+      user-select: none;
+      min-height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .person::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, var(--primary-dim), transparent);
+      transform: translateX(-100%);
+      transition: transform 0.4s;
+    }
+    .person:hover::before { transform: translateX(100%); }
+    .person:hover {
+      background: var(--primary-dim);
+      border-color: var(--primary);
+      color: var(--text-main);
+      box-shadow: 0 0 14px var(--primary-dim);
+    }
+    .person.selected {
+      background: rgba(0, 0, 0, 0.55);
+      border-color: var(--primary);
+      color: var(--primary);
+      box-shadow: inset 3px 0 0 var(--primary), 0 0 18px var(--primary-dim);
+      text-shadow: 0 0 10px var(--primary-glow);
+    }
+    .person.selected::after {
+      content: "◆";
+      position: absolute;
+      top: 5px; right: 8px;
+      font-size: 0.45rem;
+      color: var(--primary);
+      opacity: 0.7;
+      animation: pulse-diamond 1.8s infinite;
+    }
+    @keyframes pulse-diamond {
+      0%, 100% { opacity: 0.7; transform: scale(1); }
+      50%       { opacity: 0.3; transform: scale(1.4); }
+    }
 
-#feedback{
-  margin-top:28px;
-  display:flex;
-  flex-direction:column;
-  gap:18px;
-}
+    /* ─── BUTTONS (check / restart / next) ─── */
+    .btn-action {
+      background: transparent;
+      border: 1px solid var(--primary);
+      color: var(--primary);
+      font-family: var(--font-tech);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      padding: 13px 20px;
+      cursor: pointer;
+      transition: all 0.25s;
+      min-height: 48px;
+      position: relative;
+      overflow: hidden;
+      clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+    }
+    .btn-action::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--primary) 0%, transparent 50%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .btn-action:hover::before { opacity: 0.15; }
+    .btn-action:hover {
+      background: var(--primary-dim);
+      box-shadow: 0 0 22px var(--primary-glow), inset 0 0 14px var(--primary-dim);
+      color: var(--text-main);
+    }
+    .btn-action:active { transform: scale(0.97); }
 
-/* einzelne Box */
-.feedback-item{
-  padding:18px 20px;
-  border-radius:18px;
-  line-height:1.55;
-  font-size:1rem;
+    /* "Antwort prüfen" — full width, primary accent */
+    #check-btn {
+      display: block;
+      width: 100%;
+      text-align: center;
+      margin-bottom: 12px;
+    }
 
-  background:rgba(0,0,0,0.35);
-  border:1px solid color-mix(in srgb,var(--main),transparent 55%);
-  box-shadow:
-    0 0 18px color-mix(in srgb,var(--main),transparent 65%),
-    inset 0 0 18px rgba(255,255,255,0.04);
+    /* "Neu starten" + "Nächster Fall" — side by side */
+    .controls-row {
+      display: flex;
+      gap: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+    .controls-row .btn-action {
+      flex: 1;
+      text-align: center;
+    }
+    /* "Nächster Fall" slightly dimmed */
+    #next-btn {
+      border-color: var(--border);
+      color: var(--text-dim);
+    }
+    #next-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
 
-  backdrop-filter:blur(12px);
-}
+    /* ─── FEEDBACK ─── */
+    #feedback {
+      margin-top: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .feedback-item {
+      padding: 13px 16px 13px 20px;
+      border: 1px solid;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      background: rgba(0, 0, 0, 0.60);
+      animation: slideIn 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      line-height: 1.6;
+    }
+    .feedback-item::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; bottom: 0;
+      width: 3px;
+      background: currentColor;
+    }
+    .feedback-item strong {
+      display: block;
+      margin-bottom: 5px;
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .feedback-correct { border-color: var(--success); color: var(--success); }
+    .feedback-wrong   { border-color: var(--danger);  color: var(--danger);  }
 
-/* Name stärker hervorheben */
-.feedback-item strong{
-  display:block;
-  font-size:1.08rem;
-  margin-bottom:6px;
-}
+    /* ─── NORM HIGHLIGHT ─── */
+    .norm {
+      display: inline-block;
+      background: var(--primary-dim);
+      border: 1px solid var(--primary-mid);
+      color: var(--primary);
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      padding: 1px 6px;
+      margin: 1px 2px;
+      border-radius: 1px;
+      text-shadow: 0 0 8px var(--primary-glow);
+      letter-spacing: 0.5px;
+    }
 
-/* korrekt */
-.feedback-correct{
-  background:linear-gradient(
-    135deg,
-    color-mix(in srgb,var(--main),transparent 78%),
-    color-mix(in srgb,var(--main),transparent 88%)
-  );
-}
+    /* ─── MOBILE ─── */
+    @media (max-width: 600px) {
+      .app { margin: 12px; padding: 14px 12px 40px; }
+      h1   { font-size: 1rem; letter-spacing: 3px; }
+      h4   { font-size: 0.7rem; }
+      .persons { grid-template-columns: repeat(2, 1fr); }
+      .controls-row .btn-action { flex: 1 1 100%; }
+    }
+  </style>
 
-/* falsch */
-.feedback-wrong{
-  background:linear-gradient(
-    135deg,
-    rgba(239,68,68,0.28),
-    rgba(220,38,38,0.18)
-  );
-}
-
-.feedback-item{
-  border:1px solid color-mix(in srgb,var(--main),transparent 60%);
-  background:color-mix(in srgb,var(--main),transparent 85%);
-}
-
-/* ===== VISUELLE DIFFERENZIERUNG RICHTIG / FALSCH ===== */
-
-/* gemeinsame Basis */
-.feedback-correct,
-.feedback-wrong{
-  position:relative;
-  padding-left:22px;
-}
-
-/* linker Statusstreifen */
-.feedback-correct::before,
-.feedback-wrong::before{
-  content:"";
-  position:absolute;
-  left:0;
-  top:0;
-  bottom:0;
-  width:6px;
-  border-radius:12px 0 0 12px;
-}
-
-/* RICHTIG */
-.feedback-correct{
-  background:linear-gradient(
-    135deg,
-    rgba(34,197,94,0.25),
-    rgba(34,197,94,0.12)
-  );
-  border:1px solid rgba(34,197,94,0.5);
-  box-shadow:0 0 18px rgba(34,197,94,0.35);
-}
-
-.feedback-correct::before{
-  background:#22c55e;
-  box-shadow:0 0 12px #22c55e;
-}
-
-/* FALSCH */
-.feedback-wrong{
-  background:linear-gradient(
-    135deg,
-    rgba(239,68,68,0.25),
-    rgba(239,68,68,0.12)
-  );
-  border:1px solid rgba(239,68,68,0.5);
-  box-shadow:0 0 18px rgba(239,68,68,0.35);
-}
-
-.feedback-wrong::before{
-  background:#ef4444;
-  box-shadow:0 0 12px #ef4444;
-}
-
-/* Theme-Buttons Layout */
-.theme-switcher button{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:10px;
-  letter-spacing:1px;
-  font-size:0.75rem;
-  text-transform:uppercase;
-	font-weight:600;
-  letter-spacing:1px;
-}
-
-/* Icon-Grundform */
-.mode-icon{
-  width:12px;
-  height:12px;
-  border-radius:50%;
-  display:inline-block;
-  box-shadow:0 0 10px currentColor;
-}
-
-/* Farbzuweisung */
-/* Blau */
-.btn-blue{
-  border:1px solid rgba(56,189,248,0.45);
-  background:rgba(56,189,248,0.08);
-	color:#7dd3fc;
-}
-
-.btn-blue .mode-icon{
-  background:#38bdf8;
-  color:#38bdf8;
-}
-
-/* Amber */
-.btn-amber{
-  border:1px solid rgba(255,179,0,0.45);
-  background:rgba(255,179,0,0.08);
-	color:#ffd27a;
-}
-
-.btn-amber .mode-icon{
-  background:#ffb300;
-  color:#ffb300;
-}
-
-/* Grün */
-.btn-green{
-  border:1px solid rgba(34,197,94,0.45);
-  background:rgba(34,197,94,0.08);
-	color:#86efac;
-}
-
-.btn-green .mode-icon{
-  background:#22c55e;
-  color:#22c55e;
-}
-
-/* ===== CREATOR LINE ===== */
-.creator-line{
-  margin-top:28px;
-  text-align:center;
-  font-size:0.75rem;
-  letter-spacing:1.6px;
-  text-transform:uppercase;
-
-  color:color-mix(in srgb,var(--main),white 40%);
-  opacity:0.8;
-
-  border-top:1px solid color-mix(in srgb,var(--main),transparent 70%);
-  padding-top:12px;
-}
-
-/* obere Variante */
-.creator-top{
-  margin-top:0;
-  margin-bottom:14px;
-  padding-bottom:10px;
-  padding-top:0;
-
-  border-top:none;
-  border-bottom:1px solid color-mix(in srgb,var(--main),transparent 70%);
-}
-
-/* ===== ZURÜCK-BUTTON ===== */
-.btn-back {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 11px 22px;
-  margin-bottom: 18px;
-  border-radius: 30px;
-  font-weight: 600;
-  font-size: 0.78rem;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  text-decoration: none;
-  cursor: pointer;
-  border: 1px solid color-mix(in srgb, var(--main), transparent 45%);
-  background: color-mix(in srgb, var(--main), transparent 88%);
-  color: var(--main);
-  position: relative;
-  overflow: hidden;
-  transition: background 0.25s, box-shadow 0.25s, color 0.25s, border-color 0.25s;
-}
-
-.btn-back:hover {
-  background: color-mix(in srgb, var(--main), transparent 72%);
-  box-shadow: 0 0 20px color-mix(in srgb, var(--main), transparent 40%);
-  border-color: var(--main);
-}
-
-.btn-back-arrow {
-  display: inline-block;
-  transition: transform 0.25s;
-}
-
-.btn-back:hover .btn-back-arrow {
-  transform: translateX(-4px);
-}
-
-/* Ripple */
-.btn-back-ripple {
-  position: absolute;
-  border-radius: 50%;
-  background: var(--main);
-  opacity: 0;
-  transform: scale(0);
-  pointer-events: none;
-  width: 10px;
-  height: 10px;
-}
-
-.btn-back-ripple.active {
-  animation: back-ripple-anim 0.5s ease-out forwards;
-}
-
-@keyframes back-ripple-anim {
-  0%   { transform: scale(0);  opacity: 0.45; }
-  100% { transform: scale(22); opacity: 0; }
-}
-
-	</style>
 </head>
-		<body class="theme-blue">
 
-  <canvas id="bg-canvas"></canvas>
+<body class="theme-blue">
+
+<canvas id="bg-canvas"></canvas>
 
   <main class="app">
-    
-    <a href="index.html" class="btn-back" id="btn-back" onclick="triggerBackClick(event)">
+    <!-- HUD bottom corners -->
+    <span class="hud-corner-bl"></span>
+    <span class="hud-corner-br"></span>
+
+```
+<!-- Zurück-Button -->
+<a href="index.html" class="btn-back" id="btn-back" onclick="triggerBackClick(event)">
   <span class="btn-back-arrow">◄</span>
   Zurück zum Hauptmenü
   <span class="btn-back-ripple" id="back-ripple"></span>
 </a>
 
-		
-		<div class="creator-line creator-top">
+<!-- Kopfzeile -->
+<div class="creator-line">
   BG-TRAINING TERMINAL • created by Bjørn F.
 </div>
-		
-		<div class="theme-switcher">
-  <button class="btn-blue" onclick="setTheme('blue')">
+
+<!-- Theme-Auswahl -->
+<div class="theme-switcher">
+  <button class="btn-blue"  onclick="setTheme('blue')">
     <span class="mode-icon"></span> SCAN MODE
   </button>
-
   <button class="btn-amber" onclick="setTheme('amber')">
     <span class="mode-icon"></span> ANALYSE MODE
   </button>
-
   <button class="btn-green" onclick="setTheme('green')">
     <span class="mode-icon"></span> DATA MODE
   </button>
 </div>
 
-    <h1>Bedarfsgemeinschaft – Personen zuordnen</h1>
-		
-		<h4>Tippe auf die Person(en), die eine Bedarfsgemeinschaft bilden.</h4>
+<h1>Bedarfsgemeinschaft – Personen zuordnen</h1>
+<h4>Tippe auf die Person(en), die eine Bedarfsgemeinschaft bilden.</h4>
 
-    <section id="case-text">
-      <!-- Falltext wird per JS eingesetzt -->
-    </section>
+<!-- Falltext (wird per JS befüllt) -->
+<section id="case-text"></section>
 
-    <section id="persons" class="persons">
-      <!-- Personen-Karten kommen per JS -->
-    </section>
+<!-- Personen-Karten (werden per JS generiert) -->
+<section id="persons" class="persons"></section>
 
-    <button id="check-btn">Antwort prüfen</button>
+<!-- Prüfen-Button -->
+<button id="check-btn" class="btn-action">Antwort prüfen</button>
 
-    <section id="feedback">
-      <!-- Rückmeldung + Begründung -->
-    </section>
-		
-		<button id="restart-btn" style="display:none;">Neu starten</button>
-		
-		<button onclick="nextCase()">Nächster Fall</button>
+<!-- Feedback (wird per JS befüllt) -->
+<section id="feedback"></section>
+
+<!-- Steuerung: Neu starten / Nächster Fall -->
+<div class="controls-row">
+  <button id="restart-btn" class="btn-action" style="display:none;">Neu starten</button>
+  <button id="next-btn"    class="btn-action" onclick="nextCase()">Nächster Fall</button>
+</div>
+```
 
   </main>
 
-  <script src="BG-script.js"></script>
-  
-  <script>
-  function triggerBackClick(e) {
-    e.preventDefault();
-    const ripple = document.getElementById('back-ripple');
-    const btn    = document.getElementById('btn-back');
-    const rect   = btn.getBoundingClientRect();
-    ripple.style.left = (e.clientX - rect.left - 5) + 'px';
-    ripple.style.top  = (e.clientY - rect.top  - 5) + 'px';
-    ripple.classList.remove('active');
-    void ripple.offsetWidth;
-    ripple.classList.add('active');
-    setTimeout(() => { window.location.href = 'index.html'; }, 400);
-  }
-</script>
+  <!-- Externe Falldaten & Spiellogik -->
 
-  
+  <script src="BG-script.js"></script>
+
+  <!-- Ripple-Effekt für Zurück-Button -->
+
+  <script>
+    function triggerBackClick(e) {
+      e.preventDefault();
+      const ripple = document.getElementById('back-ripple');
+      const btn    = document.getElementById('btn-back');
+      const rect   = btn.getBoundingClientRect();
+      ripple.style.left = (e.clientX - rect.left - 5) + 'px';
+      ripple.style.top  = (e.clientY - rect.top  - 5) + 'px';
+      ripple.classList.remove('active');
+      void ripple.offsetWidth; /* reflow für Animation-Reset */
+      ripple.classList.add('active');
+      setTimeout(() => { window.location.href = 'index.html'; }, 400);
+    }
+  </script>
+
 </body>
 </html>
