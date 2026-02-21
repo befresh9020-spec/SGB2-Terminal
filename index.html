@@ -1561,6 +1561,17 @@ function drawNoise() {
 })();
 </script>
 
+<script>
+// ---------- Service Worker ----------
+  function initServiceWorker() {
+    if (!('serviceWorker' in navigator)) return;
+
+    navigator.serviceWorker.register('service-worker.js')
+      .then(reg => console.log('Service Worker registriert:', reg.scope))
+      .catch(err => console.error('Service Worker Registrierung fehlgeschlagen:', err));
+  }
+</script>
+
 
 </body>
 </html>
