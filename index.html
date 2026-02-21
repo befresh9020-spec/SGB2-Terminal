@@ -1515,12 +1515,26 @@ function drawNoise() {
 <script>
 // ─── CARD CLICK ANIMATION ───
 (function() {
-  // Seite: Wipe-Div einfügen
   const wipe = document.createElement('div');
   wipe.id = 'page-wipe';
   document.body.appendChild(wipe);
 
-  // Jede Karte: Scan + Flash-Elemente einfügen
+  // Beim Zurück-Navigieren (bfcache restore) Wipe sofort entfernen
+  window.addEventListener('pageshow', function(e) {
+    wipe.classList.remove('wipe-active');
+    wipe.style.opacity = '0';
+    wipe.style.animation = 'none';
+    // Kurze Verzögerung damit der Browser das Reset verarbeitet
+    setTimeout(() => {
+      wipe.style.animation = '';
+      wipe.style.opacity  = '';
+    }, 50);
+    // Alle Karten wieder klickbar machen
+    document.querySelectorAll('.module-card').forEach(c => {
+      c.classList.remove('launching');
+    });
+  });
+
   document.querySelectorAll('.module-card').forEach(card => {
     card.insertAdjacentHTML('afterbegin',
       '<div class="card-scan"></div><div class="card-flash-overlay"></div>'
@@ -1533,8 +1547,9 @@ function drawNoise() {
 
       this.classList.add('launching');
 
-      // Kurzes Warten → dann Seiten-Wipe → Navigation
       setTimeout(() => {
+        wipe.style.animation = '';
+        wipe.style.opacity   = '';
         wipe.classList.add('wipe-active');
         setTimeout(() => {
           window.location.href = href;
@@ -1544,6 +1559,7 @@ function drawNoise() {
   });
 })();
 </script>
+
 
 </body>
 </html>
