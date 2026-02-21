@@ -728,7 +728,7 @@ body {
   display: flex;
   justify-content: flex-start;
   max-width: 920px;
-  margin: 16px auto 0;
+  margin: 16px auto 32px;
   padding: 0 18px;
   position: relative;
   z-index: 999;
@@ -806,7 +806,6 @@ body {
   100% { transform: scale(25); opacity: 0; }
 }
 
-
 </style>
 
 </head>
@@ -818,16 +817,6 @@ body {
 <div class="scanlines"></div>
 <div class="visor-overlay"></div>
 <div class="visor-rim"></div>
-
-<!-- Button "Zurück zum Hauptmenü" – direkt nach dem <div class="visor-rim"></div> einfügen -->
-<div class="back-btn-wrapper">
-  <a href="index.html" class="btn-back" id="btn-back" onclick="triggerBackClick(event)">
-    <span class="btn-back-arrow">◄</span>
-    <span>Zurück zum Hauptmenü</span>
-    <span class="btn-back-ripple" id="back-ripple"></span>
-  </a>
-</div>
-
 
 <div class="top-bar">
   <div class="visor-mode">Visor</div>
@@ -868,6 +857,14 @@ body {
 ```
 
   </main>
+</div>
+
+<div class="back-btn-wrapper">
+  <a href="index.html" class="btn-back" id="btn-back" onclick="triggerBackClick(event)">
+    <span class="btn-back-arrow">◄</span>
+    <span>Zurück zum Hauptmenü</span>
+    <span class="btn-back-ripple" id="back-ripple"></span>
+  </a>
 </div>
 
 <script>
