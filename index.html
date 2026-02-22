@@ -1521,17 +1521,14 @@ function drawNoise() {
   wipe.id = 'page-wipe';
   document.body.appendChild(wipe);
 
-  // Beim Zurück-Navigieren (bfcache restore) Wipe sofort entfernen
   window.addEventListener('pageshow', function(e) {
     wipe.classList.remove('wipe-active');
     wipe.style.opacity = '0';
     wipe.style.animation = 'none';
-    // Kurze Verzögerung damit der Browser das Reset verarbeitet
     setTimeout(() => {
       wipe.style.animation = '';
       wipe.style.opacity  = '';
     }, 50);
-    // Alle Karten wieder klickbar machen
     document.querySelectorAll('.module-card').forEach(c => {
       c.classList.remove('launching');
     });
@@ -1549,14 +1546,16 @@ function drawNoise() {
 
       this.classList.add('launching');
 
+      // ← 300 → 1750: Wipe startet erst wenn Laser durch ist
       setTimeout(() => {
         wipe.style.animation = '';
         wipe.style.opacity   = '';
         wipe.classList.add('wipe-active');
+        // ← 480 → 180: passend zur verkürzten Wipe-Dauer (0.18s)
         setTimeout(() => {
           window.location.href = href;
-        }, 480);
-      }, 300);
+        }, 180);
+      }, 1750);
     });
   });
 })();
