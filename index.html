@@ -1781,14 +1781,22 @@ requestAnimationFrame(animateCanvas);
     // 5) Lock-On Sequenz – trifft jetzt echte § -Positionen
     if (!aborted) await runLockOn();
 
-    // 6) Restliche Log-Lines
+        // 6) Restliche Log-Lines
+    const remainingLines = LOG_LINES.length - 4;
+    const progressStep = 60 / remainingLines; // Teilt die restlichen 60% fair auf
+
     for (let i = 4; i < LOG_LINES.length; i++) {
       if (aborted) break;
       const { text, label } = LOG_LINES[i];
       await addLine(text, label, true);
-      setProgress(40 + ((i - 3) * 12), label === 'OK' ? 'System bereit' : 'Lade Modul');
+      
+      // Dynamische Prozent-Berechnung
+      const pct = 40 + ((i - 3) * progressStep);
+      
+      setProgress(pct, label === 'OK' ? 'System bereit' : 'Lade Modul');
       await delay(150);
     }
+
 
     await delay(200);
 
