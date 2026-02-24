@@ -128,7 +128,7 @@ body {
   pointer-events: none;
   z-index: 1002;
   overflow: hidden;
-  opacity: 0.09; /* Hier kannst du die Intensität des Rauschens anpassen */
+  opacity: 0.07; /* Hier kannst du die Intensität des Rauschens anpassen */
   mix-blend-mode: screen; /* Sorgt dafür, dass sich das Rauschen schön mit den Farben mischt */
 }
 
@@ -273,7 +273,6 @@ body {
 .hero {
   text-align: center;
   margin-bottom: 40px;
-  animation: fadeUp 0.6s ease forwards;
 }
 
 .hero-eyebrow {
@@ -388,7 +387,6 @@ body {
   font-size: 0.65rem;
   color: var(--text-dim);
   letter-spacing: 1.5px;
-  animation: fadeUp 0.6s 0.1s ease both;
 }
 .status-dot {
   width: 6px; height: 6px;
@@ -429,7 +427,6 @@ body {
   text-decoration: none;
   display: block;
   transition: all 0.3s;
-  animation: fadeUp 0.6s ease both;
 }
 .module-card:nth-child(1) { animation-delay: 0.15s; }
 .module-card:nth-child(2) { animation-delay: 0.25s; }
@@ -635,7 +632,6 @@ body {
   color: var(--text-dim);
   letter-spacing: 1.5px;
   text-transform: uppercase;
-  animation: fadeUp 0.6s 0.4s ease both;
   gap: 10px;
   flex-wrap: wrap;
 }
@@ -922,7 +918,7 @@ body {
   gap: 12px;
   z-index: 20;
   pointer-events: none;
-  opacity: 0;
+	opacity: 0;
 }
 .boot-title-main {
   font-family: var(--font-tech);
@@ -948,19 +944,98 @@ body {
   inset: 0;
   background: var(--primary);
   z-index: 30;
-  opacity: 0;
   pointer-events: none;
 }
 
-/* ── FINAL WIPE ── */
-#boot-overlay.wipe-out {
-  animation: boot-wipe 0.7s cubic-bezier(0.7,0,1,1) forwards;
+
+/* ─── VISOR REVEAL ANIMATION (Metroid Prime Style) ─── */
+.boot-flash {
+  position: absolute;
+  inset: 0;
+  background: var(--primary);
+  z-index: 30;
+  opacity: 0;
+  pointer-events: none;
+  transform-origin: center; /* Wichtig für das vertikale Öffnen */
 }
-@keyframes boot-wipe {
-  0%   { clip-path: inset(0 0 0 0); opacity: 1; }
-  60%  { clip-path: inset(0 0 0 0); opacity: 1; }
-  100% { clip-path: inset(0 100% 0 0); opacity: 0; }
+
+.boot-flash.visor-reveal {
+  animation: 
+    flash-ignite 0.1s ease-out forwards,
+    flash-to-beam 0.25s 0.1s cubic-bezier(0.8, 0, 0.2, 1) forwards,
+    beam-sweep-open 1.5s 0.75s cubic-bezier(0.7, 0, 0.1, 1) forwards;
 }
+
+/* 1. Blitz auf dem ganzen Bildschirm */
+@keyframes flash-ignite {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* 2. Zieht sich zu einem gleißenden horizontalen Laserstrahl zusammen */
+@keyframes flash-to-beam {
+  0%   { transform: scaleY(1); opacity: 1; }
+  100% { transform: scaleY(0.005); opacity: 1; box-shadow: 0 0 40px var(--primary-glow); }
+}
+
+/* 3. Strahl fächert sich auf, löst sich auf und gibt das Hub frei */
+@keyframes beam-sweep-open {
+  0%   { transform: scaleY(0.005); opacity: 1; background: var(--primary); }
+  40%  { 
+    transform: scaleY(1.2); 
+    opacity: 0.8; 
+    background: rgba(255,255,255,0.08); /* Kurzes helles Nachleuchten */
+    border-top: 3px solid var(--primary); 
+    border-bottom: 3px solid var(--primary); 
+    box-shadow: 0 0 50px var(--primary-glow);
+  }
+  100% { 
+    transform: scaleY(2); 
+    opacity: 0; 
+    background: transparent; 
+    border-top: 3px solid transparent; 
+    border-bottom: 3px solid transparent; 
+  }
+}
+
+/* ─── ECHTE VORHÄNGE (Die den Background physisch verdecken) ─── */
+.boot-curtain {
+  position: absolute;
+  left: 0; right: 0;
+  height: 50%;
+  background: #000;
+  z-index: 25; /* Über dem Text, unter dem Laser-Blitz (30) */
+}
+.boot-curtain.top { top: 0; }
+.boot-curtain.bottom { bottom: 0; }
+
+/* Timing exakt synchronisiert zu deinem beam-sweep-open (1.5s Dauer, 0.75s Delay) */
+.boot-curtain.open-top {
+  animation: curtain-slide-up 1.5s 0.75s cubic-bezier(0.7, 0, 0.1, 1) forwards;
+}
+.boot-curtain.open-bottom {
+  animation: curtain-slide-down 1.5s 0.75s cubic-bezier(0.7, 0, 0.1, 1) forwards;
+}
+
+/* Mathematischer Trick: scaleY(1.2) deines Lasers bedeutet, er deckt 120% des Bildschirms ab. 
+   Damit die Vorhänge synchron am Laser kleben bleiben, müssen sie exakt um 120% verschoben werden! */
+@keyframes curtain-slide-up {
+  0%   { transform: translateY(0); }
+  40%  { transform: translateY(-120%); }
+  100% { transform: translateY(-200%); }
+}
+@keyframes curtain-slide-down {
+  0%   { transform: translateY(0); }
+  40%  { transform: translateY(120%); }
+  100% { transform: translateY(200%); }
+}
+
+/* Versteckt die abgedunkelten Ränder (Vignette) des Overlays sauber */
+#boot-overlay.curtains-drawn::before {
+  opacity: 0;
+  transition: opacity 0.1s;
+}
+
 
 /* ─── MOBILE ─── */
 @media (max-width: 520px) {
@@ -1739,23 +1814,48 @@ requestAnimationFrame(animateCanvas);
     finalize();
   }
 
+   // ─── Finale Sequenz: Visor Reveal (Curtain Edition) ───
   function finalize() {
     aborted = true;
-    titleEl.style.transition = 'opacity 0.25s';
+    
+    // Titel einblenden
+    titleEl.style.transition = 'opacity 0.2s';
     titleEl.style.opacity    = '1';
 
     setTimeout(() => {
-      flashEl.style.transition = 'opacity 0.12s';
-      flashEl.style.opacity    = '0.55';
+      // 1. Physische schwarze Vorhänge erzeugen
+      const curtainTop = document.createElement('div');
+      curtainTop.className = 'boot-curtain top';
+      const curtainBottom = document.createElement('div');
+      curtainBottom.className = 'boot-curtain bottom';
+      overlay.appendChild(curtainTop);
+      overlay.appendChild(curtainBottom);
+
+      // 2. Den festen schwarzen Hintergrund des Overlays abschalten (Vorhänge übernehmen ab jetzt)
+      overlay.style.background = 'transparent';
+      overlay.classList.add('curtains-drawn');
+      
+      // 3. Animationen zünden
+      flashEl.classList.add('visor-reveal');
+      curtainTop.classList.add('open-top');
+      curtainBottom.classList.add('open-bottom');
+      
+      // 4. Alte Boot-Elemente verstecken, sobald der Blitz aufflammt
       setTimeout(() => {
-        flashEl.style.opacity = '0';
-        overlay.classList.add('wipe-out');
-        setTimeout(() => {
-          overlay.style.display      = 'none';
-          document.body.style.cursor = '';
-        }, 750);
-      }, 120);
-    }, 420);
+        Array.from(overlay.children).forEach(child => {
+          if (child !== flashEl && !child.classList.contains('boot-curtain')) {
+            child.style.opacity = '0';
+          }
+        });
+      }, 100);
+
+      // 5. Cleanup ganz am Ende (0.75s Delay + 1.5s Animation = ~2.3 Sekunden)
+      setTimeout(() => {
+        overlay.style.display = 'none';
+        document.body.style.cursor = '';
+      }, 2350); 
+      
+    }, 600);
   }
 
   runBoot();
