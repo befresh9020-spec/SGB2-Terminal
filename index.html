@@ -121,14 +121,37 @@ body {
   100% { transform: translateY(-50%); }
 }
 
-#noise-canvas {
+/* ─── CSS NOISE OVERLAY ─── */
+#noise-overlay {
   position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
+  top: 0; left: 0; width: 100vw; height: 100vh;
   pointer-events: none;
   z-index: 1002;
-  opacity: 1;
-  mix-blend-mode: screen;
+  overflow: hidden;
+  opacity: 0.09; /* Hier kannst du die Intensität des Rauschens anpassen */
+  mix-blend-mode: screen; /* Sorgt dafür, dass sich das Rauschen schön mit den Farben mischt */
 }
+
+/* Wir machen das Element absichtlich viel größer als den Bildschirm, 
+   damit wir es verschieben können, ohne dass Ränder sichtbar werden. */
+#noise-overlay::before {
+  content: "";
+  position: absolute;
+  top: -100%; left: -100%; width: 300%; height: 300%;
+  /* Ein winziges SVG, das per Data-URI eingebunden wird - extrem performant! */
+  background-image: url('data:image/svg+xml;utf8,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noise"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noise)"/%3E%3C/svg%3E');
+  /* Die steps() Funktion sorgt für das "abgehackte" TV-Flimmern */
+  animation: noise-flicker 0.4s infinite steps(4);
+}
+
+@keyframes noise-flicker {
+  0%   { transform: translate(0, 0); }
+  25%  { transform: translate(-5%, -10%); }
+  50%  { transform: translate(5%, 5%); }
+  75%  { transform: translate(-10%, 15%); }
+  100% { transform: translate(0, 0); }
+}
+
 
 /* ─── HUD CORNER BRACKETS ─── */
 .hud-frame { position: relative; }
@@ -1043,6 +1066,106 @@ body {
   100% { opacity: 1;   clip-path: inset(0% 0);  }
 }
 
+/* ═══════════════════════════════════════
+   DATA STREAM & LOCK-ON (NEU)
+═══════════════════════════════════════ */
+#data-stream-container {
+  position: absolute;
+  inset: 0;
+  z-index: 4; /* Hinter den Ringen, vor dem Hintergrund */
+  overflow: hidden;
+  perspective: 600px;
+}
+
+.paragraph-drop {
+  position: absolute;
+  color: var(--primary);
+  font-family: var(--font-mono);
+  font-weight: bold;
+  opacity: 0;
+  text-shadow: 0 0 10px var(--primary-glow);
+  pointer-events: none;
+  animation: fly-towards linear forwards;
+}
+
+@keyframes fly-towards {
+  0%   { transform: translate3d(0, -50px, -600px) scale(0.5); opacity: 0; }
+  20%  { opacity: 0.6; }
+  80%  { opacity: 0.8; }
+  100% { transform: translate3d(0, 100vh, 200px) scale(3); opacity: 0; }
+}
+
+/* Fadenkreuz für den Lock-On */
+#target-lock {
+  position: absolute;
+  width: 64px; height: 64px;
+  border: 2px solid var(--warning);
+  z-index: 25;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%) scale(2);
+  opacity: 0;
+  transition: top 0.15s ease-out, left 0.15s ease-out, transform 0.2s, opacity 0.2s;
+  pointer-events: none;
+}
+#target-lock::after {
+  content: "";
+  position: absolute; inset: 6px;
+  border: 1px solid var(--warning);
+  opacity: 0.5;
+  transition: border-color 0.2s;
+}
+#target-lock.locking {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+#target-lock.locked {
+  border-color: var(--success);
+  box-shadow: 0 0 20px var(--success), inset 0 0 10px var(--success);
+  transform: translate(-50%, -50%) scale(0.9);
+}
+#target-lock.locked::after { border-color: var(--success); }
+
+.locked-target {
+  position: absolute;
+  color: var(--success);
+  font-family: var(--font-mono);
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-shadow: 0 0 15px var(--success);
+  transform: translate(-50%, -50%);
+  z-index: 24;
+  pointer-events: none;
+  animation: target-fade 0.6s forwards;
+}
+@keyframes target-fade {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(2); }
+  20% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  80% { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+}
+
+/* Explodierende Schockwelle */
+#visor-shockwave {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 0; height: 0;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 4px solid var(--primary);
+  box-shadow: 0 0 40px var(--primary-glow), inset 0 0 20px var(--primary-dim);
+  z-index: 35;
+  opacity: 0;
+  pointer-events: none;
+}
+#visor-shockwave.fire {
+  animation: shockwave-expand 0.7s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+}
+@keyframes shockwave-expand {
+  0%   { width: 0; height: 0; opacity: 1; border-width: 10px; }
+  100% { width: 150vw; height: 150vw; opacity: 0; border-width: 1px; }
+}
+
+
 
 </style>
 
@@ -1051,7 +1174,7 @@ body {
 <body data-theme="blue">
 
 <canvas id="bg-canvas"></canvas>
-<canvas id="noise-canvas"></canvas>
+<div id="noise-overlay"></div>
 
 <div class="scanlines"></div>
 <div class="visor-overlay"></div>
@@ -1079,11 +1202,16 @@ body {
 
 <div id="boot-overlay">
   <div class="boot-scanlines"></div>
+  
+  <div id="data-stream-container"></div>
+  <div id="target-lock"></div>
+
   <div class="boot-top-hud" id="boot-top-hud">
     <div class="boot-system-label">SGB II Trainingssystem</div>
     <div class="boot-top-divider"></div>
     <div class="boot-system-sub">Visor Terminal Hub · v1.0.0</div>
   </div>
+  
   <div class="visor-ring-wrap">
     <div class="visor-ring vr-outer"></div>
     <div class="visor-ring vr-ticks"></div>
@@ -1091,12 +1219,17 @@ body {
     <div class="visor-ring vr-inner"></div>
     <div class="visor-cross"></div>
     <div class="visor-center-dot" id="visor-dot"></div>
+    
+    <div id="visor-shockwave"></div>
+
     <div class="visor-bracket tl" id="vb-tl"></div>
     <div class="visor-bracket tr" id="vb-tr"></div>
     <div class="visor-bracket bl" id="vb-bl"></div>
     <div class="visor-bracket br" id="vb-br"></div>
   </div>
+  
   <div class="boot-log" id="boot-log"></div>
+  
   <div class="boot-progress-wrap" id="boot-progress-wrap" style="opacity:0;transition:opacity 0.3s;">
     <div class="boot-progress-label">
       <span id="boot-pct-label">Initialisierung</span>
@@ -1106,12 +1239,14 @@ body {
       <div class="boot-progress-fill" id="boot-fill"></div>
     </div>
   </div>
+  
   <div class="boot-title-flash" id="boot-title-flash">
     <div class="boot-title-main">TERMINAL HUB</div>
     <div class="boot-title-sub">Sozialgesetzbuch II · Modul-System</div>
   </div>
   <div class="boot-flash" id="boot-flash"></div>
 </div>
+
 
 <!-- MAIN -->
 
@@ -1320,56 +1455,10 @@ window.addEventListener('resize', resize);
 resize();
 requestAnimationFrame(animateCanvas);
 
-// ─── NOISE CANVAS ───
-const noiseCvs = document.getElementById('noise-canvas');
-const nCtx = noiseCvs.getContext('2d');
-let noiseImg;
-
-function resizeNoise() {
-  noiseCvs.width  = window.innerWidth;
-  noiseCvs.height = window.innerHeight;
-  noiseImg = nCtx.createImageData(noiseCvs.width, noiseCvs.height);
-}
-window.addEventListener('resize', resizeNoise);
-resizeNoise();
-
-function drawNoise() {
-  const data = noiseImg.data;
-  const [r, g, b] = currentThemeColor;
-  for (let i = 0; i < data.length; i += 4) {
-    const lum = Math.random();
-    if (lum > 0.82) {
-      const intensity = (lum - 0.82) / 0.18;
-      data[i]     = r * intensity * 0.6;
-      data[i + 1] = g * intensity * 0.6;
-      data[i + 2] = b * intensity * 0.6;
-      data[i + 3] = Math.floor(intensity * 55 + Math.random() * 15);
-    } else if (lum < 0.06) {
-      data[i] = data[i+1] = data[i+2] = 0;
-      data[i + 3] = Math.floor(Math.random() * 40);
-    } else {
-      data[i + 3] = 0;
-    }
-  }
-  nCtx.putImageData(noiseImg, 0, 0);
-  if (Math.random() < 0.055) {
-    const W = noiseCvs.width, H = noiseCvs.height;
-    const bandY = Math.random() * H;
-    const bandH = 2 + Math.random() * 14;
-    const shift = (Math.random() - 0.5) * 18;
-    nCtx.save();
-    nCtx.fillStyle = `rgba(${r},${g},${b},${0.08 + Math.random() * 0.18})`;
-    nCtx.fillRect(0, bandY, W, bandH);
-    const slice = nCtx.getImageData(0, bandY, W, bandH);
-    nCtx.putImageData(slice, shift, bandY);
-    nCtx.restore();
-  }
-  requestAnimationFrame(drawNoise);
-}
 // ═══════════════════════════════════════
-// BOOT SEQUENCE
+// BOOT SEQUENCE (inkl. Data Stream & Lock-On)
 // ═══════════════════════════════════════
-(function() {
+(function () {
   const overlay   = document.getElementById('boot-overlay');
   const logEl     = document.getElementById('boot-log');
   const fillEl    = document.getElementById('boot-fill');
@@ -1381,41 +1470,42 @@ function drawNoise() {
   const topHud    = document.getElementById('boot-top-hud');
   const titleEl   = document.getElementById('boot-title-flash');
   const flashEl   = document.getElementById('boot-flash');
-  const brackets  = ['vb-tl','vb-tr','vb-bl','vb-br'].map(id => document.getElementById(id));
+  const brackets  = ['vb-tl', 'vb-tr', 'vb-bl', 'vb-br'].map(id => document.getElementById(id));
 
-  // Boot log lines – Metroid-style system check messages
+  const streamContainer = document.getElementById('data-stream-container');
+  const targetLock      = document.getElementById('target-lock');
+  const shockwave       = document.getElementById('visor-shockwave');
+
   const LOG_LINES = [
     { text: 'Visor-System wird gestartet',          label: 'SYS' },
-    { text: 'Sensorkalibrierung läuft',              label: 'SEN' },
-    { text: 'Modul-Integrität wird geprüft',         label: 'INT' },
-    { text: 'SGB II Datenbasis v2026 geladen',       label: 'DAT' },
-    { text: 'Terminal BG ... bereit',                label: 'MOD' },
-    { text: 'Terminal MB ... bereit',                label: 'MOD' },
-    { text: 'Terminal VM ... bereit',                label: 'MOD' },
-    { text: 'HUD-Schnittstelle wird initialisiert',  label: 'HUD' },
-    { text: 'Verbindung etabliert',                  label: 'NET' },
-    { text: 'System einsatzbereit',                  label: 'OK'  },
+    { text: 'SGB II Datenbasis v2026 laden',        label: 'DAT' },
+    { text: 'Zielerfassung aktiv',                  label: 'TRG' },
+    { text: 'HUD-Schnittstelle wird initialisiert', label: 'HUD' },
+    { text: 'System einsatzbereit',                 label: 'OK'  },
   ];
 
   let aborted = false;
+  let streamInterval;
 
-  // Allow tap/click to skip (with a minimum delay)
+  // Gemeinsames Tracking-Array: beide Funktionen greifen darauf zu
+  const activeParagraphs = []; // { el: HTMLElement, createdAt: number }
+
   let skipAllowed = false;
   setTimeout(() => { skipAllowed = true; }, 800);
-  overlay.addEventListener('click', () => { if (skipAllowed) skipBoot(); });
+  overlay.addEventListener('click',    ()  => { if (skipAllowed) skipBoot(); });
   overlay.addEventListener('touchend', (e) => { e.preventDefault(); if (skipAllowed) skipBoot(); });
 
   function skipBoot() {
     if (aborted) return;
     aborted = true;
+    clearInterval(streamInterval);
     finalize();
   }
 
   function delay(ms) {
     return new Promise(res => {
       if (aborted) { res(); return; }
-      const t = setTimeout(res, ms);
-      // store so we can clear on skip — not strictly needed but clean
+      setTimeout(res, ms);
     });
   }
 
@@ -1435,7 +1525,6 @@ function drawNoise() {
         <span>${text}</span>
         <span class="boot-line-ok">✓ OK</span>
       `;
-      // Keep max 6 lines visible (scroll-trim)
       logEl.appendChild(row);
       if (logEl.children.length > 6) logEl.removeChild(logEl.children[0]);
       requestAnimationFrame(() => {
@@ -1448,35 +1537,187 @@ function drawNoise() {
     });
   }
 
+    // ─── Data Stream – schneller & etwas dichter ───
+  function startDataStream() {
+    const paragraphs = ['§ 12', '§ 20', '§ 21', '§ 22', '§ 7', '§ 9',
+                        '§ 1',  '§ 2',  '§ 15', '§ 23', '§ 34', '§ 5', '§ 12a'];
+
+    // Intervall von 450ms auf 280ms verkürzt -> mehr Paragrafen
+    streamInterval = setInterval(() => {
+      if (aborted) { clearInterval(streamInterval); return; }
+
+      const p        = document.createElement('div');
+      p.className    = 'paragraph-drop';
+      p.textContent  = paragraphs[Math.floor(Math.random() * paragraphs.length)];
+
+      p.style.left            = (8 + Math.random() * 84) + '%';
+      
+      // Animationsdauer von 3-6s auf 2-4.5s verkürzt -> fallen schneller
+      const duration          = 2 + Math.random() * 2.5; 
+      p.style.animationDuration = duration + 's';
+      p.style.fontSize        = (0.8 + Math.random() * 1.2) + 'rem';
+
+      streamContainer.appendChild(p);
+
+      const entry = { el: p, createdAt: Date.now() };
+      activeParagraphs.push(entry);
+
+      setTimeout(() => {
+        const idx = activeParagraphs.findIndex(e => e.el === p);
+        if (idx > -1) activeParagraphs.splice(idx, 1);
+        if (p.parentNode) p.parentNode.removeChild(p);
+      }, duration * 1000);
+
+    }, 280); 
+  }
+
+  // ─── Lock-On – gezielte Paragrafen mit Anti-Überlappung ───
+  async function runLockOn() {
+    const lockTargets = ['§ 7', '§ 20', '§ 21', '§ 22', '§ 23', '§ 12'];
+    const lockedPositions = []; // Merkt sich, wo wir schon getroffen haben
+    const MIN_DISTANCE = 18;    // Mindestabstand in % des Bildschirms
+
+    for (let i = 0; i < lockTargets.length; i++) {
+      if (aborted) return;
+
+      const currentTargetText = lockTargets[i];
+      let targetEntry = null;
+      let attempts    = 0;
+
+      while (!targetEntry && attempts < 40) {
+        const now = Date.now();
+        const vw  = window.innerWidth;
+        const vh  = window.innerHeight;
+
+        const candidates = activeParagraphs.filter(e => {
+          if (now - e.createdAt < 600) return false;
+          if (e.locked) return false; 
+          
+          const rect = e.el.getBoundingClientRect();
+          const candXPct = ((rect.left + rect.width / 2) / vw) * 100;
+          const candYPct = ((rect.top + rect.height / 2) / vh) * 100;
+          
+          // Ist der Kandidat im guten Sichtfeld?
+          if (candYPct < 15 || candYPct > 75 || candXPct < 10 || candXPct > 90) return false;
+
+          // Entfernungs-Check: Ist der Kandidat zu nah an einem alten Treffer?
+          // (Wir heben diese Regel auf, wenn das Skript nach 15 Versuchen verzweifelt sucht)
+          if (attempts < 15) {
+            for (const pos of lockedPositions) {
+              const dist = Math.hypot(candXPct - pos.x, candYPct - pos.y);
+              if (dist < MIN_DISTANCE) return false; // Zu nah! Aussortieren.
+            }
+          }
+
+          return true;
+        });
+
+        if (candidates.length > 0) {
+          const exactMatches = candidates.filter(e => e.el.textContent === currentTargetText);
+          
+          if (exactMatches.length > 0) {
+            targetEntry = exactMatches[Math.floor(Math.random() * exactMatches.length)];
+          } else if (attempts > 3) {
+            targetEntry = candidates[Math.floor(Math.random() * candidates.length)];
+            targetEntry.el.textContent = currentTargetText;
+          }
+        }
+        
+        if (targetEntry) {
+          targetEntry.locked = true; 
+        } else {
+          await delay(100);
+          attempts++;
+        }
+      }
+
+      if (aborted) return;
+
+      let xPct, yPct;
+
+      if (targetEntry) {
+        targetEntry.el.style.animationPlayState = 'paused';
+        targetEntry.el.style.color = 'var(--warning)'; 
+        
+        const rect = targetEntry.el.getBoundingClientRect();
+        xPct = ((rect.left + rect.width  / 2) / window.innerWidth)  * 100;
+        yPct = ((rect.top  + rect.height / 2) / window.innerHeight) * 100;
+      } else {
+        xPct = 20 + Math.random() * 60;
+        yPct = 15 + Math.random() * 55;
+      }
+
+      // Ziel-Koordinaten speichern, damit der nächste Schuss Abstand hält
+      lockedPositions.push({ x: xPct, y: yPct });
+
+      targetLock.style.left = xPct + '%';
+      targetLock.style.top  = yPct + '%';
+      targetLock.classList.add('locking');
+
+      await delay(200); 
+      if (aborted) return;
+
+      targetLock.classList.add('locked');
+
+      if (targetEntry) {
+        targetEntry.el.style.opacity = '0'; 
+      }
+
+      const flash = document.createElement('div');
+      flash.className   = 'locked-target';
+      flash.textContent = currentTargetText; 
+      flash.style.left  = xPct + '%';
+      flash.style.top   = yPct + '%';
+      overlay.appendChild(flash);
+
+      await delay(450);
+
+      targetLock.classList.remove('locking', 'locked');
+      await delay(180);
+    }
+  }
+
+
+
   async function runBoot() {
     await delay(120);
 
-    // 1) Top HUD fades in
+    // 1) Top HUD einblenden
     topHud.classList.add('visible');
     await delay(350);
 
-    // 2) Arc starts spinning
+    // 2) Visor-Arc, Mittelpunkt und Progress Bar aktivieren
     arcEl.classList.add('active');
     dotEl.classList.add('active');
-    await delay(400);
-
-    // 3) Progress bar appears
     progressW.style.opacity = '1';
-    await delay(200);
 
-    // 4) Boot log lines appear one by one
-    for (let i = 0; i < LOG_LINES.length; i++) {
+    // 3) Data Stream starten – activeParagraphs wird ab jetzt befüllt
+    startDataStream();
+
+    // 4) Erste Log-Lines
+    for (let i = 0; i < 4; i++) {
       if (aborted) break;
       const { text, label } = LOG_LINES[i];
       await addLine(text, label, true);
-      const pct = ((i + 1) / LOG_LINES.length) * 100;
-      setProgress(pct, label === 'OK' ? 'System bereit' : 'Lade Module');
-      await delay(i < 3 ? 260 : i < 7 ? 200 : 160);
+      setProgress((i + 1) * 10, label);
+      await delay(200);
+    }
+
+    // 5) Lock-On Sequenz – trifft jetzt echte § -Positionen
+    if (!aborted) await runLockOn();
+
+    // 6) Restliche Log-Lines
+    for (let i = 4; i < LOG_LINES.length; i++) {
+      if (aborted) break;
+      const { text, label } = LOG_LINES[i];
+      await addLine(text, label, true);
+      setProgress(40 + ((i - 3) * 12), label === 'OK' ? 'System bereit' : 'Lade Modul');
+      await delay(150);
     }
 
     await delay(200);
 
-    // 5) Brackets snap in
+    // 7) HUD-Brackets einrasten
     if (!aborted) {
       for (const b of brackets) {
         b.classList.add('snap');
@@ -1484,26 +1725,33 @@ function drawNoise() {
       }
     }
 
-    await delay(300);
+    await delay(200);
+
+    // 8) Schockwelle + Stream ausblenden
+    if (!aborted) {
+      clearInterval(streamInterval);
+      shockwave.classList.add('fire');
+      streamContainer.style.transition = 'opacity 0.4s';
+      streamContainer.style.opacity    = '0';
+    }
+
+    await delay(400);
     finalize();
   }
 
   function finalize() {
     aborted = true;
-
-    // Flash the title
     titleEl.style.transition = 'opacity 0.25s';
-    titleEl.style.opacity = '1';
+    titleEl.style.opacity    = '1';
 
-    // Brief orange flash → wipe out
     setTimeout(() => {
       flashEl.style.transition = 'opacity 0.12s';
-      flashEl.style.opacity = '0.55';
+      flashEl.style.opacity    = '0.55';
       setTimeout(() => {
         flashEl.style.opacity = '0';
         overlay.classList.add('wipe-out');
         setTimeout(() => {
-          overlay.style.display = 'none';
+          overlay.style.display      = 'none';
           document.body.style.cursor = '';
         }, 750);
       }, 120);
@@ -1564,12 +1812,15 @@ function drawNoise() {
 <script>
 // ---------- Service Worker ----------
   function initServiceWorker() {
-    if (!('serviceWorker' in navigator)) return;
+  if (!('serviceWorker' in navigator)) return;
 
-    navigator.serviceWorker.register('service-worker.js')
-      .then(reg => console.log('Service Worker registriert:', reg.scope))
-      .catch(err => console.error('Service Worker Registrierung fehlgeschlagen:', err));
-  }
+  navigator.serviceWorker.register('service-worker.js')
+    .then(reg => console.log('Service Worker registriert:', reg.scope))
+    .catch(err => console.error('Service Worker Registrierung fehlgeschlagen:', err));
+}
+
+window.addEventListener('load', initServiceWorker);
+
 </script>
 
 
