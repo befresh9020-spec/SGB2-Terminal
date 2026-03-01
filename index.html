@@ -1469,6 +1469,13 @@ function setTheme(event, theme) {
   currentThemeColor = colors[theme];
 }
 
+// ─── ANDROID PERFORMANCE ───
+
+const isAndroid = /Android/i.test(navigator.userAgent);
+if (isAndroid) {
+  document.getElementById('noise-overlay').style.display = 'none';
+}
+
 // ─── BG CANVAS (Hex Grid + Sweep) ───
 const canvas = document.getElementById('bg-canvas');
 const ctx = canvas.getContext('2d');
