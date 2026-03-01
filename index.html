@@ -1163,9 +1163,10 @@ body {
   font-family: var(--font-mono);
   font-weight: bold;
   opacity: 0;
-  text-shadow: 0 0 10px var(--primary-glow);
+  text-shadow: 0 0 4px var(--primary-glow);
   pointer-events: none;
   animation: fly-towards linear forwards;
+  will-change: transform, opacity;
 }
 
 @keyframes fly-towards {
@@ -1211,11 +1212,12 @@ body {
   font-family: var(--font-mono);
   font-size: 1.5rem;
   font-weight: bold;
-  text-shadow: 0 0 15px var(--success);
+  text-shadow: 0 0 6px var(--success);
   transform: translate(-50%, -50%);
   z-index: 24;
   pointer-events: none;
   animation: target-fade 0.6s forwards;
+  will-change: transform, opacity;
 }
 @keyframes target-fade {
   0% { opacity: 0; transform: translate(-50%, -50%) scale(2); }
