@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="de">
 <head>
   <meta charset="UTF-8">
@@ -65,6 +64,24 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* ─── CUSTOM SCROLLBARS ─── */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.6);
+  border-left: 1px solid var(--border);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--primary-mid);
+  border-radius: 0px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+  box-shadow: 0 0 10px var(--primary-glow);
+}
+
 /* ─── HINTERGRUND ─── */
 #bg-canvas {
   position: fixed;
@@ -72,7 +89,6 @@ body {
   z-index: -2;
 }
 
-/* Visor lens curvature overlay */
 .visor-overlay {
   position: fixed;
   top: 0; left: 0; width: 100%; height: 100%;
@@ -85,7 +101,6 @@ body {
   z-index: 997;
 }
 
-/* Edge lens refraction shimmer */
 .visor-rim {
   position: fixed;
   top: 0; left: 0; width: 100%; height: 100%;
@@ -114,7 +129,6 @@ body {
     linear-gradient(to left,   rgba(0,255,136,0.04) 0%, transparent 6%);
 }
 
-/* ─── SCANLINES (moving) ─── */
 .scanlines {
   position: fixed;
   top: 0; left: 0; width: 100%; height: 200%;
@@ -135,7 +149,6 @@ body {
   100% { transform: translateY(-50%); }
 }
 
-/* Noise canvas sits above everything except top-bar */
 #noise-canvas {
   position: fixed;
   top: 0; left: 0; width: 100%; height: 100%;
@@ -143,10 +156,10 @@ body {
   z-index: 1002;
   opacity: 1;
   mix-blend-mode: screen;
+  image-rendering: pixelated; 
 }
 
 /* ─── HUD CORNER BRACKETS ─── */
-/* Applied to .terminal-window */
 .hud-frame {
   position: relative;
 }
@@ -160,14 +173,12 @@ body {
   pointer-events: none;
   z-index: 10;
 }
-/* Top-left */
 .hud-frame::before {
   top: -2px; left: -2px;
   border-top: 3px solid var(--primary);
   border-left: 3px solid var(--primary);
   box-shadow: -2px -2px 8px var(--primary-glow);
 }
-/* Top-right */
 .hud-frame::after {
   top: -2px; right: -2px;
   border-top: 3px solid var(--primary);
@@ -201,7 +212,6 @@ body {
   z-index: 1000;
 }
 
-/* Visor mode label left */
 .visor-mode {
   font-size: 0.6rem;
   letter-spacing: 3px;
@@ -211,7 +221,6 @@ body {
   font-family: var(--font-mono);
 }
 
-/* Tick marks decoration on top bar */
 .top-bar-ticks {
   display: flex;
   gap: 5px;
@@ -255,7 +264,6 @@ body {
   color: var(--primary);
   box-shadow: 0 0 10px var(--primary-glow), inset 0 0 6px var(--primary-dim);
 }
-/* Pulse ring on active theme btn */
 .theme-btn.active::after {
   content: "";
   position: absolute;
@@ -271,7 +279,7 @@ body {
   100% { transform: scale(1);    opacity: 0.3; }
 }
 
-/* ─── MAIN CONTAINER ─── */
+/* ─── MAIN CONTAINER & GLITCH ─── */
 .container {
   max-width: 920px;
   margin: 24px auto;
@@ -291,7 +299,6 @@ body {
   border-radius: 2px;
 }
 
-/* Inner hex texture */
 .terminal-window::before {
   content: "";
   position: absolute;
@@ -302,6 +309,19 @@ body {
   pointer-events: none;
   border-radius: 2px;
   opacity: 1;
+}
+
+/* Glitch Animation beim Wechseln des Falls */
+.glitch-anim {
+  animation: glitch-skew 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+@keyframes glitch-skew {
+  0% { transform: skew(0deg); filter: drop-shadow(0 0 0 var(--primary)); opacity: 1; }
+  20% { transform: skew(-15deg); filter: drop-shadow(-5px 0 0 red) drop-shadow(5px 0 0 blue); opacity: 0.8; }
+  40% { transform: skew(15deg); opacity: 0.5; }
+  60% { transform: skew(-5deg); filter: drop-shadow(5px 0 0 var(--primary)); opacity: 0.8; }
+  80% { transform: skew(2deg); opacity: 0.9; }
+  100% { transform: skew(0deg); filter: drop-shadow(0 0 0 transparent); opacity: 1; }
 }
 
 .terminal-header {
@@ -315,7 +335,6 @@ body {
   gap: 4px;
 }
 
-/* Central horizontal rule decoration */
 .terminal-header::after {
   content: "";
   position: absolute;
@@ -345,7 +364,6 @@ body {
   letter-spacing: 2px;
 }
 
-/* Decorative hex badges flanking title */
 .header-badge {
   position: absolute;
   top: 50%;
@@ -380,7 +398,6 @@ body {
   margin-bottom: 10px;
 }
 
-/* HUD-style segmented progress */
 .progress-bar {
   height: 6px;
   background: rgba(255,255,255,0.05);
@@ -406,7 +423,7 @@ body {
   background: linear-gradient(90deg, transparent 60%, rgba(255,255,255,0.25));
 }
 
-/* ─── CASE BOX ─── */
+/* ─── CASE BOX & TYPEWRITER CURSOR ─── */
 .case-box {
   background: rgba(0,0,0,0.4);
   border-left: 2px solid var(--primary);
@@ -419,7 +436,6 @@ body {
   line-height: 1.65;
   position: relative;
 }
-/* Corner notch */
 .case-box::before {
   content: "";
   position: absolute;
@@ -430,6 +446,17 @@ body {
   border-color: transparent var(--primary) transparent transparent;
   opacity: 0.4;
 }
+
+.typewriter-cursor {
+  display: inline-block;
+  width: 8px;
+  height: 1em;
+  background-color: var(--primary);
+  animation: blink 1s step-end infinite;
+  vertical-align: text-bottom;
+  margin-left: 2px;
+}
+@keyframes blink { 50% { opacity: 0; } }
 
 /* ─── TABLE ─── */
 .table-wrapper {
@@ -503,9 +530,9 @@ body {
 .options-grid {
   display: grid;
   gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 }
 
-/* HUD-style option button */
 .option-btn {
   background: rgba(0,0,0,0.35);
   border: 1px solid var(--border);
@@ -526,7 +553,32 @@ body {
   clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
 }
 
-/* Sweep shimmer on hover */
+/* Binärcode-Hintergrund beim Hover */
+.option-btn::after {
+  content: "01001011 01101111 01110010 01110010 01100101 01101011 01110100 10101010 11010101 01010011 01000111 01000010 10101111 00110011";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  line-height: 1.2;
+  color: var(--primary);
+  opacity: 0;
+  overflow: hidden;
+  z-index: 0;
+  pointer-events: none;
+  word-break: break-all;
+  transition: opacity 0.3s;
+}
+.option-btn:hover::after {
+  opacity: 0.08;
+  animation: binary-scroll 2s linear infinite;
+}
+@keyframes binary-scroll {
+  0% { transform: translateY(-5%); }
+  100% { transform: translateY(5%); }
+}
+
+/* Shimmer Sweep */
 .option-btn::before {
   content: "";
   position: absolute;
@@ -534,6 +586,7 @@ body {
   background: linear-gradient(90deg, transparent 0%, var(--primary-dim) 50%, transparent 100%);
   transform: translateX(-100%);
   transition: transform 0.4s;
+  z-index: 0;
 }
 .option-btn:hover::before { transform: translateX(100%); }
 
@@ -551,7 +604,6 @@ body {
   box-shadow: inset 3px 0 0 var(--primary), 0 0 12px var(--primary-dim);
 }
 
-/* Targeting reticle indicator */
 .checkbox-indicator {
   width: 16px; height: 16px;
   border: 1px solid var(--text-dim);
@@ -614,7 +666,7 @@ body {
   appearance: none;
   text-shadow: 0 0 8px rgba(109,255,179,0.5);
 }
-.calc-input::placeholder { color: #333; }
+.calc-input::placeholder { color: #555; }
 .calc-input:focus {
   box-shadow: 0 0 20px var(--primary-dim), inset 0 0 10px rgba(109,255,179,0.05);
 }
@@ -721,6 +773,7 @@ body {
   .asset-table th, .asset-table td { padding: 8px 10px; font-size: 0.78rem; }
   .option-btn { padding: 11px 12px; font-size: 0.83rem; }
   .header-badge { display: none; }
+  .options-grid { grid-template-columns: 1fr; }
 }
 
 /* ── ZURÜCK-BUTTON ─────────────────────────────── */
@@ -755,7 +808,6 @@ body {
   user-select: none;
 }
 
-/* Sweep-Shimmer beim Hover */
 .btn-back::before {
   content: "";
   position: absolute;
@@ -774,7 +826,6 @@ body {
   box-shadow: 0 0 16px var(--primary-glow), inset 0 0 10px var(--primary-dim);
 }
 
-/* Pfeil-Animation beim Hover */
 .btn-back-arrow {
   display: inline-block;
   transition: transform 0.25s;
@@ -785,7 +836,6 @@ body {
   text-shadow: 0 0 8px var(--primary);
 }
 
-/* Ripple-Effekt beim Klick */
 .btn-back-ripple {
   position: absolute;
   border-radius: 50%;
@@ -807,7 +857,6 @@ body {
 }
 
 </style>
-
 </head>
 <body data-theme="orange">
 
@@ -824,9 +873,9 @@ body {
     <span></span><span></span><span></span><span></span><span></span>
   </div>
   <div class="theme-switch">
-    <button class="theme-btn" onclick="setTheme('blue')"   aria-label="Theme Blau">●</button>
-    <button class="theme-btn active" onclick="setTheme('orange')" aria-label="Theme Orange">●</button>
-    <button class="theme-btn" onclick="setTheme('green')"  aria-label="Theme Grün">●</button>
+    <button class="theme-btn" onclick="setTheme(event, 'blue')"   aria-label="Theme Blau">●</button>
+    <button class="theme-btn active" onclick="setTheme(event, 'orange')" aria-label="Theme Orange">●</button>
+    <button class="theme-btn" onclick="setTheme(event, 'green')"  aria-label="Theme Grün">●</button>
   </div>
   <div class="top-bar-ticks">
     <span></span><span></span><span></span><span></span><span></span>
@@ -836,25 +885,21 @@ body {
 
 <div class="container">
   <main class="terminal-window hud-frame">
-    <!-- HUD corner elements -->
     <span class="hud-corner-br"></span>
     <span class="hud-corner-bl"></span>
 
-```
-<header class="terminal-header">
-  <!-- Hex badges -->
-  <span class="header-badge left">
-    <svg viewBox="0 0 100 100"><polygon points="50,5 95,27.5 95,72.5 50,95 5,72.5 5,27.5"/></svg>
-  </span>
-  <span class="header-badge right">
-    <svg viewBox="0 0 100 100"><polygon points="50,5 95,27.5 95,72.5 50,95 5,72.5 5,27.5"/></svg>
-  </span>
-  <div class="terminal-title">SGB II</div>
-  <div class="terminal-subtitle">§ 12 – Terminal Vermögen</div>
-</header>
+    <header class="terminal-header">
+      <span class="header-badge left">
+        <svg viewBox="0 0 100 100"><polygon points="50,5 95,27.5 95,72.5 50,95 5,72.5 5,27.5"/></svg>
+      </span>
+      <span class="header-badge right">
+        <svg viewBox="0 0 100 100"><polygon points="50,5 95,27.5 95,72.5 50,95 5,72.5 5,27.5"/></svg>
+      </span>
+      <div class="terminal-title">SGB II</div>
+      <div class="terminal-subtitle">§ 12 – Terminal Vermögen</div>
+    </header>
 
-<div class="terminal-content" id="app-content"></div>
-```
+    <div class="terminal-content" id="app-content"></div>
 
   </main>
 </div>
@@ -1086,17 +1131,35 @@ const cases = [
 // =============================================
 let currentCaseIndex = 0;
 let caseStatus = "Offen";
+let typeWriterTimeout; // Globale Variable für den Typewriter
 
 function init() {
   renderCase();
   requestAnimationFrame(animateCanvas);
 }
 
+// Typewriter-Funktion für den Sachverhalt
+function typewriterEffect(elementId, text, speed = 12) {
+  const el = document.getElementById(elementId);
+  if (!el) return;
+  el.innerHTML = '';
+  let i = 0;
+  clearTimeout(typeWriterTimeout);
+  
+  function type() {
+    if (i < text.length) {
+      el.innerHTML += text.charAt(i);
+      i++;
+      typeWriterTimeout = setTimeout(type, speed);
+    }
+  }
+  type();
+}
+
 function renderCase() {
   const data = cases[currentCaseIndex];
   const content = document.getElementById('app-content');
 
-  // Segmented progress bar
   let segs = '';
   for (let i = 0; i < cases.length; i++) {
     segs += `<div class="progress-seg ${i < currentCaseIndex ? 'filled' : ''}"></div>`;
@@ -1112,9 +1175,11 @@ function renderCase() {
     </div>
   `;
 
+  // Geänderte Case-Box mit Typewriter-Elementen
   html += `
     <div class="case-box">
-      <strong>Sachverhalt:</strong><br>${data.text}
+      <strong>Sachverhalt:</strong><br>
+      <span id="case-text-target"></span><span class="typewriter-cursor"></span>
     </div>
   `;
 
@@ -1137,6 +1202,21 @@ function renderCase() {
   `;
 
   content.innerHTML = html;
+
+  // Typewriter-Effekt starten
+  typewriterEffect("case-text-target", data.text);
+
+  // Enter-Taste Support
+  setTimeout(() => {
+    const inputs = document.querySelectorAll('.calc-input');
+    inputs.forEach(input => {
+      input.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter' && !document.getElementById('btn-check').disabled) {
+          checkCase();
+        }
+      });
+    });
+  }, 0);
 }
 
 function renderStep(step, stepIdx) {
@@ -1156,11 +1236,12 @@ function renderStep(step, stepIdx) {
   } else {
     html += `<div class="options-grid">`;
     step.options.forEach((opt, optIdx) => {
+      // Inline-Styles bei den spans stellen sicher, dass Text & Checkbox über dem Binary-Hintergrund (z-index: 0) liegen
       html += `
         <button class="option-btn" id="opt-${stepIdx}-${optIdx}"
                 onclick="selectOption(${stepIdx}, ${optIdx}, '${step.type}')">
-          ${opt.txt}
-          <span class="checkbox-indicator"></span>
+          <span style="position:relative; z-index:2;">${opt.txt}</span>
+          <span class="checkbox-indicator" style="position:relative; z-index:2;"></span>
         </button>
       `;
     });
@@ -1244,18 +1325,26 @@ window.checkCase = function() {
 
   caseStatus = allCorrect ? "Bestanden" : "Fehlerhaft";
   document.getElementById("progress-status").textContent = "Status: " + caseStatus;
-  document.getElementById("progress-status").className   =
-    "status-" + caseStatus.toLowerCase();
+  document.getElementById("progress-status").className   = "status-" + caseStatus.toLowerCase();
 
   fbArea.scrollIntoView({ behavior: 'smooth' });
 }
 
 window.nextCase = function() {
   if (currentCaseIndex < cases.length - 1) {
-    currentCaseIndex++;
-    caseStatus = "Offen";
-    renderCase();
-    window.scrollTo(0, 0);
+    // Start Glitch Transition
+    const content = document.getElementById('app-content');
+    content.classList.add('glitch-anim');
+    
+    // Warte bis die Glitch-Animation durch ist (300ms) und wechsle dann den Inhalt
+    setTimeout(() => {
+      currentCaseIndex++;
+      caseStatus = "Offen";
+      renderCase();
+      window.scrollTo(0, 0);
+      content.classList.remove('glitch-anim');
+    }, 300);
+    
   } else {
     showResults();
   }
@@ -1275,12 +1364,12 @@ function showResults() {
 // =============================================
 // THEME
 // =============================================
-let currentThemeColor = [255, 123, 0]; // Default orange
+let currentThemeColor = [255, 123, 0];
 
-window.setTheme = function(theme) {
+window.setTheme = function(e, theme) {
   document.body.setAttribute('data-theme', theme);
   document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
-  event.target.classList.add('active');
+  e.currentTarget.classList.add('active');
   const colors = {
     blue:   [0, 212, 255],
     orange: [255, 123, 0],
@@ -1302,7 +1391,6 @@ function resize() {
 window.addEventListener('resize', resize);
 resize();
 
-// Pre-compute hex grid vertices
 const HEX_SIZE = 38;
 const hexes = [];
 
@@ -1344,7 +1432,7 @@ function animateCanvas() {
   const [r, g, b] = currentThemeColor;
 
   hexes.forEach(h => {
-    const pulse = (Math.sin(t + h.phase) + 1) / 2; // 0–1
+    const pulse = (Math.sin(t + h.phase) + 1) / 2;
     const alpha = 0.03 + pulse * 0.07;
     hexPath(h.x, h.y, HEX_SIZE - 2);
     ctx.strokeStyle = `rgba(${r},${g},${b},${alpha})`;
@@ -1352,7 +1440,6 @@ function animateCanvas() {
     ctx.stroke();
   });
 
-  // Sweep line (horizontal scan)
   const sweepY = (t * 80) % canvas.height;
   const sweepGrad = ctx.createLinearGradient(0, sweepY - 60, 0, sweepY + 60);
   sweepGrad.addColorStop(0,   `rgba(${r},${g},${b},0)`);
@@ -1365,25 +1452,23 @@ function animateCanvas() {
 }
 
 // =============================================
-// NOISE CANVAS — Aggressive animated grain + glitch
+// NOISE CANVAS
 // =============================================
 const noiseCvs = document.getElementById('noise-canvas');
 const nCtx     = noiseCvs.getContext('2d');
+const NOISE_SCALE = 2; 
 
 function resizeNoise() {
-  noiseCvs.width  = window.innerWidth;
-  noiseCvs.height = window.innerHeight;
+  noiseCvs.width  = Math.floor(window.innerWidth / NOISE_SCALE);
+  noiseCvs.height = Math.floor(window.innerHeight / NOISE_SCALE);
+  noiseImg = nCtx.createImageData(noiseCvs.width, noiseCvs.height);
 }
-window.addEventListener('resize', resizeNoise);
+
+let noiseImg;
 resizeNoise();
+window.addEventListener('resize', resizeNoise);
 
 let noiseFrame = 0;
-// Pre-allocate ImageData once per resize (updated on resize event too)
-let noiseImg = nCtx.createImageData(noiseCvs.width, noiseCvs.height);
-
-window.addEventListener('resize', () => {
-  noiseImg = nCtx.createImageData(noiseCvs.width, noiseCvs.height);
-});
 
 function drawNoise() {
   noiseFrame++;
@@ -1392,50 +1477,41 @@ function drawNoise() {
   const data = noiseImg.data;
   const [r, g, b] = currentThemeColor;
 
-  // Base grain — every pixel gets random luminance
-  // Update every frame for maximum aggression
   for (let i = 0; i < data.length; i += 4) {
     const lum = Math.random();
     if (lum > 0.82) {
-      // Tinted bright speckle
-      const intensity = (lum - 0.82) / 0.18; // 0–1
+      const intensity = (lum - 0.82) / 0.18;
       data[i]     = r * intensity * 0.6;
       data[i + 1] = g * intensity * 0.6;
       data[i + 2] = b * intensity * 0.6;
       data[i + 3] = Math.floor(intensity * 55 + Math.random() * 15);
     } else if (lum < 0.06) {
-      // Dark dropout pixel
       data[i]     = 0;
       data[i + 1] = 0;
       data[i + 2] = 0;
       data[i + 3] = Math.floor(Math.random() * 40);
     } else {
-      data[i + 3] = 0; // transparent
+      data[i + 3] = 0;
     }
   }
 
   nCtx.putImageData(noiseImg, 0, 0);
 
-  // ── Glitch bands: random horizontal slices that shift/tint ──
-  // Fire a new glitch band every ~18 frames on average
   if (Math.random() < 0.055) {
     const bandY  = Math.random() * H;
     const bandH  = 2 + Math.random() * 14;
     const shift  = (Math.random() - 0.5) * 18;
     const alpha  = 0.08 + Math.random() * 0.18;
 
-    // Coloured horizontal tear
     nCtx.save();
     nCtx.fillStyle = `rgba(${r},${g},${b},${alpha})`;
     nCtx.fillRect(0, bandY, W, bandH);
 
-    // Pixel-shift duplicate (translucent copy offset sideways)
     const slice = nCtx.getImageData(0, bandY, W, bandH);
     nCtx.putImageData(slice, shift, bandY);
     nCtx.restore();
   }
 
-  // ── Brief full-screen flash roughly every 4 s ──
   if (Math.random() < 0.004) {
     nCtx.save();
     nCtx.fillStyle = `rgba(${r},${g},${b},0.04)`;
@@ -1450,7 +1526,6 @@ drawNoise();
 
 init();
 
-// Ripple-Effekt beim Klicken
 window.triggerBackClick = function(e) {
   const ripple = document.getElementById('back-ripple');
   const btn    = document.getElementById('btn-back');
@@ -1458,13 +1533,12 @@ window.triggerBackClick = function(e) {
   ripple.style.left = (e.clientX - rect.left - 5) + 'px';
   ripple.style.top  = (e.clientY - rect.top  - 5) + 'px';
   ripple.classList.remove('active');
-  void ripple.offsetWidth; // reflow erzwingen
+  void ripple.offsetWidth;
   ripple.classList.add('active');
-  // Navigation nach kurzem Delay, damit Effekt sichtbar wird
+  
   e.preventDefault();
   setTimeout(() => { window.location.href = 'index.html'; }, 400);
 }
-
 </script>
 
 </body>
