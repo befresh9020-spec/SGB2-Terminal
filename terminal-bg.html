@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="de">
 <head>
   <meta charset="UTF-8">
@@ -16,7 +15,6 @@
        by Bjørn F.  |  dark HUD / visor aesthetic
        ═══════════════════════════════════════════════ */
 
-    /* ─── CSS CUSTOM PROPERTIES (default: blue) ─── */
     :root {
       --bg-dark:      #050a0a;
       --bg-panel:     rgba(8, 18, 14, 0.93);
@@ -34,7 +32,6 @@
       --font-mono:    "Roboto Mono", monospace;
     }
 
-    /* ─── THEMES ─── */
     body.theme-blue {
       --primary:      #00d4ff;
       --primary-dim:  rgba(0, 212, 255, 0.08);
@@ -66,10 +63,8 @@
       --hex:          rgba(0, 255, 136, 0.05);
     }
 
-    /* ─── RESET ─── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    /* ─── BASE ─── */
     body {
       background-color: var(--bg-dark);
       color: var(--text-main);
@@ -80,7 +75,6 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* ─── CANVAS BACKGROUND ─── */
     #bg-canvas {
       position: fixed;
       top: 0; left: 0;
@@ -88,7 +82,6 @@
       z-index: -2;
     }
 
-    /* ─── SCANLINES (moving) ─── */
     body::after {
       content: "";
       position: fixed;
@@ -103,14 +96,13 @@
       );
       pointer-events: none;
       z-index: 1001;
-      opacity: 0.55;
-      animation: scanroll 8s linear infinite;
+      opacity: 0.15;
+      animation: scanroll 12s linear infinite;
     }
     @keyframes scanroll {
       to { transform: translateY(-50%); }
     }
 
-    /* ─── VISOR EDGE GLOW ─── */
     body::before {
       content: "";
       position: fixed;
@@ -124,13 +116,11 @@
       transition: background 0.5s;
     }
 
-    /* ─── SCROLLBAR ─── */
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: var(--primary-mid); border-radius: 3px; }
     ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
 
-    /* ─── APP WRAPPER ─── */
     .app {
       position: relative;
       max-width: 700px;
@@ -147,9 +137,9 @@
         inset 0 0 80px var(--primary-dim),
         0 0 1px var(--primary-mid);
       backdrop-filter: blur(14px);
+      transition: all 0.3s ease;
     }
 
-    /* HUD corner brackets — top */
     .app::before,
     .app::after {
       content: "";
@@ -171,7 +161,6 @@
       box-shadow: 2px -2px 10px var(--primary-glow);
     }
 
-    /* HUD corner brackets — bottom */
     .hud-corner-bl,
     .hud-corner-br {
       position: absolute;
@@ -192,7 +181,6 @@
       box-shadow: 2px 2px 10px var(--primary-glow);
     }
 
-    /* ─── CREATOR LINE ─── */
     .creator-line {
       font-family: var(--font-mono);
       font-size: 0.6rem;
@@ -206,7 +194,6 @@
       margin-bottom: 16px;
     }
 
-    /* ─── THEME SWITCHER ─── */
     .theme-switcher {
       display: flex;
       justify-content: center;
@@ -248,7 +235,6 @@
       background: var(--primary-dim);
     }
 
-    /* Mode-icon dot */
     .mode-icon {
       width: 8px; height: 8px;
       border-radius: 50%;
@@ -262,7 +248,6 @@
     .btn-amber { color: #ffd27a; }
     .btn-green { color: #86efac; }
 
-    /* ─── HEADINGS ─── */
     h1 {
       font-size: 1.2rem;
       letter-spacing: 5px;
@@ -274,6 +259,7 @@
       border-bottom: 1px solid var(--border);
       margin-bottom: 4px;
       position: relative;
+      transition: font-size 0.3s ease;
     }
     h1::after {
       content: "";
@@ -293,15 +279,36 @@
       font-weight: 400;
       margin: 10px 0 22px;
       text-transform: uppercase;
+      transition: font-size 0.3s ease;
     }
 
-    /* ─── BACK BUTTON ─── */
-    .btn-back {
+    /* Top Action Bar (Zurück-Button, Fortschritt & Animations-Toggle) */
+    .top-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    /* QoL: Fortschrittsanzeige */
+    .progress-display {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--primary);
+      letter-spacing: 2px;
+      padding: 8px 16px;
+      border: 1px solid var(--border);
+      background: var(--primary-dim);
+      border-radius: 2px;
+      box-shadow: inset 0 0 10px var(--primary-dim);
+      text-align: center;
+    }
+
+    .btn-sub {
       display: inline-flex;
       align-items: center;
       gap: 8px;
       padding: 8px 16px;
-      margin-bottom: 20px;
       background: transparent;
       border: 1px solid var(--border);
       color: var(--text-dim);
@@ -317,7 +324,7 @@
       transition: color 0.25s, border-color 0.25s, box-shadow 0.25s, background 0.25s;
       user-select: none;
     }
-    .btn-back::before {
+    .btn-sub::before {
       content: "";
       position: absolute;
       inset: 0;
@@ -326,8 +333,8 @@
       transition: transform 0.4s;
       pointer-events: none;
     }
-    .btn-back:hover::before { transform: translateX(100%); }
-    .btn-back:hover {
+    .btn-sub:hover::before { transform: translateX(100%); }
+    .btn-sub:hover {
       border-color: var(--primary);
       color: var(--primary);
       background: var(--primary-dim);
@@ -337,28 +344,11 @@
       display: inline-block;
       transition: transform 0.25s;
     }
-    .btn-back:hover .btn-back-arrow {
+    .btn-sub:hover .btn-back-arrow {
       transform: translateX(-4px);
       text-shadow: 0 0 8px var(--primary);
     }
-    .btn-back-ripple {
-      position: absolute;
-      border-radius: 50%;
-      background: var(--primary);
-      opacity: 0;
-      transform: scale(0);
-      pointer-events: none;
-      width: 10px; height: 10px;
-    }
-    .btn-back-ripple.active {
-      animation: ripple-anim 0.5s ease-out forwards;
-    }
-    @keyframes ripple-anim {
-      0%   { transform: scale(0);  opacity: 0.5; }
-      100% { transform: scale(25); opacity: 0;   }
-    }
 
-    /* ─── CASE TEXT ─── */
     #case-text {
       background: rgba(0, 0, 0, 0.40);
       border-left: 2px solid var(--primary);
@@ -370,6 +360,7 @@
       color: var(--text-main);
       line-height: 1.70;
       position: relative;
+      transition: font-size 0.3s ease, padding 0.3s ease;
     }
     #case-text::before {
       content: "";
@@ -381,7 +372,6 @@
       opacity: 0.45;
     }
 
-    /* ─── PERSONS GRID ─── */
     .persons {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -407,6 +397,14 @@
       align-items: center;
       justify-content: center;
     }
+    .person:focus-visible {
+      outline: none;
+      background: var(--primary-dim);
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px var(--bg-dark), 0 0 0 4px var(--primary);
+      color: var(--text-main);
+    }
+
     .person::before {
       content: "";
       position: absolute;
@@ -438,12 +436,7 @@
       opacity: 0.7;
       animation: pulse-diamond 1.8s infinite;
     }
-    @keyframes pulse-diamond {
-      0%, 100% { opacity: 0.7; transform: scale(1); }
-      50%       { opacity: 0.3; transform: scale(1.4); }
-    }
 
-    /* ─── BUTTONS (check / restart / next) ─── */
     .btn-action {
       background: transparent;
       border: 1px solid var(--primary);
@@ -468,15 +461,20 @@
       opacity: 0;
       transition: opacity 0.3s;
     }
-    .btn-action:hover::before { opacity: 0.15; }
-    .btn-action:hover {
+    .btn-action:hover:not(:disabled)::before { opacity: 0.15; }
+    .btn-action:hover:not(:disabled) {
       background: var(--primary-dim);
       box-shadow: 0 0 22px var(--primary-glow), inset 0 0 14px var(--primary-dim);
       color: var(--text-main);
     }
-    .btn-action:active { transform: scale(0.97); }
+    .btn-action:active:not(:disabled) { transform: scale(0.97); }
+    .btn-action:disabled {
+      border-color: var(--border);
+      color: var(--text-dim);
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
 
-    /* "Antwort prüfen" — full width, primary accent */
     #check-btn {
       display: block;
       width: 100%;
@@ -484,7 +482,6 @@
       margin-bottom: 12px;
     }
 
-    /* "Neu starten" + "Nächster Fall" — side by side */
     .controls-row {
       display: flex;
       gap: 12px;
@@ -496,17 +493,23 @@
       flex: 1;
       text-align: center;
     }
-    /* "Nächster Fall" slightly dimmed */
+    
     #next-btn {
       border-color: var(--border);
       color: var(--text-dim);
+      transition: all 0.3s ease;
     }
     #next-btn:hover {
       border-color: var(--primary);
       color: var(--primary);
     }
+    #next-btn.highlight {
+      border-color: var(--primary);
+      color: var(--primary);
+      box-shadow: 0 0 10px var(--primary-glow);
+      animation: pulse-border 2s infinite;
+    }
 
-    /* ─── FEEDBACK ─── */
     #feedback {
       margin-top: 24px;
       display: flex;
@@ -535,15 +538,11 @@
       display: block;
       margin-bottom: 5px;
     }
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateY(-8px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
     .feedback-correct { border-color: var(--success); color: var(--success); }
     .feedback-wrong   { border-color: var(--danger);  color: var(--danger);  }
 
-    /* ─── NORM HIGHLIGHT ─── */
-    .norm {
+    /* QoL: Klickbare Normen Styling */
+    a.norm {
       display: inline-block;
       background: var(--primary-dim);
       border: 1px solid var(--primary-mid);
@@ -555,18 +554,39 @@
       border-radius: 1px;
       text-shadow: 0 0 8px var(--primary-glow);
       letter-spacing: 0.5px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    a.norm:hover {
+      background: var(--primary);
+      color: var(--bg-dark);
+      box-shadow: 0 0 12px var(--primary-glow);
+      text-shadow: none;
     }
 
-    /* ─── MOBILE ─── */
     @media (max-width: 600px) {
       .app { margin: 12px; padding: 14px 12px 40px; }
       h1   { font-size: 1rem; letter-spacing: 3px; }
       h4   { font-size: 0.7rem; }
       .persons { grid-template-columns: repeat(2, 1fr); }
       .controls-row .btn-action { flex: 1 1 100%; }
+      .top-actions { flex-direction: column; gap: 10px; align-items: stretch; }
+      .top-actions .btn-sub { justify-content: center; }
+    }
+
+    @media (min-width: 768px) {
+      .app { max-width: 900px; padding: 40px 48px 60px; margin: 6vh auto; }
+      h1 { font-size: 1.6rem; margin-bottom: 8px; }
+      h4 { font-size: 0.85rem; margin-bottom: 30px; }
+      #case-text { font-size: 1rem; padding: 20px 24px; }
+      .persons { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
+      .person { font-size: 1rem; min-height: 70px; }
+      .btn-action { font-size: 0.85rem; padding: 16px 24px; }
+      .controls-row { gap: 16px; }
+      .feedback-item { font-size: 0.9rem; padding: 16px 20px 16px 24px; }
     }
   </style>
-
 </head>
 
 <body class="theme-blue">
@@ -574,80 +594,336 @@
 <canvas id="bg-canvas"></canvas>
 
   <main class="app">
-    <!-- HUD bottom corners -->
     <span class="hud-corner-bl"></span>
     <span class="hud-corner-br"></span>
 
-```
-<!-- Zurück-Button -->
-<a href="index.html" class="btn-back" id="btn-back" onclick="triggerBackClick(event)">
-  <span class="btn-back-arrow">◄</span>
-  Zurück zum Hauptmenü
-  <span class="btn-back-ripple" id="back-ripple"></span>
-</a>
+    <div class="top-actions">
+      <a href="index.html" class="btn-sub" id="btn-back" onclick="triggerBackClick(event)">
+        <span class="btn-back-arrow">◄</span>
+        Hauptmenü
+      </a>
+      
+      <div id="progress-display" class="progress-display"></div>
 
-<!-- Kopfzeile -->
-<div class="creator-line">
-  BG-TRAINING TERMINAL • created by Bjørn F.
-</div>
+      <button id="toggle-anim-btn" class="btn-sub">
+        <span class="btn-back-arrow" id="anim-icon">⏸</span> 
+        <span id="anim-text">Matrix OFF</span>
+      </button>
+    </div>
 
-<!-- Theme-Auswahl -->
-<div class="theme-switcher">
-  <button class="btn-blue"  onclick="setTheme('blue')">
-    <span class="mode-icon"></span> SCAN MODE
-  </button>
-  <button class="btn-amber" onclick="setTheme('amber')">
-    <span class="mode-icon"></span> ANALYSE MODE
-  </button>
-  <button class="btn-green" onclick="setTheme('green')">
-    <span class="mode-icon"></span> DATA MODE
-  </button>
-</div>
+    <div class="creator-line">
+      BG-TRAINING TERMINAL • created by Bjørn F.
+    </div>
 
-<h1>Bedarfsgemeinschaft – Personen zuordnen</h1>
-<h4>Tippe auf die Person(en), die eine Bedarfsgemeinschaft bilden.</h4>
+    <div class="theme-switcher">
+      <button class="btn-blue"  onclick="setTheme('blue')"><span class="mode-icon"></span> SCAN MODE</button>
+      <button class="btn-amber" onclick="setTheme('amber')"><span class="mode-icon"></span> ANALYSE MODE</button>
+      <button class="btn-green" onclick="setTheme('green')"><span class="mode-icon"></span> DATA MODE</button>
+    </div>
 
-<!-- Falltext (wird per JS befüllt) -->
-<section id="case-text"></section>
+    <h1 id="app-title">Bedarfsgemeinschaft – Personen zuordnen</h1>
+    <h4 id="app-subtitle">Tippe auf die Person(en), die eine Bedarfsgemeinschaft bilden.</h4>
 
-<!-- Personen-Karten (werden per JS generiert) -->
-<section id="persons" class="persons"></section>
+    <section id="case-text"></section>
 
-<!-- Prüfen-Button -->
-<button id="check-btn" class="btn-action">Antwort prüfen</button>
+    <section id="persons" class="persons"></section>
 
-<!-- Feedback (wird per JS befüllt) -->
-<section id="feedback"></section>
+    <button id="check-btn" class="btn-action">Antwort prüfen</button>
 
-<!-- Steuerung: Neu starten / Nächster Fall -->
-<div class="controls-row">
-  <button id="restart-btn" class="btn-action" style="display:none;">Neu starten</button>
-  <button id="next-btn"    class="btn-action" onclick="nextCase()">Nächster Fall</button>
-</div>
-```
+    <section id="feedback"></section>
 
+    <div class="controls-row">
+      <button id="restart-btn" class="btn-action" style="display:none;">Neu starten</button>
+      <button id="next-btn"    class="btn-action" onclick="nextCase()">Nächster Fall</button>
+    </div>
   </main>
-
-  <!-- Externe Falldaten & Spiellogik -->
-
-  <script src="BG-script.js"></script>
-
-  <!-- Ripple-Effekt für Zurück-Button -->
 
   <script>
     function triggerBackClick(e) {
       e.preventDefault();
-      const ripple = document.getElementById('back-ripple');
-      const btn    = document.getElementById('btn-back');
-      const rect   = btn.getBoundingClientRect();
-      ripple.style.left = (e.clientX - rect.left - 5) + 'px';
-      ripple.style.top  = (e.clientY - rect.top  - 5) + 'px';
-      ripple.classList.remove('active');
-      void ripple.offsetWidth; /* reflow für Animation-Reset */
-      ripple.classList.add('active');
-      setTimeout(() => { window.location.href = 'index.html'; }, 400);
+      setTimeout(() => { window.location.href = 'index.html'; }, 300);
+    }
+
+    // ===== FALLDATEN (Unverändert) =====
+    const cases = [
+      {
+        text: "Jasmin (32) lebt mit ihrem Partner Alex (35) seit 2 Jahren in einer Wohnung in Ulm. Jasmins Sohn Tom (6) wohnt auch dort. Jasmin und Alex sind nicht verheiratet. Beide können arbeiten. Alex ist nicht der Vater von Tom.",
+        persons: [
+          { name: "Jasmin", bg: true, reason: "Erwerbsfähige Leistungsberechtigte <br>§ 7 Abs. 3 Nr. 1 SGB II." },
+          { name: "Alex", bg: true, reason: "Partner in einer Verantwortungs- und Einstehensgemeinschaft <br>§ 7 Abs. 3 Nr. 3c SGB II i.V.m. § 7 Abs. 3a SGB II" },
+          { name: "Tom", bg: true, reason: "Unverheiratetes Kind eines eLb unter 25, das seinen Lebensunterhalt nicht selbst bestreiten kann <br>§ 7 Abs. 3 Nr. 4 SGB II" }
+        ]
+      },
+      {
+        text: "Max (26) lebt bei seinen Eltern in Ulm. Er ist unverheiratet und hat kein eigenes Einkommen. Max kann in Vollzeit arbeiten.",
+        persons: [
+          { name: "Max", bg: true, reason: "Erwerbsfähiger Leistungsberechtigter <br>§ 7 Abs. 3 Nr. 1 SGB II" },
+          { name: "Mutter", bg: false, reason: "Elternteil eines Ü25-Leistungsberechtigten <br>§ 7 Abs. 3 Nr. 4 SGB II - Umkehrschluss" },
+          { name: "Vater", bg: false, reason: "Elternteil eines Ü25-Leistungsberechtigten <br>§ 7 Abs. 3 Nr. 4 SGB II - Umkehrschluss" }
+        ]
+      },
+      {
+        text: "Rick wohnt mit seiner Ehefrau Sara und dem gemeinsamen Kind Nora (12) in einer Wohnung in Neu-Ulm. Rick arbeitet in Teilzeit als Lagerhelfer. Sara erhält eine volle Erwerbsminderungsrente, da sie nicht erwerbsfähig ist.",
+        persons: [
+          { name: "Rick", bg: true, reason: "Erwerbsfähiger Leistungsberechtigter <br>§ 7 Abs. 3 Nr. 1 SGB II" },
+          { name: "Sara", bg: true, reason: "Partnerin des eLb <br>§ 7 Abs. 3 Nr. 3a SGB II" },
+          { name: "Nora", bg: true, reason: "Gemeinsames Kind des eLb und der Partnerin unter 25, das seinen Lebensunterhalt nicht selbst bestreiten kann <br> § 7 Abs. 3 Nr. 4 SGB II" }
+        ]
+      },
+      {
+        text: "Mona (45) wohnt mit ihren Kindern Mia (16) und James (11) in einer Wohnung in Biberach. Mona ist nicht erwerbsfähig und bezieht eine Erwerbsminderungsrente. Die Kinder besuchen eine allgemeinbildende Schule.",
+        persons: [
+          { name: "Mona", bg: true, reason: "Kein erwerbsfähiger Leistungsberechtigter im Haushalt mit einem erwerbsfähigen Kind <br>§ 7 Abs. 3 Nr. 2 SGB II" },
+          { name: "Mia", bg: true, reason: "Erwerbsfähige Leistungsberechtigte <br>§ 7 Abs. 3 Nr. 1 SGB II" },
+          { name: "James", bg: true, reason: "Kind von Mona <br> § 7 Abs. 3 Nr. 4 SGB II" }
+        ]
+      },
+      {
+        text: "Pierre (40) wohnt mit seinen Kindern Yves (10) und Jacques (14) in einer Wohnung in Konstanz. Pierre ist nicht erwerbsfähig und bezieht eine Erwerbsminderungsrente. Die Kinder besuchen eine allgemeinbildende Schule.",
+        persons: [
+          { name: "Pierre", bg: false, reason: "Kein erwerbsfähiger Leistungsberechtigter <br>§ 7 Abs. 3 Nr. 1 SGB II" },
+          { name: "Yves", bg: false, reason: "Kein erwerbsfähiger Leistungsberechtigter & kein Kind eines eLb <br>§ 7 Abs. 3 Nr. 1 SGB II & § 7 Abs. 3 Nr. 4 SGB II" },
+          { name: "Jacques", bg: false, reason: "Kein erwerbsfähiger Leistungsberechtigter & kein Kind eines eLb <br>§ 7 Abs. 3 Nr. 1 SGB II & § 7 Abs. 3 Nr. 4 SGB II" }
+        ]
+      }
+    ];
+
+    let selectedPersons = [];
+    let currentIndex = 0;
+    let currentCase = cases[currentIndex];
+
+    const caseTextEl = document.getElementById("case-text");
+    const personsEl = document.getElementById("persons");
+    const feedbackEl = document.getElementById("feedback");
+    const checkBtn = document.getElementById("check-btn");
+    const restartBtn = document.getElementById("restart-btn");
+    const nextBtn = document.getElementById("next-btn");
+    const appTitle = document.getElementById("app-title");
+    const appSubtitle = document.getElementById("app-subtitle");
+    const progressDisplay = document.getElementById("progress-display");
+
+    // ===== QoL: Dynamischer Button-Text Update =====
+    function updateCheckBtnText() {
+      if (selectedPersons.length === 0) {
+        checkBtn.textContent = "Keine BG – Antwort prüfen";
+      } else {
+        checkBtn.textContent = "Antwort prüfen";
+      }
+    }
+
+    function loadCase() {
+      // QoL: Fortschrittsanzeige aktualisieren
+      progressDisplay.textContent = `[ DATENSATZ ${currentIndex + 1} / ${cases.length} ]`;
+
+      checkBtn.style.display = "block";
+      checkBtn.disabled = false;
+      nextBtn.style.display = "block";
+      nextBtn.classList.remove("highlight");
+      appTitle.style.display = "block";
+      appSubtitle.style.display = "block";
+      
+      caseTextEl.textContent = currentCase.text;
+      personsEl.innerHTML = "";
+      feedbackEl.innerHTML = "";
+      selectedPersons = [];
+      updateCheckBtnText(); // Initiale Text-Anpassung
+
+      currentCase.persons.forEach((person, index) => {
+        const div = document.createElement("div");
+        div.classList.add("person");
+        div.textContent = person.name;
+        div.tabIndex = 0;
+
+        div.addEventListener("click", () => {
+          if(checkBtn.disabled) return;
+          
+          div.classList.toggle("selected");
+          if (selectedPersons.includes(index)) {
+            selectedPersons = selectedPersons.filter(i => i !== index);
+          } else {
+            selectedPersons.push(index);
+          }
+          updateCheckBtnText(); // Text bei jedem Klick anpassen
+        });
+
+        div.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            div.click();
+          }
+        });
+
+        personsEl.appendChild(div);
+      });
+    }
+
+    // ===== QoL: Klickbare Rechtsnormen (Verlinkung zu dejure.org) =====
+    function highlightNorms(text) {
+      // Regex extrahiert Paragraf und das SGB-Buch
+      const normRegex = /§\s*(\d+)[a-zA-Z]*\s*(Abs\.?\s*\d+[a-zA-Z]*)?\s*(Nr\.?\s*\d+[a-zA-Z]*)?\s*(Satz\s*\d+)?\s*SGB\s*([IVX]+)/g;
+      
+      return text.replace(normRegex, (match, paragraph, abs, nr, satz, sgbNum) => {
+        const baseUrl = `https://dejure.org/gesetze/SGB_${sgbNum}/${paragraph}.html`;
+        return `<a href="${baseUrl}" target="_blank" class="norm" title="Gesetzestext aufrufen (dejure.org)">${match}</a>`;
+      });
+    }
+
+    checkBtn.addEventListener("click", () => {
+      if(checkBtn.disabled) return;
+      checkBtn.disabled = true;
+
+      feedbackEl.innerHTML = "";
+      let allCorrect = true;
+
+      currentCase.persons.forEach((person, index) => {
+        const userSelected = selectedPersons.includes(index);
+        
+        const result = document.createElement("div");
+        result.classList.add("feedback-item");
+
+        if (userSelected === person.bg) {
+          result.classList.add("feedback-correct");
+          result.innerHTML = `
+            <strong>${person.name}: richtig</strong>
+            ${highlightNorms(person.reason)}
+          `;
+        } else {
+          result.classList.add("feedback-wrong");
+          result.innerHTML = `
+            <strong>${person.name}: falsch</strong>
+            ${highlightNorms(person.reason)}
+          `;
+          allCorrect = false;
+        }
+
+        feedbackEl.appendChild(result);
+      });
+
+      nextBtn.classList.add("highlight");
+
+      setTimeout(() => {
+        feedbackEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 150);
+    });
+
+    function nextCase() {
+      if (currentIndex < cases.length - 1) {
+        currentIndex++;
+        currentCase = cases[currentIndex];
+        loadCase();
+      } else {
+        showEndScreen();
+      }
+    }
+
+    function showEndScreen() {
+      appTitle.style.display = "none";
+      appSubtitle.style.display = "none";
+      caseTextEl.innerHTML = "<h2 style='text-align: center; color: var(--primary);'>Training abgeschlossen</h2>";
+      personsEl.innerHTML = "";
+      feedbackEl.innerHTML = "<div style='text-align: center; margin-top: 20px;'>Alle Fälle wurden erfolgreich bearbeitet.</div>";
+      
+      checkBtn.style.display = "none";
+      nextBtn.style.display = "none";
+      restartBtn.style.display = "block";
+      progressDisplay.textContent = `[ STATUS: COMPLETED ]`;
+    }
+
+    restartBtn.addEventListener("click", () => {
+      currentIndex = 0;
+      currentCase = cases[currentIndex];
+      restartBtn.style.display = "none";
+      loadCase();
+    });
+
+    loadCase();
+
+    // ===== DIGITALER BACKGROUND =====
+    const canvas = document.getElementById("bg-canvas");
+    const ctx = canvas.getContext("2d");
+
+    let w, h;
+    let animId;
+    let isAnimRunning = true;
+    
+    function resize() {
+      const dpr = window.devicePixelRatio || 1;
+      w = window.innerWidth;
+      h = window.innerHeight;
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      ctx.scale(dpr, dpr);
+    }
+    
+    let resizeTimer;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(resize, 200);
+    });
+    resize();
+
+    const symbols = "01<>[]{}#@$%&";
+    const particles = [];
+
+    for (let i = 0; i < 50; i++) {
+      particles.push({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        speed: 0.1 + Math.random() * 0.6,
+        size: 12 + Math.random() * 10,
+        char: symbols[Math.floor(Math.random() * symbols.length)]
+      });
+    }
+
+    function animateBG() {
+      if (!isAnimRunning) return;
+
+      ctx.fillStyle = "rgba(2, 6, 23, 0.25)";
+      ctx.fillRect(0, 0, w, h);
+
+      const primaryColor = getComputedStyle(document.body).getPropertyValue('--primary').trim() || '#38bdf8';
+      
+      ctx.fillStyle = primaryColor;
+      ctx.font = "14px monospace";
+      ctx.globalAlpha = 0.25;
+
+      particles.forEach(p => {
+        ctx.fillText(p.char, p.x, p.y);
+        p.y += p.speed;
+
+        if (p.y > h) {
+          p.y = -20;
+          p.x = Math.random() * w;
+        }
+      });
+      
+      ctx.globalAlpha = 1.0;
+      animId = requestAnimationFrame(animateBG);
+    }
+
+    animateBG();
+
+    const toggleAnimBtn = document.getElementById("toggle-anim-btn");
+    const animIcon = document.getElementById("anim-icon");
+    const animText = document.getElementById("anim-text");
+
+    toggleAnimBtn.addEventListener("click", () => {
+      isAnimRunning = !isAnimRunning;
+      if (isAnimRunning) {
+        animIcon.textContent = "⏸";
+        animText.textContent = "Matrix OFF";
+        animateBG();
+      } else {
+        animIcon.textContent = "▶";
+        animText.textContent = "Matrix ON";
+        cancelAnimationFrame(animId);
+      }
+    });
+
+    function setTheme(theme){
+      document.body.classList.remove("theme-blue","theme-amber","theme-green");
+      document.body.classList.add("theme-" + theme);
     }
   </script>
-
 </body>
 </html>
