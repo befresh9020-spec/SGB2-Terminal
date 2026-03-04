@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="de">
 <head>
   <meta charset="UTF-8">
@@ -15,7 +14,6 @@
      by Bjørn F.  |  dark HUD / visor aesthetic
      ═══════════════════════════════════════════════ */
 
-  /* ─── CSS CUSTOM PROPERTIES (default: blue) ─── */
   :root {
     --bg-dark:      #050a0a;
     --bg-panel:     rgba(8, 18, 14, 0.93);
@@ -34,7 +32,6 @@
     --font-mono:    "Roboto Mono", monospace;
   }
 
-  /* ─── THEMES ─── */
   [data-theme="blue"] {
     --primary:      #00d4ff;
     --primary-dim:  rgba(0, 212, 255, 0.08);
@@ -66,10 +63,8 @@
     --hex:          rgba(0, 255, 136, 0.05);
   }
 
-  /* ─── RESET ─── */
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  /* ─── BASE ─── */
   body {
     background-color: var(--bg-dark);
     color: var(--text-main);
@@ -81,7 +76,6 @@
     transition: color 0.4s, background-color 0.4s;
   }
 
-  /* ─── CANVAS BACKGROUND ─── */
   #bg-canvas {
     position: fixed;
     top: 0; left: 0;
@@ -89,7 +83,6 @@
     z-index: -2;
   }
 
-  /* ─── SCANLINES ─── */
   body::after {
     content: "";
     position: fixed;
@@ -109,7 +102,6 @@
   }
   @keyframes scanroll { to { transform: translateY(-50%); } }
 
-  /* ─── VISOR EDGE GLOW ─── */
   body::before {
     content: "";
     position: fixed;
@@ -123,7 +115,6 @@
     transition: background 0.5s;
   }
 
-  /* ─── THEME TRANSITION OVERLAY ─── */
   .theme-transition-overlay {
     position: fixed;
     inset: 0;
@@ -148,13 +139,11 @@
     100% { opacity: 0;   transform: scale(1.5); }
   }
 
-  /* ─── SCROLLBAR ─── */
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: var(--primary-mid); border-radius: 3px; }
   ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
 
-  /* ─── CREATOR / TOP BAR ─── */
   .creator-line {
     position: sticky;
     top: 0;
@@ -175,10 +164,9 @@
     transition: color 0.4s, border-color 0.4s, box-shadow 0.4s;
   }
 
-  /* ─── THEME SWITCHER ─── */
   .theme-switcher {
     position: sticky;
-    top: 37px; /* below creator-line */
+    top: 37px;
     z-index: 999;
     display: flex;
     background: rgba(0, 0, 0, 0.88);
@@ -211,7 +199,6 @@
   }
   .theme-btn:last-child { border-right: none; }
 
-  /* Sweep shimmer on hover */
   .theme-btn::before {
     content: "";
     position: absolute;
@@ -243,10 +230,9 @@
   .theme-btn[data-theme="orange"] .theme-btn-indicator { background: #ff7b00; box-shadow: 0 0 8px #ff7b00; }
   .theme-btn[data-theme="green"]  .theme-btn-indicator { background: #00ff88; box-shadow: 0 0 8px #00ff88; }
 
-  /* ─── APP WRAPPER ─── */
   .app {
     position: relative;
-    max-width: 800px;
+    max-width: 800px; 
     margin: 36px auto 60px;
     z-index: 10;
     background: var(--bg-panel);
@@ -259,11 +245,10 @@
       inset 0 0 80px var(--primary-dim),
       0 0 1px var(--primary-mid);
     backdrop-filter: blur(14px);
-    overflow: hidden;
+    /* overflow: visible um sticky positionierung zu erlauben */
     transition: border-color 0.4s, box-shadow 0.4s;
   }
 
-  /* HUD corner brackets — top */
   .app::before,
   .app::after {
     content: "";
@@ -286,7 +271,6 @@
     box-shadow: 2px 2px 12px var(--primary-glow);
   }
 
-  /* ─── APP HEADER ─── */
   .app-header {
     padding: 28px 36px 22px;
     border-bottom: 1px solid var(--border);
@@ -295,7 +279,6 @@
     text-align: center;
     transition: border-color 0.4s;
   }
-  /* Glowing centre-line under header */
   .app-header::after {
     content: "";
     position: absolute;
@@ -329,12 +312,30 @@
     transition: color 0.4s;
   }
 
-  /* ─── APP CONTENT ─── */
-  .app-content {
-    padding: 28px 36px 40px;
+  /* ─── NEW: PROGRESS INDICATOR ─── */
+  .progress-indicator {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--primary);
+    letter-spacing: 3px;
+    margin-top: 14px;
+    opacity: 0.8;
   }
 
-  /* ─── REGELBEDARF INFO / INPUT ─── */
+  .app-content {
+    padding: 28px 36px 0; /* Unten padding entfernt, weil Action-Row das jetzt übernimmt */
+    position: relative;
+  }
+
+  /* ─── NEW: FADE/GLITCH TRANSITION ─── */
+  .case-transition {
+    animation: terminalGlitch 0.4s ease forwards;
+  }
+  @keyframes terminalGlitch {
+    0% { opacity: 0; transform: translateY(10px); filter: blur(4px); }
+    100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+  }
+
   .rb-info {
     background: rgba(0,0,0,0.4);
     border-left: 2px solid var(--primary);
@@ -364,13 +365,27 @@
     background: rgba(0,0,0,0.40);
     border: 1px solid var(--border);
     position: relative;
-    transition: border-color 0.4s;
+    transition: border-color 0.4s, box-shadow 0.4s;
     animation: fadeInRB 0.4s ease;
   }
   @keyframes fadeInRB {
     from { opacity: 0; transform: translateY(-8px); }
     to   { opacity: 1; transform: translateY(0); }
   }
+
+  /* ─── NEW: ERROR SHAKE ANIMATION ─── */
+  .shake-error {
+    animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+    border-color: var(--danger) !important;
+    box-shadow: inset 0 0 20px rgba(255, 68, 68, 0.2), 0 0 15px rgba(255, 68, 68, 0.4) !important;
+  }
+  @keyframes shake {
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
+    20%, 80% { transform: translate3d(2px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+    40%, 60% { transform: translate3d(4px, 0, 0); }
+  }
+
   #rb-input-wrapper::before {
     content: "NÄCHSTE STUFE — REGELBEDARF ERMITTELN";
     display: block;
@@ -409,7 +424,6 @@
   }
   #rb-input::placeholder { color: #333; }
 
-  /* ─── CASE TEXT ─── */
   #case-text {
     background: rgba(0,0,0,0.40);
     border-left: 2px solid var(--primary);
@@ -422,6 +436,7 @@
     line-height: 1.70;
     position: relative;
     transition: border-color 0.4s;
+    min-height: 80px; /* Verhindert starkes Springen beim Tipp-Effekt */
   }
   #case-text::before {
     content: "";
@@ -434,7 +449,18 @@
     transition: border-color 0.4s;
   }
 
-  /* ─── OPTIONS / PERSONS ─── */
+  /* ─── NEW: TYPING CURSOR ─── */
+  .type-cursor {
+    display: inline-block;
+    width: 8px;
+    height: 1.2em;
+    background-color: var(--primary);
+    vertical-align: text-bottom;
+    animation: blink 1s step-end infinite;
+    margin-left: 2px;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
   .persons {
     display: flex;
     flex-direction: column;
@@ -453,8 +479,12 @@
     clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
     display: flex;
     flex-direction: column;
+    outline: none; /* Für Keyboard-Navigation */
   }
-  /* Sweep shimmer */
+  .person:focus-visible {
+    border-color: var(--primary);
+    box-shadow: 0 0 18px var(--primary-glow);
+  }
   .person::before {
     content: "";
     position: absolute;
@@ -509,7 +539,6 @@
   }
   .person.selected .checkbox-visual { transform: scale(1.1); }
 
-  /* ─── CALC INPUT (inside person card) ─── */
   .calc-input-wrapper {
     display: none;
     margin-top: 16px;
@@ -542,7 +571,8 @@
     font-family: var(--font-mono);
     font-size: 1.05rem;
     font-weight: 600;
-    width: 180px;
+    width: 100%;
+    max-width: 180px;
     outline: none;
     border-radius: 0;
     transition: box-shadow 0.25s, background 0.25s;
@@ -553,19 +583,28 @@
     background: rgba(0,0,0,0.8);
   }
 
-  /* ─── ACTION BUTTONS ─── */
+  /* ─── NEW: STICKY ACTION ROW ─── */
+  .action-wrapper {
+    position: sticky;
+    bottom: 0;
+    background: linear-gradient(0deg, var(--bg-panel) 70%, transparent 100%);
+    padding: 20px 36px 40px;
+    margin: 0 -36px;
+    z-index: 50;
+    backdrop-filter: blur(8px);
+    border-top: 1px solid transparent;
+  }
+
   .action-row {
     display: flex;
     gap: 14px;
-    padding-top: 20px;
-    border-top: 1px solid var(--border);
     flex-wrap: wrap;
     transition: border-color 0.4s;
   }
 
   button {
     flex: 1;
-    background: transparent;
+    background: var(--bg-dark); /* Hintergrund für besseren Kontrast über Sticky */
     border: 1px solid var(--primary);
     color: var(--primary);
     font-family: var(--font-tech);
@@ -580,7 +619,6 @@
     overflow: hidden;
     clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
   }
-  /* Glow fill on hover */
   button::before {
     content: "";
     position: absolute;
@@ -594,11 +632,9 @@
     background: var(--primary-dim);
     box-shadow: 0 0 22px var(--primary-glow), inset 0 0 14px var(--primary-dim);
     color: var(--text-main);
-    transform: none; /* override old translateY */
   }
   button:active { transform: scale(0.97); }
 
-  /* Secondary / next button */
   #next-btn {
     border-color: var(--border);
     color: var(--text-dim);
@@ -618,9 +654,8 @@
   button:disabled::before { display: none; }
   button:disabled:hover { transform: none; box-shadow: none; }
 
-  /* ─── FEEDBACK ─── */
   #feedback {
-    margin-top: 24px;
+    margin-bottom: 24px;
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -631,7 +666,7 @@
     border: 1px solid;
     font-family: var(--font-mono);
     font-size: 0.82rem;
-    background: rgba(0,0,0,0.60);
+    background: rgba(0,0,0,0.85);
     animation: slideIn 0.35s ease;
     position: relative;
     overflow: hidden;
@@ -654,6 +689,11 @@
   .feedback-wrong   { border-color: var(--danger);  color: var(--danger);  }
   .feedback-partial { border-color: var(--warning); color: var(--warning); }
 
+  /* ─── NEW: TERMINAL TAGS INSTEAD OF EMOJIS ─── */
+  .tag-ok  { color: var(--success); font-weight: 700; margin-right: 6px; letter-spacing: 1px; }
+  .tag-err { color: var(--danger);  font-weight: 700; margin-right: 6px; letter-spacing: 1px; }
+  .tag-wrn { color: var(--warning); font-weight: 700; margin-right: 6px; letter-spacing: 1px; }
+
   .detail-math {
     display: block;
     margin-top: 10px;
@@ -666,7 +706,6 @@
     line-height: 1.5;
   }
 
-  /* ─── ZURÜCK-BUTTON ─── */
   .btn-back {
     display: inline-flex;
     align-items: center;
@@ -712,32 +751,23 @@
     transform: translateX(-4px);
     text-shadow: 0 0 8px var(--primary);
   }
-  .btn-back-ripple {
-    position: absolute;
-    border-radius: 50%;
-    background: var(--primary);
-    opacity: 0;
-    transform: scale(0);
-    pointer-events: none;
-    width: 10px; height: 10px;
-  }
-  .btn-back-ripple.active {
-    animation: back-ripple-anim 0.5s ease-out forwards;
-  }
-  @keyframes back-ripple-anim {
-    0%   { transform: scale(0);  opacity: 0.5; }
-    100% { transform: scale(25); opacity: 0;   }
+
+  @media (min-width: 769px) {
+    .app { max-width: 900px; }
+    .persons { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .action-row { justify-content: space-between; }
+    button { flex: 0 1 48%; }
   }
 
-  /* ─── MOBILE ─── */
   @media (max-width: 768px) {
     .app         { margin: 12px; }
     .app-header  { padding: 20px 18px 16px; }
-    .app-content { padding: 18px 16px 32px; }
+    .app-content { padding: 18px 16px 0; }
+    .action-wrapper { padding: 16px 16px 32px; margin: 0 -16px; }
     h1           { font-size: 1.1rem; letter-spacing: 3px; }
     h4           { font-size: 0.7rem; }
     .action-row  { flex-direction: column; }
-    button       { width: 100%; clip-path: none; }
+    button       { width: 100%; clip-path: none; flex: 1 1 auto; }
     .person      { clip-path: none; }
     .theme-btn   { font-size: 0.58rem; height: 52px; }
   }
@@ -774,34 +804,38 @@
   <div class="app-header">
     <h1>§ 21 SGB II</h1>
     <h4>Wähle den Mehrbedarf und berechne die Höhe.</h4>
+    <div id="progress-indicator" class="progress-indicator"></div>
   </div>
 
   <div class="app-content">
-    <div id="rb-display" class="rb-info">Lade Daten...</div>
+    
+    <div id="case-area">
+      <div id="rb-display" class="rb-info">Lade Daten...</div>
 
-```
-<div id="rb-input-wrapper" style="display:none;">
-  <label>Maßgebenden Regelbedarf in Euro ermitteln:</label>
-  <input type="number" step="0.01" id="rb-input" placeholder="0,00">
-</div>
+      <div id="rb-input-wrapper" style="display:none;">
+        <label>Maßgebenden Regelbedarf in Euro ermitteln:</label>
+        <input type="text" id="rb-input" placeholder="0,00">
+      </div>
 
-<section id="case-text"></section>
-<section id="persons" class="persons"></section>
-<section id="feedback"></section>
+      <section id="case-text"></section>
+      <section id="persons" class="persons"></section>
+    </div>
 
-<div class="action-row">
-  <button id="check-btn">Berechnung Prüfen</button>
-  <button id="next-btn" onclick="nextCase()">Nächster Fall</button>
-</div>
-```
+    <section id="feedback"></section>
 
-<div class="action-row" style="margin-top:0; border-top:none; padding-top:0; justify-content:flex-start;">
-  <a href="index.html" class="btn-back" id="btn-back" onclick="triggerBackClick(event)">
-    <span class="btn-back-arrow">◄</span>
-    Zurück zum Hauptmenü
-    <span class="btn-back-ripple" id="back-ripple"></span>
-  </a>
-</div>
+    <div class="action-wrapper">
+      <div class="action-row">
+        <button id="check-btn">Berechnung Prüfen</button>
+        <button id="next-btn" onclick="nextCase()">Nächster Fall</button>
+      </div>
+
+      <div class="action-row" style="margin-top:0; border-top:none; padding-top:14px; justify-content:flex-start;">
+        <a href="index.html" class="btn-back" id="btn-back" onclick="triggerBackClick(event)">
+          <span class="btn-back-arrow">◄</span>
+          Zurück zum Hauptmenü
+        </a>
+      </div>
+    </div>
 
   </div>
 </main>
@@ -971,7 +1005,7 @@ const cases = [
     options: [
       {
         label: "Kostenaufwändige Ernährung<br>§ 21 Abs. 5 SGB II",
-        isCorrect: false, percent: 17, inputRequired: false,
+        isCorrect: false, percent: 0, inputRequired: false,
         reason: "Es liegen keine Angaben hierzu vor."
       },
       {
@@ -993,7 +1027,9 @@ const cases = [
 // =====================================
 let currentIndex  = 0;
 let selectedIndices = [];
+let typingTimeout;
 
+const caseArea      = document.getElementById("case-area");
 const caseTextEl    = document.getElementById("case-text");
 const rbDisplayEl   = document.getElementById("rb-display");
 const personsEl     = document.getElementById("persons");
@@ -1002,11 +1038,51 @@ const checkBtn      = document.getElementById("check-btn");
 const nextBtn       = document.getElementById("next-btn");
 const rbInputWrapper = document.getElementById("rb-input-wrapper");
 const rbInputEl     = document.getElementById("rb-input");
+const progressEl    = document.getElementById("progress-indicator");
+
+// Hilfsfunktion: Auto-Formatierung der Inputs bei Verlassen (Blur)
+function formatCurrencyInput(inputElement) {
+  inputElement.addEventListener('blur', function() {
+    if (this.value) {
+      let val = parseFloat(this.value.replace(',', '.'));
+      if (!isNaN(val)) this.value = val.toFixed(2).replace('.', ',');
+    }
+  });
+}
+formatCurrencyInput(rbInputEl);
+
+// Hilfsfunktion: Terminal Tipp-Effekt
+function typeText(element, text, speed = 15) {
+  element.innerHTML = '<span class="typed-text"></span><span class="type-cursor"></span>';
+  const textSpan = element.querySelector('.typed-text');
+  let i = 0;
+  clearTimeout(typingTimeout);
+  
+  function type() {
+    if (i < text.length) {
+      textSpan.innerHTML += text.charAt(i);
+      i++;
+      typingTimeout = setTimeout(type, speed);
+    } else {
+      element.querySelector('.type-cursor').style.display = 'none';
+    }
+  }
+  type();
+}
 
 function loadCase() {
   const currentCase = cases[currentIndex];
 
-  caseTextEl.textContent = currentCase.text;
+  // Progress Update
+  progressEl.textContent = `[ FALL ${currentIndex + 1} / ${cases.length} ]`;
+
+  // Glitch/Fade In Animation auslösen
+  caseArea.classList.remove('case-transition');
+  void caseArea.offsetWidth; 
+  caseArea.classList.add('case-transition');
+
+  // Text mit Tipp-Effekt füllen
+  typeText(caseTextEl, currentCase.text);
 
   if (currentCase.requireRbInput) {
     rbDisplayEl.style.display = "none";
@@ -1032,6 +1108,7 @@ function loadCase() {
     const div = document.createElement("div");
     div.classList.add("person");
     div.dataset.index = index;
+    div.setAttribute("tabindex", "0"); // Mache Div via Tastatur anwählbar
 
     const header = document.createElement("div");
     header.classList.add("option-header");
@@ -1045,14 +1122,14 @@ function loadCase() {
     inputWrap.classList.add("calc-input-wrapper");
     inputWrap.innerHTML = `
       <label class="calc-input-label">Betrag in Euro:</label>
-      <input type="number" step="0.01" class="calc-input" placeholder="0,00" id="input-${index}">
+      <input type="text" class="calc-input" placeholder="0,00" id="input-${index}">
     `;
     inputWrap.addEventListener("click", e => e.stopPropagation());
     div.appendChild(inputWrap);
 
-    div.addEventListener("click", () => {
+    // Toggle-Logik
+    const toggleSelection = () => {
       if (checkBtn.disabled) return;
-
       const checkbox   = div.querySelector(".checkbox-visual");
       const inputField = div.querySelector(`#input-${index}`);
 
@@ -1067,9 +1144,24 @@ function loadCase() {
         selectedIndices = selectedIndices.filter(i => i !== index);
         if (inputField) inputField.value = "";
       }
+    };
+
+    // Click Listener
+    div.addEventListener("click", toggleSelection);
+
+    // Tastatur Listener (Leertaste / Enter markieren Checkbox)
+    div.addEventListener("keydown", (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggleSelection();
+      }
     });
 
     personsEl.appendChild(div);
+
+    // Auto-Formatierung für neue dynamische Inputs anwenden
+    const newlyCreatedInput = document.getElementById(`input-${index}`);
+    if(newlyCreatedInput) formatCurrencyInput(newlyCreatedInput);
   });
 }
 
@@ -1081,13 +1173,16 @@ checkBtn.addEventListener("click", () => {
     const enteredRb = parseFloat(rbInputEl.value.replace(',', '.'));
 
     if (!enteredRb || enteredRb <= 0) {
-      alert("Bitte zuerst den maßgebenden Regelbedarf eingeben.");
+      // Neuer Shake-Error statt alert()
+      rbInputWrapper.classList.add('shake-error');
+      setTimeout(() => rbInputWrapper.classList.remove('shake-error'), 400);
+      rbInputEl.focus();
       return;
     }
     if (enteredRb !== currentCase.baseValue) {
       feedbackEl.innerHTML = `
         <div class="feedback-item feedback-wrong">
-          ❌ Der maßgebende Regelbedarf ist falsch.<br>
+          <span class="tag-err">[ ERR ]</span> Der maßgebende Regelbedarf ist falsch.<br>
           Richtig wäre: ${currentCase.baseValue} €
         </div>
       `;
@@ -1105,7 +1200,10 @@ checkBtn.addEventListener("click", () => {
     const isSelected = selectedIndices.includes(index);
     const inputEl    = document.getElementById(`input-${index}`);
     let userValue    = 0;
-    if (inputEl && inputEl.value) userValue = parseFloat(inputEl.value.replace(',', '.'));
+    
+    if (inputEl && inputEl.value) {
+      userValue = parseFloat(inputEl.value.replace(',', '.')) || 0;
+    }
 
     const correctValue = parseFloat((rbBase * (option.percent / 100)).toFixed(2));
     const resDiv = document.createElement("div");
@@ -1115,24 +1213,24 @@ checkBtn.addEventListener("click", () => {
       if (isSelected) {
         if (Math.abs(userValue - correctValue) < 0.1) {
           resDiv.classList.add("feedback-correct");
-          resDiv.innerHTML = `✅ <strong>${option.label}</strong>: Richtig ausgewählt & korrekt berechnet!<br>
+          resDiv.innerHTML = `<span class='tag-ok'>[ OK ]</span> <strong>${option.label}</strong>: Richtig ausgewählt & korrekt berechnet!<br>
             <span class="detail-math">${rbBase} € × ${option.percent}% = ${correctValue.toFixed(2).replace('.', ',')} €</span>`;
         } else {
           resDiv.classList.add("feedback-partial");
-          resDiv.innerHTML = `⚠️ <strong>${option.label}</strong>: Richtiger Bedarf, aber falscher Betrag.<br>
+          resDiv.innerHTML = `<span class="tag-wrn">[ WRN ]</span> <strong>${option.label}</strong>: Richtiger Bedarf, aber falscher Betrag.<br>
             Deine Eingabe: ${userValue.toFixed(2).replace('.', ',')} €<br>
             <span class="detail-math">Richtig wäre: ${rbBase} € × ${option.percent}% = ${correctValue.toFixed(2).replace('.', ',')} €</span>`;
           allCorrect = false;
         }
       } else {
         resDiv.classList.add("feedback-wrong");
-        resDiv.innerHTML = `❌ <strong>${option.label}</strong>: Dieser Mehrbedarf wurde vergessen.<br>${option.reason}`;
+        resDiv.innerHTML = `<span class="tag-err">[ ERR ]</span> <strong>${option.label}</strong>: Dieser Mehrbedarf wurde vergessen.<br>${option.reason}`;
         allCorrect = false;
       }
     } else {
       if (isSelected) {
         resDiv.classList.add("feedback-wrong");
-        resDiv.innerHTML = `❌ <strong>${option.label}</strong>: Dieser Mehrbedarf steht nicht zu.<br>${option.reason}`;
+        resDiv.innerHTML = `<span class="tag-err">[ ERR ]</span> <strong>${option.label}</strong>: Dieser Mehrbedarf steht nicht zu.<br>${option.reason}`;
         allCorrect = false;
       }
     }
@@ -1141,12 +1239,16 @@ checkBtn.addEventListener("click", () => {
   });
 
   if (feedbackEl.innerHTML === "") {
-    feedbackEl.innerHTML = "<div class='feedback-item feedback-correct'>✅ Korrekt! Keine Mehrbedarfe in diesem Fall.</div>";
+    // KORREKT (mit Backticks)
+feedbackEl.innerHTML = `<div class="feedback-item feedback-correct"><span class="tag-ok">[ OK ]</span> Korrekt! Keine Mehrbedarfe in diesem Fall.</div>`;
   }
 
   checkBtn.disabled = true;
   nextBtn.disabled  = false;
-  feedbackEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  // Feedback in Sichtbereich scrollen, aber mit kleinem Offset für die Sticky-Row
+  setTimeout(() => {
+    feedbackEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 100);
 });
 
 function nextCase() {
@@ -1155,15 +1257,15 @@ function nextCase() {
     loadCase();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   } else {
-    caseTextEl.innerHTML  = "<h2 style='color:var(--success); text-align:center; font-size:1.6rem; text-shadow:0 0 20px var(--success); letter-spacing:3px;'>✓ TRAINING ABGESCHLOSSEN</h2><p style='text-align:center; margin-top:14px; color:var(--text-dim); font-family:var(--font-mono); font-size:0.85rem;'>Alle Fälle wurden erfolgreich bearbeitet.</p>";
-    rbDisplayEl.style.display = "none";
-    personsEl.innerHTML   = "";
+    progressEl.textContent = "[ STATUS: COMPLETE ]";
+    caseArea.innerHTML = "<h2 style='color:var(--success); text-align:center; font-size:1.6rem; text-shadow:0 0 20px var(--success); letter-spacing:3px; margin: 20px 0;'>✓ TRAINING ABGESCHLOSSEN</h2><p style='text-align:center; margin-bottom:20px; color:var(--text-dim); font-family:var(--font-mono); font-size:0.85rem;'>Alle Fälle wurden erfolgreich bearbeitet.</p>";
     feedbackEl.innerHTML  = "";
     checkBtn.style.display = "none";
     nextBtn.style.display  = "none";
   }
 }
 
+// Start
 loadCase();
 
 // =====================================
@@ -1211,20 +1313,11 @@ function animate() {
   });
   requestAnimationFrame(animate);
 }
-// =====================================
-// ZURÜCK-BUTTON RIPPLE
-// =====================================
+
 function triggerBackClick(e) {
+  // Navigation trigger logic
   e.preventDefault();
-  const ripple = document.getElementById('back-ripple');
-  const btn    = document.getElementById('btn-back');
-  const rect   = btn.getBoundingClientRect();
-  ripple.style.left = (e.clientX - rect.left - 5) + 'px';
-  ripple.style.top  = (e.clientY - rect.top  - 5) + 'px';
-  ripple.classList.remove('active');
-  void ripple.offsetWidth;
-  ripple.classList.add('active');
-  setTimeout(() => { window.location.href = 'index.html'; }, 400);
+  setTimeout(() => { window.location.href = 'index.html'; }, 200);
 }
 
 animate();
