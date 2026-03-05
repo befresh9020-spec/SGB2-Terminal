@@ -533,16 +533,17 @@ body {
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 }
 
+./* 1. Ruhezustand (Basis-Styling anpassen) */
 .option-btn {
-  background: rgba(0,0,0,0.35);
-  border: 1px solid var(--border);
+  background: rgba(0,0,0,0.45);
+  border: 1px solid var(--primary-mid); /* Hellerer Rand im Standardzustand */
   padding: 13px 16px;
   text-align: left;
-  color: var(--text-dim);
+  color: var(--text-main); /* Hellerer Text für sofortige Lesbarkeit */
   cursor: pointer;
   font-family: var(--font-mono);
   font-size: 0.88rem;
-  transition: all 0.2s;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* Geschmeidigere Bewegung */
   position: relative;
   display: flex;
   justify-content: space-between;
@@ -551,57 +552,46 @@ body {
   user-select: none;
   overflow: hidden;
   clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+  box-shadow: 0 0 8px var(--primary-dim); /* Subtiler Basis-Glow */
 }
 
-/* Binärcode-Hintergrund beim Hover */
-.option-btn::after {
-  content: "01001011 01101111 01110010 01110010 01100101 01101011 01110100 10101010 11010101 01010011 01000111 01000010 10101111 00110011";
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  font-family: var(--font-mono);
-  font-size: 0.55rem;
-  line-height: 1.2;
-  color: var(--primary);
-  opacity: 0;
-  overflow: hidden;
-  z-index: 0;
-  pointer-events: none;
-  word-break: break-all;
-  transition: opacity 0.3s;
-}
-.option-btn:hover::after {
-  opacity: 0.08;
-  animation: binary-scroll 2s linear infinite;
-}
-@keyframes binary-scroll {
-  0% { transform: translateY(-5%); }
-  100% { transform: translateY(5%); }
-}
+/* DEINE BESTEHENDEN ::after (Binärcode) und ::before (Sweep) EFFEKTE BLEIBEN HIER UNVERÄNDERT ERHALTEN! */
 
-/* Shimmer Sweep */
-.option-btn::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, transparent 0%, var(--primary-dim) 50%, transparent 100%);
-  transform: translateX(-100%);
-  transition: transform 0.4s;
-  z-index: 0;
-}
-.option-btn:hover::before { transform: translateX(100%); }
-
+/* 2. Hover-Zustand */
 .option-btn:hover {
   background: var(--primary-dim);
   border-color: var(--primary);
-  color: var(--text-main);
+  color: #ffffff;
+  box-shadow: 
+    0 0 20px var(--primary-glow), 
+    inset 0 0 10px var(--primary-dim);
+  transform: translateY(-2px); /* Button hebt sich leicht an */
 }
-.option-btn:active { background: var(--primary-dim); }
+.option-btn:active { 
+  background: var(--primary-dim); 
+  transform: translateY(0); /* Klick-Feedback */
+}
 
+/* 3. Selected-Zustand (Intensiver Glow) */
 .option-btn.selected {
-  background: rgba(0,0,0,0.5);
+  background: var(--primary-mid);
   border-color: var(--primary);
-  color: var(--primary);
-  box-shadow: inset 3px 0 0 var(--primary), 0 0 12px var(--primary-dim);
+  color: #ffffff;
+  box-shadow: 
+    inset 4px 0 0 var(--primary), 
+    inset 0 0 20px var(--primary-glow),
+    0 0 30px var(--primary-glow),
+    0 0 10px var(--primary); 
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.4), 0 0 15px var(--primary);
+  transform: translateY(-2px) scale(1.02); /* Plopt optisch nach vorne */
+  z-index: 10; /* Verhindert, dass der Glow von benachbarten Elementen abgeschnitten wird */
+}
+
+/* Den bestehenden Checkbox-Indikator beim Selected-Zustand ebenfalls zum Strahlen bringen */
+.option-btn.selected .checkbox-indicator {
+  background: var(--primary);
+  border-color: #ffffff;
+  box-shadow: 0 0 15px #ffffff, 0 0 20px var(--primary);
 }
 
 .checkbox-indicator {
@@ -632,14 +622,40 @@ body {
 }
 
 /* ─── INPUT ─── */
+/* 1. Der Wrapper (Das äußere Gehäuse mit der angeschnittenen Ecke) */
 .input-wrapper {
   margin-top: 10px;
   padding: 12px;
-  background: rgba(0,0,0,0.3);
-  border: 1px solid var(--border);
+  background: rgba(0,0,0,0.45); /* Etwas heller für mehr Präsenz */
+  border: 1px solid var(--primary-mid); /* Basis-Rand */
   position: relative;
   clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 0 8px var(--primary-dim); /* Subtiler Basis-Glow */
 }
+
+/* Hover-Effekt für das Gehäuse */
+.input-wrapper:hover {
+  background: rgba(0,0,0,0.6);
+  border-color: var(--primary);
+  box-shadow: 0 0 15px var(--primary-glow), inset 0 0 10px var(--primary-dim);
+  transform: translateY(-2px); /* Hebt sich leicht an, analog zu den Buttons */
+}
+
+/* Aktiver Zustand: Wenn der Nutzer in das Feld klickt / tippt */
+.input-wrapper:focus-within {
+  background: var(--primary-mid);
+  border-color: var(--primary);
+  box-shadow: 
+    inset 4px 0 0 var(--primary), 
+    inset 0 0 20px var(--primary-glow),
+    0 0 30px var(--primary-glow),
+    0 0 10px var(--primary);
+  transform: translateY(-2px) scale(1.02); /* Plopt optisch nach vorne */
+  z-index: 10;
+}
+
+/* Das Euro-Zeichen im Wrapper soll beim Tippen auch mitglühen */
 .input-wrapper::after {
   content: "€";
   position: absolute;
@@ -650,14 +666,27 @@ body {
   font-size: 0.9rem;
   opacity: 0.6;
   pointer-events: none;
+  transition: all 0.3s ease;
+}
+.input-wrapper:focus-within::after {
+  color: #ffffff;
+  text-shadow: 0 0 10px var(--primary), 0 0 20px var(--primary-glow);
+  opacity: 1;
 }
 
+/* WICHTIG: Hover-Effekte deaktivieren, sobald das Feld geprüft und gesperrt wurde */
+.input-wrapper:has(input:disabled) {
+  pointer-events: none;
+  opacity: 0.85;
+}
+
+/* 2. Das eigentliche Eingabefeld (innenliegend) */
 .calc-input {
-  background: rgba(0,0,0,0.6);
-  border: 1px solid var(--primary);
-  color: var(--success);
+  background: rgba(0,0,0,0.7); /* Schön dunkel als Kontrast zum glühenden Rahmen */
+  border: 1px solid var(--primary-mid);
+  color: var(--success); /* Dein bestehendes Grün für Zahlen */
   font-family: var(--font-mono);
-  font-size: 1.1rem;
+  font-size: 1.15rem; /* Minimal größer */
   padding: 10px 40px 10px 14px;
   width: 100%;
   outline: none;
@@ -665,11 +694,29 @@ body {
   border-radius: 0;
   appearance: none;
   text-shadow: 0 0 8px rgba(109,255,179,0.5);
+  transition: all 0.3s ease;
 }
-.calc-input::placeholder { color: #555; }
+
+.calc-input::placeholder { 
+  color: var(--text-dim); 
+  opacity: 0.5;
+}
+
+/* Der Text im Feld, während man tippt */
 .calc-input:focus {
-  box-shadow: 0 0 20px var(--primary-dim), inset 0 0 10px rgba(109,255,179,0.05);
+  border-color: var(--primary);
+  color: #ffffff; /* Weiß für maximalen Kontrast bei der Eingabe */
+  text-shadow: 0 0 10px var(--success), 0 0 20px var(--success); /* Grüner Text-Glow */
+  box-shadow: inset 0 0 15px rgba(0,0,0,0.8); /* Erzeugt Tiefe im Textfeld */
 }
+
+/* Nach dem Prüfen (Wenn per JS gesperrt) */
+.calc-input:disabled {
+  background: rgba(0,0,0,0.3);
+  text-shadow: none;
+  cursor: not-allowed;
+}
+
 
 /* ─── CONTROLS ─── */
 .controls {
