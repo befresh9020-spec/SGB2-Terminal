@@ -624,6 +624,18 @@ body {
   animation: blink-dot 2.5s infinite;
 }
 
+/* Modifier für den Offline-Status */
+.card-status.offline {
+  color: var(--danger);
+}
+
+.card-status.offline::before {
+  background: var(--danger);
+  box-shadow: 0 0 6px var(--danger);
+  /* Optional: Die Animation für Offline-Karten etwas schneller/hektischer machen */
+  animation: blink-dot 1.5s infinite; 
+}
+
 /* ─── FOOTER INFO BAR ─── */
 .footer-bar {
   margin-top: 44px;
@@ -1397,7 +1409,7 @@ body {
   <span class="card-corner tr"></span>
   <span class="card-corner bl"></span>
   <span class="card-corner br"></span>
-  <span class="card-status">Offline</span>
+  <span class="card-status offline">Offline</span>
   <div class="card-inner">
     <div class="card-icon">
       <!-- Icon: Euro / Bedarf -->
@@ -1485,7 +1497,7 @@ body {
   <span class="card-corner tr"></span>
   <span class="card-corner bl"></span>
   <span class="card-corner br"></span>
-  <span class="card-status">Offline</span>
+  <span class="card-status offline">Offline</span>
   <div class="card-inner">
     <div class="card-icon">
       <!-- Icon: Einkommen -->
