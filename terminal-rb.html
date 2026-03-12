@@ -1,837 +1,569 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Roboto+Mono:wght@300;400;600&display=swap" rel="stylesheet">
-  <title>SGB II Regelbedarfe §§ 20, 23</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#050a0a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Roboto+Mono:wght@300;400;600&display=swap" rel="stylesheet">
+  <title>SGB II Regelbedarfe §§ 20, 23</title>
 <style>
 /* ═══════════════════════════════════════════════════════════
-   REGELBEDARFE TERMINAL v4 — §§ 20, 23 SGB II
-   Metroid Prime HUD / Visor — Desktop-Optimized + A11y
-   ═══════════════════════════════════════════════════════════ */
+   REGELBEDARFE TERMINAL v4m — §§ 20, 23 SGB II
+   Mobile-First · Touch-Optimized · Metroid Dread Handheld
+   ═══════════════════════════════════════════════════════════ */
 
 :root {
-  --bg-dark: #050a0a;
-  --bg-panel: rgba(8, 18, 14, 0.93);
-  --primary: #ff7b00;
-  --primary-dim: rgba(255, 123, 0, 0.08);
-  --primary-glow: rgba(255, 123, 0, 0.55);
-  --primary-mid: rgba(255, 123, 0, 0.35);
-  --text-main: #e8dfc0;
-  --text-dim: #8a7a5a;
-  --success: #6dffb3;
-  --warning: #ffe066;
-  --danger: #ff4444;
-  --border: rgba(255, 123, 0, 0.35);
-  --hex: rgba(255, 123, 0, 0.06);
-  --font-tech: "Orbitron", sans-serif;
-  --font-mono: "Roboto Mono", monospace;
-  --sidebar-w: 380px;
+  --bg-dark: #050a0a;
+  --bg-panel: rgba(8, 18, 14, 0.95);
+  --primary: #ff7b00;
+  --primary-dim: rgba(255, 123, 0, 0.08);
+  --primary-glow: rgba(255, 123, 0, 0.55);
+  --primary-mid: rgba(255, 123, 0, 0.35);
+  --text-main: #e8dfc0;
+  --text-dim: #8a7a5a;
+  --success: #6dffb3;
+  --warning: #ffe066;
+  --danger: #ff4444;
+  --border: rgba(255, 123, 0, 0.35);
+  --hex: rgba(255, 123, 0, 0.06);
+  --font-tech: "Orbitron", sans-serif;
+  --font-mono: "Roboto Mono", monospace;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-top: env(safe-area-inset-top, 0px);
+  --bar-h: 56px;
 }
 
 [data-theme="blue"] {
-  --primary: #00d4ff;
-  --primary-dim: rgba(0, 212, 255, 0.08);
-  --primary-glow: rgba(0, 212, 255, 0.55);
-  --primary-mid: rgba(0, 212, 255, 0.3);
-  --text-main: #c8e8f8;
-  --text-dim: #5a7a8a;
-  --border: rgba(0, 212, 255, 0.3);
-  --hex: rgba(0, 212, 255, 0.05);
+  --primary: #00d4ff;
+  --primary-dim: rgba(0, 212, 255, 0.08);
+  --primary-glow: rgba(0, 212, 255, 0.55);
+  --primary-mid: rgba(0, 212, 255, 0.3);
+  --text-main: #c8e8f8;
+  --text-dim: #5a7a8a;
+  --border: rgba(0, 212, 255, 0.3);
+  --hex: rgba(0, 212, 255, 0.05);
 }
 
 [data-theme="green"] {
-  --primary: #00ff88;
-  --primary-dim: rgba(0, 255, 136, 0.08);
-  --primary-glow: rgba(0, 255, 136, 0.55);
-  --primary-mid: rgba(0, 255, 136, 0.3);
-  --text-main: #c8f0d8;
-  --text-dim: #5a8a6a;
-  --border: rgba(0, 255, 136, 0.3);
-  --hex: rgba(0, 255, 136, 0.05);
+  --primary: #00ff88;
+  --primary-dim: rgba(0, 255, 136, 0.08);
+  --primary-glow: rgba(0, 255, 136, 0.55);
+  --primary-mid: rgba(0, 255, 136, 0.3);
+  --text-main: #c8f0d8;
+  --text-dim: #5a8a6a;
+  --border: rgba(0, 255, 136, 0.3);
+  --hex: rgba(0, 255, 136, 0.05);
 }
 
 /* ─── RESET ─── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-html { background-color: #050a0a; }
+html {
+  background-color: #050a0a;
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+}
 body {
-  background-color: var(--bg-dark);
-  color: var(--text-main);
-  font-family: var(--font-tech);
-  min-height: 100vh;
-  overflow-x: hidden;
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-  transition: color 0.4s, background-color 0.4s;
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  font-family: var(--font-tech);
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 0.4s, background-color 0.4s;
+  padding-bottom: calc(var(--bar-h) + var(--safe-bottom) + 16px);
 }
 
 /* ─── SKIP NAV ─── */
 .skip-link {
-  position: absolute;
-  top: -100%;
-  left: 16px;
-  z-index: 10000;
-  background: var(--bg-dark);
-  color: var(--primary);
-  border: 2px solid var(--primary);
-  padding: 10px 20px;
-  font-family: var(--font-mono);
-  font-size: 0.85rem;
-  text-decoration: none;
-  transition: top 0.2s;
+  position: absolute;
+  top: -100%;
+  left: 8px;
+  z-index: 10000;
+  background: var(--bg-dark);
+  color: var(--primary);
+  border: 2px solid var(--primary);
+  padding: 10px 16px;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: top 0.2s;
 }
-.skip-link:focus {
-  top: 8px;
-  outline: 2px solid var(--primary);
-  outline-offset: 2px;
-}
+.skip-link:focus { top: calc(var(--safe-top) + 4px); }
 
-/* ─── FOCUS STYLES ─── */
+/* ─── FOCUS ─── */
 :focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 2px;
-  box-shadow: 0 0 12px var(--primary-glow);
-}
-button:focus-visible, a:focus-visible, input:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 2px;
-  box-shadow: 0 0 12px var(--primary-glow);
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  box-shadow: 0 0 10px var(--primary-glow);
 }
 
-/* ─── SCROLLBARS ─── */
-::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-track { background: rgba(0,0,0,0.6); border-left: 1px solid var(--border); }
-::-webkit-scrollbar-thumb { background: var(--primary-mid); }
-::-webkit-scrollbar-thumb:hover { background: var(--primary); box-shadow: 0 0 10px var(--primary-glow); }
+/* ─── SCROLLBARS (thin) ─── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--primary-mid); border-radius: 2px; }
 
-/* ─── BACKGROUND LAYERS ─── */
-#bg-canvas {
-  position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
-  z-index: -2;
+/* ─── BACKGROUND ─── */
+.bg-layer {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  pointer-events: none;
 }
-
+#bg-canvas { z-index: -2; }
 .visor-overlay {
-  position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background: radial-gradient(ellipse at 50% 40%, transparent 30%, rgba(0,0,0,0.25) 65%, rgba(0,0,0,0.75) 100%);
-  pointer-events: none;
-  z-index: 997;
+  z-index: -1;
+  background: radial-gradient(ellipse at 50% 30%, transparent 20%, rgba(0,0,0,0.3) 60%, rgba(0,0,0,0.8) 100%);
 }
-
-.visor-rim {
-  position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background:
-    linear-gradient(to bottom, rgba(255,123,0,0.07) 0%, transparent 8%),
-    linear-gradient(to top,    rgba(255,123,0,0.07) 0%, transparent 8%),
-    linear-gradient(to right,  rgba(255,123,0,0.04) 0%, transparent 6%),
-    linear-gradient(to left,   rgba(255,123,0,0.04) 0%, transparent 6%);
-  pointer-events: none;
-  z-index: 998;
-  transition: background 0.5s;
-}
-[data-theme="blue"] .visor-rim {
-  background:
-    linear-gradient(to bottom, rgba(0,212,255,0.07) 0%, transparent 8%),
-    linear-gradient(to top,    rgba(0,212,255,0.07) 0%, transparent 8%),
-    linear-gradient(to right,  rgba(0,212,255,0.04) 0%, transparent 6%),
-    linear-gradient(to left,   rgba(0,212,255,0.04) 0%, transparent 6%);
-}
-[data-theme="green"] .visor-rim {
-  background:
-    linear-gradient(to bottom, rgba(0,255,136,0.07) 0%, transparent 8%),
-    linear-gradient(to top,    rgba(0,255,136,0.07) 0%, transparent 8%),
-    linear-gradient(to right,  rgba(0,255,136,0.04) 0%, transparent 6%),
-    linear-gradient(to left,   rgba(0,255,136,0.04) 0%, transparent 6%);
-}
-
-/* ─── VIEWPORT HUD BRACKETS ─── */
-.viewport-hud { position: fixed; pointer-events: none; z-index: 999; }
-.viewport-hud-tl, .viewport-hud-tr, .viewport-hud-bl, .viewport-hud-br {
-  position: fixed;
-  width: 60px; height: 60px;
-  z-index: 999;
-  pointer-events: none;
-  transition: border-color 0.4s, box-shadow 0.4s;
-}
-.viewport-hud-tl {
-  top: 0; left: 0;
-  border-top: 2px solid var(--primary);
-  border-left: 2px solid var(--primary);
-  box-shadow: -2px -2px 14px var(--primary-glow);
-}
-.viewport-hud-tr {
-  top: 0; right: 0;
-  border-top: 2px solid var(--primary);
-  border-right: 2px solid var(--primary);
-  box-shadow: 2px -2px 14px var(--primary-glow);
-}
-.viewport-hud-bl {
-  bottom: 0; left: 0;
-  border-bottom: 2px solid var(--primary);
-  border-left: 2px solid var(--primary);
-  box-shadow: -2px 2px 14px var(--primary-glow);
-}
-.viewport-hud-br {
-  bottom: 0; right: 0;
-  border-bottom: 2px solid var(--primary);
-  border-right: 2px solid var(--primary);
-  box-shadow: 2px 2px 14px var(--primary-glow);
-}
-
-/* Ambient edge glow */
-.ambient-glow-top, .ambient-glow-bottom {
-  position: fixed;
-  left: 0; right: 0; height: 3px;
-  z-index: 999;
-  pointer-events: none;
-  background: var(--primary);
-  opacity: 0.15;
-  box-shadow: 0 0 30px 8px var(--primary-glow);
-  animation: ambientPulse 4s ease-in-out infinite;
-}
-.ambient-glow-top { top: 0; }
-.ambient-glow-bottom { bottom: 0; }
-@keyframes ambientPulse {
-  0%, 100% { opacity: 0.08; }
-  50% { opacity: 0.22; }
-}
-
 .scanlines {
-  position: fixed;
-  top: 0; left: 0; width: 100%; height: 200%;
-  background: repeating-linear-gradient(to bottom, transparent 0px, transparent 2px, rgba(0,0,0,0.18) 2px, rgba(0,0,0,0.18) 4px);
-  pointer-events: none;
-  z-index: 1001;
-  opacity: 0.65;
-  animation: scanroll 8s linear infinite;
+  z-index: 1001;
+  height: 200%;
+  background: repeating-linear-gradient(to bottom, transparent 0px, transparent 3px, rgba(0,0,0,0.12) 3px, rgba(0,0,0,0.12) 6px);
+  opacity: 0.5;
+  animation: scanroll 10s linear infinite;
 }
-@keyframes scanroll { 0% { transform: translateY(0); } 100% { transform: translateY(-50%); } }
+@keyframes scanroll { to { transform: translateY(-50%); } }
 
-#noise-canvas {
-  position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
-  pointer-events: none;
-  z-index: 1002;
-  opacity: 1;
-  mix-blend-mode: screen;
-  image-rendering: pixelated;
-}
-
-/* ─── SCAN-WIPE TRANSITION ─── */
+/* ─── SCAN-WIPE ─── */
 .scan-wipe {
-  position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
-  z-index: 9998;
-  pointer-events: none;
-  opacity: 0;
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  z-index: 9998; pointer-events: none; opacity: 0;
 }
-.scan-wipe.active {
-  animation: scanWipeAnim 0.7s ease-out;
-}
-@keyframes scanWipeAnim {
-  0%   { opacity: 1; background: linear-gradient(180deg, var(--primary) 0%, transparent 2%); }
-  20%  { opacity: 1; background: linear-gradient(180deg, transparent 15%, var(--primary) 20%, transparent 22%); }
-  50%  { opacity: 0.8; background: linear-gradient(180deg, transparent 45%, var(--primary) 50%, transparent 52%); }
-  80%  { opacity: 0.5; background: linear-gradient(180deg, transparent 75%, var(--primary) 80%, transparent 82%); }
-  100% { opacity: 0; background: linear-gradient(180deg, transparent 98%, var(--primary) 100%); }
+.scan-wipe.active { animation: scanWipe 0.6s ease-out; }
+@keyframes scanWipe {
+  0%   { opacity: 1; background: linear-gradient(180deg, var(--primary) 0%, transparent 3%); }
+  30%  { opacity: 0.9; background: linear-gradient(180deg, transparent 25%, var(--primary) 30%, transparent 33%); }
+  60%  { opacity: 0.6; background: linear-gradient(180deg, transparent 55%, var(--primary) 60%, transparent 63%); }
+  100% { opacity: 0; background: linear-gradient(180deg, transparent 95%, var(--primary) 100%); }
 }
 
 /* ─── THEME FLASH ─── */
-.theme-transition-overlay {
-  position: fixed; inset: 0;
-  pointer-events: none;
-  z-index: 9999;
-  opacity: 0;
-  transition: opacity 0.3s ease;
+.theme-flash { position: fixed; inset: 0; pointer-events: none; z-index: 9999; opacity: 0; transition: opacity 0.3s; }
+.theme-flash.active { opacity: 1; }
+.theme-flash::after {
+  content: ""; position: absolute; inset: 0;
+  background: var(--primary); opacity: 0; mix-blend-mode: screen;
+  animation: flashPulse 0.7s ease-out;
 }
-.theme-transition-overlay.active { opacity: 1; }
-.theme-transition-overlay::after {
-  content: "";
-  position: absolute; inset: 0;
-  background: var(--primary);
-  opacity: 0;
-  mix-blend-mode: screen;
-  animation: pulseGlow 0.8s ease-out;
-}
-@keyframes pulseGlow {
-  0%   { opacity: 0;   transform: scale(0.8); }
-  50%  { opacity: 0.4; transform: scale(1.1); }
-  100% { opacity: 0;   transform: scale(1.5); }
+@keyframes flashPulse {
+  0%  { opacity: 0; transform: scale(0.9); }
+  40% { opacity: 0.35; transform: scale(1.05); }
+  100%{ opacity: 0; transform: scale(1.3); }
 }
 
 /* ─── TOP BAR ─── */
 .top-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 28px;
-  background: rgba(0,0,0,0.88);
-  border-bottom: 1px solid var(--border);
-  backdrop-filter: blur(8px);
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  transition: border-color 0.4s, box-shadow 0.4s;
-  box-shadow: 0 4px 20px var(--primary-glow);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: rgba(0,0,0,0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: calc(var(--safe-top) + 6px) 12px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: border-color 0.4s;
+  box-shadow: 0 2px 16px var(--primary-glow);
 }
-.top-bar-left {
-  display: flex;
-  align-items: center;
-  gap: 18px;
+.top-bar-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
-.visor-mode {
-  font-size: 0.6rem;
-  letter-spacing: 3px;
-  color: var(--primary);
-  text-transform: uppercase;
-  opacity: 0.7;
-  font-family: var(--font-mono);
-  transition: color 0.4s;
+.visor-label {
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  letter-spacing: 2px;
+  color: var(--primary);
+  text-transform: uppercase;
+  opacity: 0.7;
 }
-.top-bar-progress {
-  display: none;
-  align-items: center;
-  gap: 10px;
-  font-family: var(--font-mono);
-  font-size: 0.62rem;
-  color: var(--text-dim);
-  letter-spacing: 1px;
-  text-transform: uppercase;
-}
-.top-bar-progress-count { color: var(--primary); }
-.top-bar-progress-bar {
-  display: flex;
-  gap: 3px;
-  align-items: center;
-}
-.top-bar-progress-seg {
-  width: 28px; height: 4px;
-  background: rgba(255,255,255,0.08);
-  transition: background 0.4s, box-shadow 0.4s;
-}
-.top-bar-progress-seg.filled {
-  background: var(--primary);
-  box-shadow: 0 0 6px var(--primary-glow);
-}
-
-.top-bar-ticks {
-  display: flex;
-  gap: 5px;
-  align-items: center;
-}
-.top-bar-ticks span {
-  display: block;
-  height: 12px;
-  width: 2px;
-  background: var(--primary);
-  opacity: 0.4;
-  transition: background 0.4s;
-}
-.top-bar-ticks span:nth-child(3) { opacity: 0.9; height: 18px; }
-
 .theme-switch {
-  display: flex;
-  gap: 14px;
-  align-items: center;
+  display: flex;
+  gap: 10px;
 }
-
 .theme-btn {
-  background: transparent;
-  border: 1px solid var(--text-dim);
-  color: var(--text-dim);
-  width: 32px; height: 32px;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: 0.3s;
-  display: grid;
-  place-items: center;
-  font-size: 0.7rem;
-  position: relative;
-  padding: 0;
-  min-height: unset;
-  flex: unset;
-  clip-path: none;
-  overflow: visible;
-}
-.theme-btn::before { display: none; }
-.theme-btn:hover, .theme-btn:focus-visible {
-  border-color: var(--text-main);
-  color: var(--text-main);
-  outline: none;
-  background: transparent;
-  box-shadow: 0 0 8px var(--primary-glow);
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--text-dim);
+  background: transparent;
+  color: var(--text-dim);
+  font-size: 0.65rem;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: 0.25s;
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
 }
 .theme-btn[aria-checked="true"] {
-  border-color: var(--primary);
-  color: var(--primary);
-  box-shadow: 0 0 10px var(--primary-glow), inset 0 0 6px var(--primary-dim);
+  border-color: var(--primary);
+  color: var(--primary);
+  box-shadow: 0 0 8px var(--primary-glow), inset 0 0 4px var(--primary-dim);
 }
 .theme-btn[aria-checked="true"]::after {
-  content: "";
-  position: absolute;
-  inset: -5px;
-  border-radius: 50%;
-  border: 1px solid var(--primary);
-  opacity: 0.3;
-  animation: pulse-ring 2s infinite;
+  content: ""; position: absolute; inset: -4px; border-radius: 50%;
+  border: 1px solid var(--primary); opacity: 0.25;
+  animation: ringPulse 2.5s infinite;
 }
-@keyframes pulse-ring {
-  0%   { transform: scale(1);    opacity: 0.3; }
-  50%  { transform: scale(1.15); opacity: 0.1; }
-  100% { transform: scale(1);    opacity: 0.3; }
+@keyframes ringPulse {
+  0%, 100% { transform: scale(1); opacity: 0.25; }
+  50% { transform: scale(1.12); opacity: 0.08; }
 }
 
-/* ─── DESKTOP LAYOUT ─── */
-.app-layout {
-  display: flex;
-  min-height: calc(100vh - 50px);
-  position: relative;
+/* Progress strip */
+.progress-strip {
+  display: flex;
+  gap: 3px;
+  align-items: center;
 }
-
-/* ─── SIDEBAR (Desktop-persistent Reference) ─── */
-.sidebar {
-  display: none;
-  width: var(--sidebar-w);
-  min-width: var(--sidebar-w);
-  border-right: 1px solid var(--border);
-  background: rgba(4, 10, 8, 0.95);
-  backdrop-filter: blur(12px);
-  position: sticky;
-  top: 50px;
-  height: calc(100vh - 50px);
-  overflow-y: auto;
-  z-index: 500;
-  transition: border-color 0.4s;
-  flex-shrink: 0;
+.progress-strip-seg {
+  flex: 1;
+  height: 3px;
+  background: rgba(255,255,255,0.08);
+  transition: background 0.4s, box-shadow 0.4s;
 }
-.sidebar-inner {
-  padding: 24px 20px;
-  position: relative;
+.progress-strip-seg.filled {
+  background: var(--primary);
+  box-shadow: 0 0 4px var(--primary-glow);
 }
-
-/* Sidebar HUD frame */
-.sidebar-hud-tl, .sidebar-hud-tr, .sidebar-hud-bl, .sidebar-hud-br {
-  position: absolute;
-  width: 20px; height: 20px;
-  pointer-events: none;
-  z-index: 10;
-  transition: border-color 0.4s;
-}
-.sidebar-hud-tl { top: 8px; left: 8px; border-top: 2px solid var(--primary); border-left: 2px solid var(--primary); }
-.sidebar-hud-tr { top: 8px; right: 8px; border-top: 2px solid var(--primary); border-right: 2px solid var(--primary); }
-.sidebar-hud-bl { bottom: 8px; left: 8px; border-bottom: 2px solid var(--primary); border-left: 2px solid var(--primary); }
-.sidebar-hud-br { bottom: 8px; right: 8px; border-bottom: 2px solid var(--primary); border-right: 2px solid var(--primary); }
-
-.sidebar-title {
-  font-family: var(--font-tech);
-  font-size: 0.65rem;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: var(--primary);
-  margin-bottom: 6px;
-  text-shadow: 0 0 8px var(--primary-glow);
-}
-.sidebar-subtitle {
-  font-family: var(--font-mono);
-  font-size: 0.58rem;
-  color: var(--text-dim);
-  letter-spacing: 1px;
-  margin-bottom: 20px;
-}
-
-.sidebar .ref-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-family: var(--font-mono);
-  font-size: 0.66rem;
-}
-.sidebar .ref-table th {
-  text-align: left;
-  color: var(--text-dim);
-  font-weight: 400;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  padding: 4px 6px 8px 0;
-  border-bottom: 1px solid var(--border);
-  font-size: 0.58rem;
-}
-.sidebar .ref-table td {
-  padding: 6px 6px 6px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.04);
-  vertical-align: top;
-  line-height: 1.45;
-  color: var(--text-main);
-  font-size: 0.64rem;
-}
-.sidebar .ref-table tr:last-child td { border-bottom: none; }
-.sidebar .ref-table .t-stufe { color: var(--primary); font-weight: 600; white-space: nowrap; }
-.sidebar .ref-table .t-para  { color: var(--text-dim); font-size: 0.56rem; }
-.sidebar .ref-table .t-amt   { color: var(--success); font-weight: 600; text-align: right; white-space: nowrap; text-shadow: 0 0 6px rgba(109,255,179,0.3); }
-
-/* Sidebar visor gradient */
-.sidebar::after {
-  content: "";
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: linear-gradient(180deg, rgba(0,0,0,0) 60%, rgba(0,0,0,0.5) 100%);
-  pointer-events: none;
+.progress-strip-seg.filled::after { display: none; }
+.progress-strip-label {
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  color: var(--primary);
+  letter-spacing: 1px;
+  margin-left: 8px;
+  white-space: nowrap;
 }
 
 /* ─── MAIN CONTENT ─── */
 .main-content {
-  flex: 1;
-  min-width: 0;
-  padding: 24px 32px 60px;
-  max-width: 1100px;
-  margin: 0 auto;
+  padding: 12px 10px 20px;
 }
 
-/* ─── MOBILE PROGRESS (hidden on desktop) ─── */
-.progress-container-mobile { margin-bottom: 28px; }
-.progress-text {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.68rem;
-  color: var(--text-dim);
-  text-transform: uppercase;
-  font-family: var(--font-mono);
-  letter-spacing: 1px;
-  margin-bottom: 10px;
-  transition: color 0.4s;
+/* ─── CASE HEADER ─── */
+.case-header {
+  margin-bottom: 10px;
 }
-.progress-text span:last-child { color: var(--primary); transition: color 0.4s; }
-.progress-bar-mobile {
-  height: 6px;
-  background: rgba(255,255,255,0.05);
-  width: 100%;
-  display: flex;
-  gap: 3px;
+.case-title {
+  font-family: var(--font-tech);
+  font-size: 1rem;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  text-shadow: 0 0 10px var(--primary-glow);
+  text-align: center;
+  margin-bottom: 4px;
 }
-.progress-seg {
-  flex: 1;
-  background: rgba(255,255,255,0.05);
-  position: relative;
-  overflow: hidden;
+.case-subtitle {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: var(--text-dim);
+  text-align: center;
+  letter-spacing: 1.5px;
 }
-.progress-seg.filled {
-  background: var(--primary);
-  box-shadow: 0 0 8px var(--primary);
-  transition: background 0.4s, box-shadow 0.4s;
-}
-.progress-seg.filled::after {
-  content: "";
-  position: absolute; inset: 0;
-  background: linear-gradient(90deg, transparent 60%, rgba(255,255,255,0.25));
+.case-meta-line {
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  color: var(--primary);
+  text-align: center;
+  opacity: 0.65;
+  letter-spacing: 1px;
+  margin-top: 3px;
 }
 
-/* ─── TERMINAL WINDOW ─── */
-.terminal-window {
-  background: var(--bg-panel);
-  border: 1px solid var(--border);
-  box-shadow:
-    0 0 40px rgba(0,0,0,0.7),
-    inset 0 0 60px var(--primary-dim),
-    0 0 1px var(--primary-mid);
-  position: relative;
-  backdrop-filter: blur(12px);
-  border-radius: 2px;
-  transition: border-color 0.4s, box-shadow 0.4s;
+/* ─── CASE TEXT CARD ─── */
+.case-card {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  position: relative;
+  margin-bottom: 8px;
+  transition: border-color 0.4s;
 }
-.terminal-window::before {
-  content: "";
-  position: absolute; inset: 0;
-  background-image: radial-gradient(circle, var(--hex) 1px, transparent 1px);
-  background-size: 28px 28px;
-  pointer-events: none;
-  border-radius: 2px;
+.case-card::before {
+  content: ""; position: absolute; inset: 0;
+  background-image: radial-gradient(circle, var(--hex) 1px, transparent 1px);
+  background-size: 24px 24px; pointer-events: none;
 }
-
-/* HUD CORNER BRACKETS */
-.hud-frame { position: relative; }
-.hud-frame::before,
-.hud-frame::after,
-.hud-frame .hud-corner-br,
-.hud-frame .hud-corner-bl {
-  content: "";
-  position: absolute;
-  width: 28px; height: 28px;
-  pointer-events: none;
-  z-index: 10;
-  transition: border-color 0.4s, box-shadow 0.4s;
+/* Mini HUD corners */
+.case-card::after {
+  content: ""; position: absolute; top: -1px; left: -1px;
+  width: 16px; height: 16px;
+  border-top: 2px solid var(--primary);
+  border-left: 2px solid var(--primary);
+  pointer-events: none;
+  box-shadow: -1px -1px 6px var(--primary-glow);
 }
-.hud-frame::before {
-  top: -2px; left: -2px;
-  border-top: 3px solid var(--primary);
-  border-left: 3px solid var(--primary);
-  box-shadow: -2px -2px 8px var(--primary-glow);
-}
-.hud-frame::after {
-  top: -2px; right: -2px;
-  border-top: 3px solid var(--primary);
-  border-right: 3px solid var(--primary);
-  box-shadow: 2px -2px 8px var(--primary-glow);
-}
-.hud-corner-br {
-  bottom: -2px; right: -2px;
-  border-bottom: 3px solid var(--primary);
-  border-right: 3px solid var(--primary);
-  box-shadow: 2px 2px 8px var(--primary-glow);
-}
-.hud-corner-bl {
-  bottom: -2px; left: -2px;
-  border-bottom: 3px solid var(--primary);
-  border-left: 3px solid var(--primary);
-  box-shadow: -2px 2px 8px var(--primary-glow);
+.case-card-corner {
+  position: absolute; bottom: -1px; right: -1px;
+  width: 16px; height: 16px;
+  border-bottom: 2px solid var(--primary);
+  border-right: 2px solid var(--primary);
+  pointer-events: none;
+  box-shadow: 1px 1px 6px var(--primary-glow);
 }
 
-/* ─── TERMINAL HEADER ─── */
-.terminal-header {
-  padding: 18px 24px 14px;
-  border-bottom: 1px solid var(--border);
-  background: linear-gradient(180deg, rgba(0,0,0,0.5) 0%, transparent 100%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
-  gap: 4px;
-  transition: border-color 0.4s;
-}
-.terminal-header::after {
-  content: "";
-  position: absolute;
-  bottom: -1px; left: 50%;
-  transform: translateX(-50%);
-  width: 60%; height: 2px;
-  background: linear-gradient(90deg, transparent, var(--primary), transparent);
-  box-shadow: 0 0 10px var(--primary);
-  transition: background 0.4s, box-shadow 0.4s;
-}
-.terminal-title {
-  font-size: 1.25rem;
-  color: var(--primary);
-  text-transform: uppercase;
-  letter-spacing: 6px;
-  text-shadow: 0 0 14px var(--primary-glow), 0 0 40px var(--primary-mid);
-  text-align: center;
-  transition: color 0.4s, text-shadow 0.4s;
-}
-.terminal-subtitle {
-  font-size: 0.68rem;
-  color: var(--text-dim);
-  font-family: var(--font-mono);
-  text-align: center;
-  letter-spacing: 2px;
-  transition: color 0.4s;
-}
-.case-meta {
-  font-family: var(--font-mono);
-  font-size: 0.6rem;
-  color: var(--primary);
-  letter-spacing: 1px;
-  margin-top: 2px;
-  opacity: 0.7;
-  transition: color 0.4s;
-}
-
-.terminal-content {
-  padding: 24px;
-  position: relative;
-}
-
-/* ─── MOBILE REF PANEL (accordion, hidden on desktop when sidebar visible) ─── */
-.ref-panel-mobile {
-  margin-bottom: 20px;
-  border: 1px solid var(--border);
-  background: rgba(0,0,0,0.20);
-  transition: border-color 0.4s;
-  overflow: hidden;
-}
-.ref-toggle {
-  width: 100%;
-  background: transparent;
-  border: none;
-  padding: 10px 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  cursor: pointer;
-  font-family: var(--font-mono);
-  font-size: 0.62rem;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--text-dim);
-  clip-path: none;
-  min-height: unset;
-  flex: unset;
-  text-align: left;
-  transition: color 0.25s, background 0.25s;
-}
-.ref-toggle span:first-child {
-  white-space: normal;
-  line-height: 1.4;
-  padding-right: 12px;
-}
-.ref-toggle:hover, .ref-toggle:focus-visible {
-  color: var(--primary);
-  background: var(--primary-dim);
-  box-shadow: none;
-}
-.ref-toggle::before { display: none; }
-.ref-toggle .arr {
-  font-size: 0.6rem;
-  transition: transform 0.3s;
-  flex-shrink: 0;
-}
-.ref-panel-mobile[aria-expanded="true"] .arr { transform: rotate(180deg); }
-.ref-body {
-  display: none;
-  border-top: 1px solid var(--border);
-  padding: 12px 16px;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-.ref-panel-mobile[aria-expanded="true"] .ref-body { display: block; }
-
-.ref-table {
-  width: 100%;
-  min-width: 480px;
-  border-collapse: collapse;
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-}
-.ref-table th {
-  text-align: left;
-  color: var(--text-dim);
-  font-weight: 400;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  padding: 4px 10px 8px 0;
-  border-bottom: 1px solid var(--border);
-}
-.ref-table td {
-  padding: 6px 10px 6px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.04);
-  vertical-align: top;
-  line-height: 1.5;
-  color: var(--text-main);
-}
-.ref-table tr:last-child td { border-bottom: none; }
-.ref-table .t-stufe { color: var(--primary); font-weight: 600; white-space: nowrap; }
-.ref-table .t-para  { color: var(--text-dim); font-size: 0.62rem; }
-.ref-table .t-amt   { color: var(--success); font-weight: 600; text-align: right; white-space: nowrap; text-shadow: 0 0 6px rgba(109,255,179,0.3); }
-
-/* ─── CASE TEXT ─── */
 .case-text {
-  background: rgba(0,0,0,0.4);
-  border-left: 2px solid var(--primary);
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-  padding: 14px 16px;
-  margin-bottom: 6px;
-  font-family: var(--font-mono);
-  font-size: 0.88rem;
-  color: var(--text-main);
-  line-height: 1.65;
-  position: relative;
-  transition: border-color 0.4s;
-}
-.case-text::before {
-  content: "";
-  position: absolute;
-  top: 0; right: 0;
-  width: 0; height: 0;
-  border-style: solid;
-  border-width: 0 16px 16px 0;
-  border-color: transparent var(--primary) transparent transparent;
-  opacity: 0.4;
-  transition: border-color 0.4s;
+  padding: 14px 12px;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--text-main);
+  line-height: 1.7;
+  border-left: 2px solid var(--primary);
+  margin: 0;
+  position: relative;
 }
 
 .bg-count {
-  font-family: var(--font-mono);
-  font-size: 0.58rem;
-  letter-spacing: 2px;
-  color: var(--text-dim);
-  text-transform: uppercase;
-  padding: 8px 0 16px;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-  margin-bottom: 20px;
-  transition: color 0.4s;
+  font-family: var(--font-mono);
+  font-size: 0.54rem;
+  letter-spacing: 1.5px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  padding: 8px 12px;
+  border-top: 1px solid rgba(255,255,255,0.05);
 }
 .bg-count span { color: var(--primary); }
 
-/* ─── PERSON CARDS — Desktop 2-col ─── */
+/* ─── REFERENCE BOTTOM SHEET ─── */
+.ref-sheet-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  margin-bottom: 12px;
+  transition: all 0.25s;
+  min-height: 44px;
+  -webkit-tap-highlight-color: transparent;
+}
+.ref-sheet-trigger:active {
+  background: var(--primary-dim);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+.ref-sheet-trigger .ref-icon {
+  font-size: 0.8rem;
+  transition: transform 0.3s;
+}
+
+/* Bottom sheet overlay */
+.ref-sheet-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 2000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+.ref-sheet-overlay.open { opacity: 1; pointer-events: all; }
+
+.ref-sheet {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 2001;
+  background: rgba(8, 16, 12, 0.98);
+  border-top: 2px solid var(--primary);
+  box-shadow: 0 -8px 40px var(--primary-glow);
+  transform: translateY(100%);
+  transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+  max-height: 75vh;
+  max-height: 75dvh;
+  overflow-y: auto;
+  padding: 0 0 calc(var(--safe-bottom) + 12px);
+  border-radius: 16px 16px 0 0;
+}
+.ref-sheet.open { transform: translateY(0); }
+
+.ref-sheet-handle {
+  display: flex;
+  justify-content: center;
+  padding: 10px 0 6px;
+  position: sticky;
+  top: 0;
+  background: rgba(8, 16, 12, 0.98);
+  z-index: 1;
+}
+.ref-sheet-handle-bar {
+  width: 36px; height: 4px;
+  background: var(--primary-mid);
+  border-radius: 2px;
+}
+.ref-sheet-title {
+  font-family: var(--font-tech);
+  font-size: 0.65rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--primary);
+  text-align: center;
+  padding: 4px 0 12px;
+  text-shadow: 0 0 8px var(--primary-glow);
+}
+
+.ref-sheet .ref-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  padding: 0 12px;
+}
+.ref-sheet .ref-table th {
+  text-align: left;
+  color: var(--text-dim);
+  font-weight: 400;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 4px 6px 8px;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.52rem;
+  position: sticky;
+  top: 44px;
+  background: rgba(8, 16, 12, 0.98);
+}
+.ref-sheet .ref-table td {
+  padding: 8px 6px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  vertical-align: top;
+  line-height: 1.5;
+  color: var(--text-main);
+}
+.ref-sheet .ref-table tr:last-child td { border-bottom: none; }
+.ref-sheet .ref-table .t-stufe { color: var(--primary); font-weight: 600; }
+.ref-sheet .ref-table .t-para { color: var(--text-dim); font-size: 0.52rem; }
+.ref-sheet .ref-table .t-amt {
+  color: var(--success); font-weight: 600;
+  text-align: right; white-space: nowrap;
+  text-shadow: 0 0 4px rgba(109,255,179,0.3);
+}
+.ref-sheet-close {
+  display: block;
+  width: calc(100% - 24px);
+  margin: 12px auto 0;
+  padding: 14px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  font-family: var(--font-tech);
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  min-height: 48px;
+  transition: all 0.2s;
+}
+.ref-sheet-close:active {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-dim);
+}
+
+/* ─── PERSON CARDS ─── */
 .person-cards {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
 }
 
 .pcard {
-  border: 1px solid var(--border);
-  background: rgba(0,0,0,0.22);
-  position: relative;
-  transition: border-color 0.35s, box-shadow 0.35s;
+  border: 1px solid var(--border);
+  background: rgba(0,0,0,0.25);
+  transition: border-color 0.35s, box-shadow 0.35s;
+  overflow: hidden;
 }
-.pcard.pcard-s1-done  { border-color: rgba(255,224,102,0.30); }
-.pcard.pcard-complete { border-color: rgba(109,255,179,0.40); box-shadow: 0 0 16px rgba(109,255,179,0.07); }
+.pcard.pcard-s1-done { border-color: rgba(255,224,102,0.30); }
+.pcard.pcard-complete { border-color: rgba(109,255,179,0.40); box-shadow: 0 0 12px rgba(109,255,179,0.07); }
 
 .pcard-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 11px 16px;
-  border-bottom: 1px solid var(--border);
-  background: rgba(0,0,0,0.30);
-  gap: 10px;
-  transition: border-color 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  background: rgba(0,0,0,0.35);
+  border-bottom: 1px solid var(--border);
+  min-height: 48px;
+  gap: 8px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.2s;
 }
+.pcard-head:active { background: var(--primary-dim); }
+.pcard-info { flex: 1; min-width: 0; }
 .pcard-name {
-  font-family: var(--font-mono);
-  font-size: 0.84rem;
-  font-weight: 600;
-  color: var(--text-main);
-  transition: color 0.3s;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-main);
 }
 .pcard.pcard-complete .pcard-name { color: var(--success); }
 .pcard-tag {
-  font-family: var(--font-mono);
-  font-size: 0.6rem;
-  color: var(--text-dim);
-  margin-top: 2px;
-  letter-spacing: 0.5px;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: var(--text-dim);
+  margin-top: 1px;
 }
 .pcard-badges {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 .pbadge {
-  font-family: var(--font-mono);
-  font-size: 0.55rem;
-  letter-spacing: 1px;
-  padding: 3px 7px;
-  border: 1px solid;
-  text-transform: uppercase;
-  white-space: nowrap;
-  transition: all 0.3s;
+  font-family: var(--font-mono);
+  font-size: 0.48rem;
+  letter-spacing: 0.5px;
+  padding: 3px 5px;
+  border: 1px solid;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 .pbadge-pending { border-color: rgba(255,255,255,0.12); color: var(--text-dim); }
-.pbadge-s1      { border-color: var(--warning); color: var(--warning); }
-.pbadge-done    { border-color: var(--success); color: var(--success); text-shadow: 0 0 6px rgba(109,255,179,0.4); }
+.pbadge-s1 { border-color: var(--warning); color: var(--warning); }
+.pbadge-done { border-color: var(--success); color: var(--success); text-shadow: 0 0 4px rgba(109,255,179,0.4); }
+
+/* Collapsible card body */
+.pcard-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+}
+.pcard.pcard-open .pcard-body {
+  max-height: 800px;
+}
+.pcard-expand-icon {
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  transition: transform 0.3s;
+  flex-shrink: 0;
+  margin-left: 4px;
+}
+.pcard.pcard-open .pcard-expand-icon { transform: rotate(180deg); }
 
 /* ─── STEP BLOCKS ─── */
 .step-block {
-  padding: 12px 16px;
-  border-bottom: 1px solid rgba(255,255,255,0.04);
-  transition: opacity 0.35s, filter 0.35s;
+  padding: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
 }
 .step-block:last-child { border-bottom: none; }
 .step-block[aria-disabled="true"] { opacity: 0.35; filter: grayscale(0.4); }
@@ -840,667 +572,484 @@ button:focus-visible, a:focus-visible, input:focus-visible {
 .step-block.step-done .s-num { border-color: var(--success); color: var(--success); }
 
 .step-hdr {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
 }
 .s-num {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 15px; height: 15px;
-  border: 1px solid var(--text-dim);
-  font-family: var(--font-mono);
-  font-size: 0.52rem;
-  flex-shrink: 0;
-  transition: border-color 0.3s, color 0.3s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px; height: 16px;
+  border: 1px solid var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  flex-shrink: 0;
 }
 .step-hdr-label {
-  font-family: var(--font-mono);
-  font-size: 0.58rem;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 0.54rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-dim);
 }
 
-/* ─── § 19 BUTTONS ─── */
+/* ─── § 19 BUTTONS — Touch optimized ─── */
 .s19-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 .s19-btn {
-  background: rgba(0,0,0,0.45);
-  border: 1px solid var(--primary-mid);
-  color: var(--text-main);
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  padding: 10px 12px;
-  cursor: pointer;
-  text-align: left;
-  line-height: 1.5;
-  letter-spacing: 0.5px;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
-  min-height: unset;
-  flex: unset;
-  width: 100%;
-  box-shadow: 0 0 8px var(--primary-dim);
+  background: rgba(0,0,0,0.45);
+  border: 1px solid var(--primary-mid);
+  color: var(--text-main);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  padding: 14px 12px;
+  cursor: pointer;
+  text-align: left;
+  line-height: 1.5;
+  min-height: 56px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 0 6px var(--primary-dim);
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
 }
-.s19-btn::before {
-  content: "";
-  position: absolute; inset: 0;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent);
-  transform: translateX(-100%);
-  transition: transform 0.35s;
-  pointer-events: none;
+.s19-btn:active {
+  background: var(--primary-dim);
+  border-color: var(--primary);
+  transform: scale(0.97);
 }
-.s19-btn:hover::before { transform: translateX(100%); }
-.s19-btn:hover, .s19-btn:focus-visible {
-  background: var(--primary-dim);
-  border-color: var(--primary);
-  color: #ffffff;
-  box-shadow: 0 0 20px var(--primary-glow), inset 0 0 10px var(--primary-dim);
-  transform: translateY(-2px);
-}
-.s19-btn:active { transform: translateY(0); }
-
 .s19-para {
-  display: block;
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: var(--primary);
-  margin-bottom: 3px;
-  transition: color 0.2s;
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 3px;
 }
 .s19-sub {
-  display: block;
-  font-size: 0.62rem;
-  color: var(--text-dim);
-  transition: color 0.2s;
+  display: block;
+  font-size: 0.6rem;
+  color: var(--text-dim);
 }
 
 .s19-btn.s-correct {
-  border-color: var(--success) !important;
-  background: rgba(109,255,179,0.07) !important;
-  pointer-events: none;
-  box-shadow: inset 4px 0 0 var(--success), inset 0 0 20px rgba(109,255,179,0.15), 0 0 20px rgba(109,255,179,0.2);
-  transform: translateY(-2px) scale(1.02);
+  border-color: var(--success) !important;
+  background: rgba(109,255,179,0.07) !important;
+  pointer-events: none;
+  box-shadow: inset 3px 0 0 var(--success), 0 0 12px rgba(109,255,179,0.15);
 }
 .s19-btn.s-correct .s19-para { color: var(--success); }
-.s19-btn.s-correct .s19-sub  { color: rgba(109,255,179,0.6); }
+.s19-btn.s-correct .s19-sub { color: rgba(109,255,179,0.6); }
 .s19-btn.s-wrong {
-  border-color: var(--danger) !important;
-  background: rgba(255,68,68,0.07) !important;
-  animation: shake 0.35s ease;
+  border-color: var(--danger) !important;
+  background: rgba(255,68,68,0.07) !important;
+  animation: shake 0.3s ease;
 }
-.s19-btn.s-dim { opacity: 0.25; pointer-events: none; }
+.s19-btn.s-dim { opacity: 0.2; pointer-events: none; }
 
 @keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25%      { transform: translateX(-5px); }
-  75%      { transform: translateX(5px); }
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
 }
 
 .s19-feedback {
-  display: none;
-  margin-top: 10px;
-  padding: 8px 12px;
-  border-left: 2px solid;
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  line-height: 1.65;
-  animation: fadeUp 0.3s ease;
+  display: none;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-left: 2px solid;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  line-height: 1.7;
+  animation: fadeUp 0.25s ease;
 }
-.s19-feedback.fb-ok  { display: block; border-color: var(--success); color: var(--success); }
-.s19-feedback.fb-err { display: block; border-color: var(--danger);  color: var(--danger);  }
+.s19-feedback.fb-ok { display: block; border-color: var(--success); color: var(--success); }
+.s19-feedback.fb-err { display: block; border-color: var(--danger); color: var(--danger); }
 .s19-hint {
-  display: block;
-  margin-top: 6px;
-  font-size: 0.68rem;
-  color: var(--warning);
-  opacity: 0.85;
+  display: block;
+  margin-top: 6px;
+  font-size: 0.65rem;
+  color: var(--warning);
+  opacity: 0.85;
 }
 
-/* ─── RBS GRID ─── */
-.unlock-anim { animation: unlockSlide 0.45s ease; }
+/* ─── RBS GRID — 3x2 touch targets ─── */
+.unlock-anim { animation: unlockSlide 0.4s ease; }
 @keyframes unlockSlide {
-  from { opacity: 0; transform: translateY(-10px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .rbs-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
 }
 .rbs-btn {
-  background: rgba(0,0,0,0.45);
-  border: 1px solid var(--primary-mid);
-  color: var(--text-dim);
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  font-weight: 600;
-  padding: 9px 6px;
-  cursor: pointer;
-  text-align: center;
-  letter-spacing: 1px;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
-  min-height: unset;
-  flex: unset;
-  width: 100%;
-  box-shadow: 0 0 8px var(--primary-dim);
+  background: rgba(0,0,0,0.45);
+  border: 1px solid var(--primary-mid);
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 12px 4px;
+  cursor: pointer;
+  text-align: center;
+  min-height: 48px;
+  transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px));
 }
-.rbs-btn::before { display: none; }
-.rbs-btn:hover, .rbs-btn:focus-visible {
-  border-color: var(--primary);
-  color: #ffffff;
-  background: var(--primary-dim);
-  box-shadow: 0 0 20px var(--primary-glow), inset 0 0 10px var(--primary-dim);
-  transform: translateY(-2px);
+.rbs-btn:active:not([aria-disabled="true"]) {
+  background: var(--primary-dim);
+  border-color: var(--primary);
+  transform: scale(0.95);
 }
 .rbs-btn[aria-pressed="true"] {
-  border-color: var(--primary);
-  background: var(--primary-mid);
-  color: #ffffff;
-  box-shadow: inset 4px 0 0 var(--primary), inset 0 0 20px var(--primary-glow), 0 0 30px var(--primary-glow), 0 0 10px var(--primary);
-  text-shadow: 0 0 8px rgba(255,255,255,0.4), 0 0 15px var(--primary);
-  transform: translateY(-2px) scale(1.02);
-  z-index: 10;
+  border-color: var(--primary);
+  background: var(--primary-mid);
+  color: #ffffff;
+  box-shadow: inset 3px 0 0 var(--primary), 0 0 16px var(--primary-glow);
+  text-shadow: 0 0 6px rgba(255,255,255,0.3);
 }
-.rbs-btn[aria-disabled="true"] { pointer-events: none; opacity: 0.5; }
+.rbs-btn[aria-disabled="true"] { pointer-events: none; opacity: 0.4; }
 
-/* ─── AMOUNT INPUT ─── */
+/* ─── AMOUNT INPUT — Large touch ─── */
 .amount-row {
-  display: none;
-  margin-top: 12px;
-  align-items: center;
-  gap: 10px;
-  animation: fadeUp 0.3s ease;
+  display: none;
+  margin-top: 12px;
+  align-items: center;
+  gap: 8px;
+  animation: fadeUp 0.25s ease;
 }
 .amount-row.vis { display: flex; }
 .amount-label {
-  font-family: var(--font-mono);
-  font-size: 0.62rem;
-  color: var(--warning);
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--warning);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .input-wrapper {
-  padding: 4px;
-  background: rgba(0,0,0,0.45);
-  border: 1px solid var(--primary-mid);
-  position: relative;
-  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  box-shadow: 0 0 8px var(--primary-dim);
-}
-.input-wrapper:hover {
-  background: rgba(0,0,0,0.6);
-  border-color: var(--primary);
-  box-shadow: 0 0 15px var(--primary-glow), inset 0 0 10px var(--primary-dim);
-  transform: translateY(-2px);
+  flex: 1;
+  padding: 3px;
+  background: rgba(0,0,0,0.5);
+  border: 1px solid var(--primary-mid);
+  position: relative;
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+  transition: all 0.2s;
 }
 .input-wrapper:focus-within {
-  background: var(--primary-mid);
-  border-color: var(--primary);
-  box-shadow: inset 4px 0 0 var(--primary), inset 0 0 20px var(--primary-glow), 0 0 30px var(--primary-glow), 0 0 10px var(--primary);
-  transform: translateY(-2px) scale(1.02);
-  z-index: 10;
+  border-color: var(--primary);
+  box-shadow: inset 3px 0 0 var(--primary), 0 0 16px var(--primary-glow);
 }
 .input-wrapper::after {
-  content: "€";
-  position: absolute;
-  right: 22px; top: 50%;
-  transform: translateY(-50%);
-  color: var(--primary);
-  font-family: var(--font-mono);
-  font-size: 0.9rem;
-  opacity: 0.6;
-  pointer-events: none;
-  transition: all 0.3s ease;
+  content: "€";
+  position: absolute;
+  right: 18px; top: 50%; transform: translateY(-50%);
+  color: var(--primary);
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  opacity: 0.5;
+  pointer-events: none;
 }
-.input-wrapper:focus-within::after {
-  color: #ffffff;
-  text-shadow: 0 0 10px var(--primary), 0 0 20px var(--primary-glow);
-  opacity: 1;
-}
-.input-wrapper:has(input:disabled) {
-  pointer-events: none;
-  opacity: 0.85;
-}
+.input-wrapper:focus-within::after { color: #fff; opacity: 1; text-shadow: 0 0 8px var(--primary); }
 
 .calc-input {
-  background: rgba(0,0,0,0.7);
-  border: 1px solid var(--primary-mid);
-  color: var(--success);
-  font-family: var(--font-mono);
-  font-size: 1.05rem;
-  font-weight: 600;
-  padding: 8px 40px 8px 12px;
-  width: 150px;
-  outline: none;
-  border-radius: 0;
-  appearance: none;
-  text-align: right;
-  text-shadow: 0 0 8px rgba(109,255,179,0.5);
-  transition: all 0.3s ease;
+  background: rgba(0,0,0,0.6);
+  border: 1px solid var(--primary-mid);
+  color: var(--success);
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding: 12px 36px 12px 12px;
+  width: 100%;
+  outline: none;
+  border-radius: 0;
+  appearance: none;
+  text-align: right;
+  text-shadow: 0 0 6px rgba(109,255,179,0.4);
+  min-height: 48px;
 }
 .calc-input::-webkit-outer-spin-button,
 .calc-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 .calc-input[type=number] { -moz-appearance: textfield; }
-.calc-input::placeholder { color: var(--text-dim); opacity: 0.5; }
-.calc-input:focus {
-  border-color: var(--primary);
-  color: #ffffff;
-  text-shadow: 0 0 10px var(--success), 0 0 20px var(--success);
-  box-shadow: inset 0 0 15px rgba(0,0,0,0.8);
-}
-.calc-input:disabled {
-  background: rgba(0,0,0,0.3);
-  text-shadow: none;
-  cursor: not-allowed;
-}
-
-.amount-unit {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  color: var(--text-dim);
-}
+.calc-input::placeholder { color: var(--text-dim); opacity: 0.4; }
+.calc-input:focus { border-color: var(--primary); color: #fff; }
+.calc-input:disabled { background: rgba(0,0,0,0.3); text-shadow: none; cursor: not-allowed; }
 
 /* ─── PERSON RESULT ─── */
 .p-result {
-  padding: 10px 16px;
-  border-top: 1px solid;
-  font-family: var(--font-mono);
-  font-size: 0.76rem;
-  line-height: 1.65;
-  animation: fadeUp 0.4s ease;
-  position: relative;
+  padding: 10px 12px;
+  border-top: 1px solid;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  line-height: 1.65;
+  animation: fadeUp 0.3s ease;
+  position: relative;
 }
 .p-result::before {
-  content: "";
-  position: absolute;
-  top: 0; left: 0; bottom: 0;
-  width: 3px;
-  background: currentColor;
+  content: ""; position: absolute; top: 0; left: 0; bottom: 0;
+  width: 3px; background: currentColor;
 }
-.p-result.r-ok      { border-color: var(--success); color: var(--success); background: rgba(109,255,179,0.04); }
+.p-result.r-ok { border-color: var(--success); color: var(--success); background: rgba(109,255,179,0.04); }
 .p-result.r-partial { border-color: var(--warning); color: var(--warning); background: rgba(255,224,102,0.04); }
-.p-result.r-wrong   { border-color: var(--danger);  color: var(--danger);  background: rgba(255,68,68,0.04); }
+.p-result.r-wrong { border-color: var(--danger); color: var(--danger); background: rgba(255,68,68,0.04); }
 .r-detail {
-  display: block;
-  margin-top: 6px;
-  padding: 6px 10px;
-  background: rgba(255,255,255,0.04);
-  border-left: 2px solid currentColor;
-  color: var(--text-main);
-  font-size: 0.73rem;
-  line-height: 1.55;
+  display: block; margin-top: 6px; padding: 6px 8px;
+  background: rgba(255,255,255,0.04);
+  border-left: 2px solid currentColor;
+  color: var(--text-main);
+  font-size: 0.68rem;
+  line-height: 1.55;
 }
 
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(-6px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* ─── CONTROLS ─── */
-.controls {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-  margin-top: 28px;
-  padding-top: 20px;
-  border-top: 1px solid var(--border);
-  transition: border-color 0.4s;
+/* ─── BOTTOM ACTION BAR ─── */
+.bottom-bar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 1000;
+  background: rgba(0,0,0,0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid var(--border);
+  padding: 8px 10px calc(var(--safe-bottom) + 8px);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  box-shadow: 0 -2px 16px rgba(0,0,0,0.6);
+  transition: border-color 0.4s;
+}
+.bottom-bar-status {
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  color: var(--text-dim);
+  letter-spacing: 0.5px;
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.85);
+  padding: 2px 10px;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-bottom: none;
+  border-radius: 4px 4px 0 0;
+  white-space: nowrap;
 }
 
-.btn-main {
-  padding: 15px;
-  background: transparent;
-  border: 1px solid var(--primary);
-  color: var(--primary);
-  font-family: var(--font-tech);
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  cursor: pointer;
-  transition: all 0.25s;
-  min-height: 52px;
-  display: grid;
-  place-items: center;
-  position: relative;
-  overflow: hidden;
-  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+.btn-action {
+  flex: 1;
+  padding: 0;
+  min-height: 48px;
+  background: transparent;
+  border: 1px solid var(--primary);
+  color: var(--primary);
+  font-family: var(--font-tech);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
 }
-.btn-main::before {
-  content: "";
-  position: absolute; inset: 0;
-  background: linear-gradient(135deg, var(--primary) 0%, transparent 50%);
-  opacity: 0;
-  transition: opacity 0.3s;
+.btn-action:active:not(:disabled) {
+  background: var(--primary-dim);
+  transform: scale(0.97);
 }
-.btn-main:hover::before { opacity: 0.15; }
-.btn-main:hover, .btn-main:focus-visible {
-  background: var(--primary-dim);
-  box-shadow: 0 0 20px var(--primary-glow), inset 0 0 15px var(--primary-dim);
-  color: var(--text-main);
-  outline: none;
+.btn-action:disabled {
+  border-color: #333;
+  color: #444;
+  cursor: not-allowed;
 }
-.btn-main:active { transform: scale(0.97); }
-.btn-main:disabled {
-  border-color: #444;
-  color: #555;
-  cursor: not-allowed;
-  box-shadow: none;
-  background: transparent;
+.btn-action.btn-secondary {
+  border-color: var(--border);
+  color: var(--text-dim);
 }
-.btn-main:disabled::before { display: none; }
-.btn-main:disabled:hover { transform: none; box-shadow: none; }
-
-#next-btn { border-color: var(--border); color: var(--text-dim); }
-#next-btn:hover:not(:disabled), #next-btn:focus-visible:not(:disabled) { border-color: var(--primary); color: var(--primary); }
-
-.check-helper {
-  font-family: var(--font-mono);
-  font-size: 0.6rem;
-  color: var(--text-dim);
-  letter-spacing: 1px;
-  grid-column: 1 / -1;
-  text-align: center;
-  white-space: nowrap;
+.btn-action.btn-secondary:active:not(:disabled) {
+  border-color: var(--primary);
+  color: var(--primary);
 }
 
 /* ─── CASE COMPLETE ─── */
 .case-complete {
-  text-align: center;
-  padding: 20px 0;
+  text-align: center;
+  padding: 28px 12px;
 }
 .case-complete h2 {
-  color: var(--success);
-  font-size: 1.4rem;
-  text-shadow: 0 0 20px var(--success);
-  letter-spacing: 3px;
-  margin-bottom: 14px;
+  color: var(--success);
+  font-size: 1.15rem;
+  text-shadow: 0 0 16px var(--success);
+  letter-spacing: 3px;
+  margin-bottom: 10px;
 }
 .case-complete p {
-  color: var(--text-dim);
-  font-family: var(--font-mono);
-  font-size: 0.85rem;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
 }
 
 /* ─── BACK BUTTON ─── */
 .back-row {
-  margin-top: 14px;
-  display: flex;
-  justify-content: flex-start;
+  margin-top: 12px;
+  display: flex;
 }
 .btn-back {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 20px;
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--text-dim);
-  font-family: var(--font-tech);
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  text-decoration: none;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
-  transition: color 0.25s, border-color 0.25s, box-shadow 0.25s, background 0.25s;
-  user-select: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  font-family: var(--font-tech);
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  text-decoration: none;
+  cursor: pointer;
+  min-height: 48px;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.2s;
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
 }
-.btn-back::before {
-  content: "";
-  position: absolute; inset: 0;
-  background: linear-gradient(90deg, transparent 0%, var(--primary-dim) 50%, transparent 100%);
-  transform: translateX(-100%);
-  transition: transform 0.4s;
-  pointer-events: none;
+.btn-back:active {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-dim);
 }
-.btn-back:hover::before { transform: translateX(100%); }
-.btn-back:hover, .btn-back:focus-visible {
-  border-color: var(--primary);
-  color: var(--primary);
-  background: var(--primary-dim);
-  box-shadow: 0 0 16px var(--primary-glow), inset 0 0 10px var(--primary-dim);
-}
-.btn-back-arrow {
-  display: inline-block;
-  transition: transform 0.25s;
-  font-size: 0.75rem;
-}
-.btn-back:hover .btn-back-arrow {
-  transform: translateX(-4px);
-  text-shadow: 0 0 8px var(--primary);
-}
-.btn-back-ripple {
-  position: absolute;
-  border-radius: 50%;
-  background: var(--primary);
-  opacity: 0;
-  transform: scale(0);
-  pointer-events: none;
-  width: 10px; height: 10px;
-}
-.btn-back-ripple.active { animation: back-ripple-anim 0.5s ease-out forwards; }
-@keyframes back-ripple-anim {
-  0%   { transform: scale(0);  opacity: 0.5; }
-  100% { transform: scale(25); opacity: 0; }
-}
+.btn-back-arrow { font-size: 0.7rem; }
 
-/* ─── LIVE REGION (SR) ─── */
+/* ─── SR ONLY ─── */
 .sr-only {
-  position: absolute;
-  width: 1px; height: 1px;
-  padding: 0; margin: -1px;
-  overflow: hidden;
-  clip: rect(0,0,0,0);
-  white-space: nowrap;
-  border: 0;
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0,0,0,0); white-space: nowrap; border: 0;
 }
 
-/* ─── DESKTOP BREAKPOINT ─── */
-@media (min-width: 1100px) {
-  .sidebar { display: block; }
-  .ref-panel-mobile { display: none; }
-  .progress-container-mobile { display: none; }
-  .top-bar-progress { display: flex; }
-
-  .main-content {
-    padding: 28px 40px 60px;
-  }
-
-  /* 2-col person cards when 4+ persons */
-  .person-cards.two-col {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-  }
-
-  .terminal-title { font-size: 1.35rem; letter-spacing: 8px; }
-}
-
-@media (min-width: 1400px) {
-  :root { --sidebar-w: 420px; }
-  .main-content { padding: 32px 48px 60px; }
-}
-
-/* ─── MOBILE ─── */
-@media (max-width: 768px) {
-  .main-content { padding: 10px; }
-  .terminal-content { padding: 14px; }
-  .terminal-title { font-size: 1rem; letter-spacing: 3px; }
-  .controls { grid-template-columns: 1fr; }
-  .s19-grid { grid-template-columns: 1fr; }
-  .rbs-grid { grid-template-columns: repeat(2, 1fr); }
-  .pcard-head { flex-wrap: wrap; }
-  .btn-back { clip-path: none; }
-  .top-bar { padding: 8px 14px; }
-  .visor-mode { font-size: 0.5rem; letter-spacing: 2px; }
+/* ─── DESKTOP SCALE-UP ─── */
+@media (min-width: 768px) {
+  .main-content { max-width: 680px; margin: 0 auto; padding: 20px 16px 20px; }
+  .s19-grid { flex-direction: row; }
+  .rbs-grid { grid-template-columns: repeat(6, 1fr); }
+  .bottom-bar { max-width: 680px; left: 50%; transform: translateX(-50%); border-radius: 12px 12px 0 0; }
+  .bottom-bar-status { border-radius: 6px 6px 0 0; }
 }
 </style>
 </head>
 
 <body>
 
-<a href="#main-terminal" class="skip-link">Zum Hauptinhalt springen</a>
+<a href="#main-content" class="skip-link">Zum Hauptinhalt springen</a>
 
-<canvas id="bg-canvas" aria-hidden="true"></canvas>
-<div class="visor-overlay" aria-hidden="true"></div>
-<div class="visor-rim" aria-hidden="true"></div>
-
-<!-- Viewport HUD brackets -->
-<div class="viewport-hud-tl" aria-hidden="true"></div>
-<div class="viewport-hud-tr" aria-hidden="true"></div>
-<div class="viewport-hud-bl" aria-hidden="true"></div>
-<div class="viewport-hud-br" aria-hidden="true"></div>
-<div class="ambient-glow-top" aria-hidden="true"></div>
-<div class="ambient-glow-bottom" aria-hidden="true"></div>
-
-<div class="scanlines" aria-hidden="true"></div>
-<canvas id="noise-canvas" aria-hidden="true"></canvas>
+<canvas id="bg-canvas" class="bg-layer" aria-hidden="true"></canvas>
+<div class="visor-overlay bg-layer" aria-hidden="true"></div>
+<div class="scanlines bg-layer" aria-hidden="true"></div>
 <div class="scan-wipe" id="scan-wipe" aria-hidden="true"></div>
-<div class="theme-transition-overlay" id="transition-overlay" aria-hidden="true"></div>
+<div class="theme-flash" id="theme-flash" aria-hidden="true"></div>
 
-<!-- Live region for screen readers -->
 <div id="sr-live" class="sr-only" aria-live="polite" aria-atomic="true"></div>
 
+<!-- TOP BAR -->
 <header class="top-bar" role="banner">
-  <div class="top-bar-left">
-    <div class="visor-mode" aria-hidden="true">Regelbedarfe Terminal • §§ 20, 23 SGB II</div>
-    <nav class="top-bar-progress" aria-label="Fallfortschritt">
-      <span>Fälle</span>
-      <div class="top-bar-progress-bar" id="topbar-progress" role="progressbar" aria-valuemin="1" aria-valuemax="5" aria-valuenow="1"></div>
-      <span class="top-bar-progress-count" id="topbar-count">1 / 5</span>
-    </nav>
-  </div>
-  <div class="top-bar-ticks" aria-hidden="true">
-    <span></span><span></span><span></span><span></span><span></span>
-  </div>
-  <div class="theme-switch" role="radiogroup" aria-label="Farbschema wählen">
-    <button class="theme-btn" data-theme="orange" role="radio" aria-checked="true" aria-label="Analyse Mode — Orange" title="Analyse Mode">▣</button>
-    <button class="theme-btn" data-theme="blue" role="radio" aria-checked="false" aria-label="Scan Mode — Blau" title="Scan Mode">◈</button>
-    <button class="theme-btn" data-theme="green" role="radio" aria-checked="false" aria-label="Data Mode — Grün" title="Data Mode">◉</button>
-  </div>
+  <div class="top-bar-row">
+    <div class="visor-label" aria-hidden="true">§§ 20, 23 SGB II</div>
+    <div class="theme-switch" role="radiogroup" aria-label="Farbschema">
+      <button class="theme-btn" data-theme="orange" role="radio" aria-checked="true" aria-label="Orange" title="Analyse Mode">▣</button>
+      <button class="theme-btn" data-theme="blue" role="radio" aria-checked="false" aria-label="Blau" title="Scan Mode">◈</button>
+      <button class="theme-btn" data-theme="green" role="radio" aria-checked="false" aria-label="Grün" title="Data Mode">◉</button>
+    </div>
+  </div>
+  <div class="progress-strip" role="progressbar" aria-label="Fallfortschritt" aria-valuemin="1" aria-valuemax="5" aria-valuenow="1" id="progress-strip">
+    <div class="progress-strip-seg" id="pseg-0"></div>
+    <div class="progress-strip-seg" id="pseg-1"></div>
+    <div class="progress-strip-seg" id="pseg-2"></div>
+    <div class="progress-strip-seg" id="pseg-3"></div>
+    <div class="progress-strip-seg" id="pseg-4"></div>
+    <span class="progress-strip-label" id="prog-label">1 / 5</span>
+  </div>
 </header>
 
-<div class="app-layout">
+<!-- REFERENCE BOTTOM SHEET -->
+<div class="ref-sheet-overlay" id="ref-overlay" aria-hidden="true"></div>
+<div class="ref-sheet" id="ref-sheet" role="dialog" aria-label="Regelbedarfsstufen Referenz" aria-hidden="true">
+  <div class="ref-sheet-handle"><div class="ref-sheet-handle-bar"></div></div>
+  <div class="ref-sheet-title">Regelbedarfsstufen 2026</div>
+  <table class="ref-table" role="table" aria-label="Regelbedarfsstufen">
+    <thead>
+      <tr>
+        <th scope="col">Stufe</th>
+        <th scope="col">Personengruppe</th>
+        <th scope="col">Rechtsgrundlage</th>
+        <th scope="col" style="text-align:right">2026</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td class="t-stufe">1</td><td>Alleinstehende · Alleinerziehende (eigener HH)</td><td class="t-para">§ 20 Abs. 2 S. 1 SGB II</td><td class="t-amt">563,00 €</td></tr>
+      <tr><td class="t-stufe">2</td><td>Volljährige Partner in einer BG (je Person)</td><td class="t-para">§ 20 Abs. 4 SGB II</td><td class="t-amt">506,00 €</td></tr>
+      <tr><td class="t-stufe">3</td><td>Volljährig · U25 · im Elternhaushalt · kein eigener HH</td><td class="t-para">§ 20 Abs. 2 S. 2 Nr. 2 SGB II</td><td class="t-amt">451,00 €</td></tr>
+      <tr><td class="t-stufe">4</td><td>Jugendliche 15–17 Jahre</td><td class="t-para">§ 20 Abs. 2 S. 2 Nr. 1 SGB II</td><td class="t-amt">471,00 €</td></tr>
+      <tr><td class="t-stufe">4</td><td>Kinder 14 Jahre</td><td class="t-para">§ 23 Nr. 1 SGB II</td><td class="t-amt">471,00 €</td></tr>
+      <tr><td class="t-stufe">5</td><td>Kinder 6–13 Jahre</td><td class="t-para">§ 23 Nr. 1 SGB II</td><td class="t-amt">390,00 €</td></tr>
+      <tr><td class="t-stufe">6</td><td>Kinder 0–5 Jahre</td><td class="t-para">§ 23 Nr. 1 SGB II</td><td class="t-amt">357,00 €</td></tr>
+    </tbody>
+  </table>
+  <button class="ref-sheet-close" id="ref-close">Schließen</button>
+</div>
 
-  <!-- SIDEBAR: Desktop persistent reference -->
-  <aside class="sidebar" aria-label="Regelbedarfsstufen Referenz">
-    <div class="sidebar-inner">
-      <div class="sidebar-hud-tl" aria-hidden="true"></div>
-      <div class="sidebar-hud-tr" aria-hidden="true"></div>
-      <div class="sidebar-hud-bl" aria-hidden="true"></div>
-      <div class="sidebar-hud-br" aria-hidden="true"></div>
-      <div class="sidebar-title">Referenzdaten</div>
-      <div class="sidebar-subtitle">Regelbedarfsstufen 2026</div>
-      <table class="ref-table" role="table" aria-label="Regelbedarfsstufen Übersicht">
-        <thead>
-          <tr>
-            <th scope="col">Stufe</th>
-            <th scope="col">Personengruppe</th>
-            <th scope="col">Rechtsgrundlage</th>
-            <th scope="col" style="text-align:right">2026</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td class="t-stufe">1</td><td>Alleinstehende · Alleinerziehende (eigener HH)</td><td class="t-para">§ 20 Abs. 2 S. 1 SGB II</td><td class="t-amt">563,00 €</td></tr>
-          <tr><td class="t-stufe">2</td><td>Volljährige Partner in einer BG (je Person)</td><td class="t-para">§ 20 Abs. 4 SGB II</td><td class="t-amt">506,00 €</td></tr>
-          <tr><td class="t-stufe">3</td><td>Volljährig · U25 · im Elternhaushalt · kein eigener HH</td><td class="t-para">§ 20 Abs. 2 S. 2 Nr. 2 SGB II</td><td class="t-amt">451,00 €</td></tr>
-          <tr><td class="t-stufe">4</td><td>Jugendliche 15–17 Jahre</td><td class="t-para">§ 20 Abs. 2 S. 2 Nr. 1 SGB II</td><td class="t-amt">471,00 €</td></tr>
-          <tr><td class="t-stufe">4</td><td>Kinder 14 Jahre</td><td class="t-para">§ 23 Nr. 1 SGB II</td><td class="t-amt">471,00 €</td></tr>
-          <tr><td class="t-stufe">5</td><td>Kinder 6–13 Jahre</td><td class="t-para">§ 23 Nr. 1 SGB II</td><td class="t-amt">390,00 €</td></tr>
-          <tr><td class="t-stufe">6</td><td>Kinder 0–5 Jahre</td><td class="t-para">§ 23 Nr. 1 SGB II</td><td class="t-amt">357,00 €</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </aside>
+<!-- MAIN CONTENT -->
+<main class="main-content" id="main-content">
 
-  <!-- MAIN CONTENT -->
-  <main class="main-content" id="main-terminal" role="main">
+  <div class="case-header">
+    <h1 class="case-title">§§ 20, 23 SGB II</h1>
+    <div class="case-subtitle">Regelbedarfsstufe & Rechtsgrundlage</div>
+    <div class="case-meta-line" id="case-meta" aria-live="polite"></div>
+  </div>
 
-    <!-- Mobile-only progress -->
-    <div class="progress-container-mobile">
-      <div class="progress-text">
-        <span>Fälle</span>
-        <span id="prog-count">0 / 5</span>
-      </div>
-      <div class="progress-bar-mobile" id="progress-bar" role="progressbar" aria-valuemin="1" aria-valuemax="5" aria-valuenow="1"></div>
-    </div>
+  <div class="case-card">
+    <div class="case-card-corner" aria-hidden="true"></div>
+    <div class="case-text" id="case-text"></div>
+    <div class="bg-count" id="bg-count"></div>
+  </div>
 
-    <div class="terminal-window hud-frame">
-      <div class="hud-corner-br" aria-hidden="true"></div>
-      <div class="hud-corner-bl" aria-hidden="true"></div>
+  <button class="ref-sheet-trigger" id="ref-trigger" aria-label="Regelbedarfsstufen Referenz öffnen">
+    <span class="ref-icon">◈</span>
+    <span>Regelbedarfsstufen anzeigen</span>
+  </button>
 
-      <div class="terminal-header">
-        <h1 class="terminal-title">§§ 20, 23 SGB II</h1>
-        <div class="terminal-subtitle">Regelbedarfsstufe und Rechtsgrundlage ermitteln</div>
-        <div class="case-meta" id="case-meta" aria-live="polite"></div>
-      </div>
+  <section class="person-cards" id="person-cards" aria-label="Personen der Bedarfsgemeinschaft"></section>
 
-      <div class="terminal-content">
+  <div id="global-feedback" aria-live="polite"></div>
 
-        <!-- Mobile-only ref accordion -->
-        <div class="ref-panel-mobile" id="ref-panel" aria-expanded="false">
-          <button class="ref-toggle" id="ref-toggle-btn" aria-expanded="false" aria-controls="ref-body-mobile">
-            <span>▶ Regelbedarfsstufen Übersicht (Referenz)</span>
-            <span class="arr" aria-hidden="true">▼</span>
-          </button>
-          <div class="ref-body" id="ref-body-mobile" role="region" aria-label="Regelbedarfsstufen Tabelle">
-            <table class="ref-table" role="table" aria-label="Regelbedarfsstufen Übersicht">
-              <thead><tr><th scope="col">Stufe</th><th scope="col">Personengruppe</th><th scope="col">Rechtsgrundlage</th><th scope="col" style="text-align:right">2026</th></tr></thead>
-              <tbody>
-                <tr><td class="t-stufe">1</td><td>Alleinstehende · Alleinerziehende (eigener HH)</td><td class="t-para">§ 20 Abs. 2 S. 1 SGB II</td><td class="t-amt">563,00 €</td></tr>
-                <tr><td class="t-stufe">2</td><td>Volljährige Partner in einer BG (je Person)</td><td class="t-para">§ 20 Abs. 4 SGB II</td><td class="t-amt">506,00 €</td></tr>
-                <tr><td class="t-stufe">3</td><td>Volljährig · U25 · im Elternhaushalt · kein eigener HH</td><td class="t-para">§ 20 Abs. 2 S. 2 Nr. 2 SGB II</td><td class="t-amt">451,00 €</td></tr>
-                <tr><td class="t-stufe">4</td><td>Jugendliche 15–17 Jahre</td><td class="t-para">§ 20 Abs. 2 S. 2 Nr. 1 SGB II</td><td class="t-amt">471,00 €</td></tr>
-                <tr><td class="t-stufe">4</td><td>Kinder 14 Jahre</td><td class="t-para">§ 23 Nr. 1 SGB II</td><td class="t-amt">471,00 €</td></tr>
-                <tr><td class="t-stufe">5</td><td>Kinder 6–13 Jahre</td><td class="t-para">§ 23 Nr. 1 SGB II</td><td class="t-amt">390,00 €</td></tr>
-                <tr><td class="t-stufe">6</td><td>Kinder 0–5 Jahre</td><td class="t-para">§ 23 Nr. 1 SGB II</td><td class="t-amt">357,00 €</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
+  <div class="back-row">
+    <a href="index.html" class="btn-back" id="btn-back">
+      <span class="btn-back-arrow" aria-hidden="true">◄</span>Zurück zum Hauptmenü
+    </a>
+  </div>
 
-        <section aria-label="Sachverhalt">
-          <div class="case-text" id="case-text"></div>
-          <div class="bg-count" id="bg-count"></div>
-        </section>
+</main>
 
-        <section class="person-cards" id="person-cards" aria-label="Personen der Bedarfsgemeinschaft"></section>
-
-        <div id="global-feedback" aria-live="polite"></div>
-
-        <div class="controls">
-          <button class="btn-main" id="check-btn" disabled aria-describedby="check-helper">Regelbedarfe prüfen</button>
-          <button class="btn-main" id="next-btn" disabled>Nächster Fall</button>
-          <span class="check-helper" id="check-helper" role="status"></span>
-        </div>
-
-        <div class="back-row">
-          <a href="index.html" class="btn-back" id="btn-back">
-            <span class="btn-back-arrow" aria-hidden="true">◄</span>Zurück zum Hauptmenü
-            <span class="btn-back-ripple" id="back-ripple" aria-hidden="true"></span>
-          </a>
-        </div>
-
-      </div>
-    </div>
-
-  </main>
+<!-- BOTTOM ACTION BAR -->
+<div class="bottom-bar" id="bottom-bar">
+  <div class="bottom-bar-status" id="bar-status" role="status"></div>
+  <button class="btn-action" id="check-btn" disabled>Prüfen</button>
+  <button class="btn-action btn-secondary" id="next-btn" disabled>Nächster Fall</button>
 </div>
 
 <script>
@@ -1508,137 +1057,147 @@ button:focus-visible, a:focus-visible, input:focus-visible {
 // SR ANNOUNCE
 // ══════════════════════════════════════
 function announce(msg) {
-  const el = document.getElementById('sr-live');
-  el.textContent = '';
-  requestAnimationFrame(() => { el.textContent = msg; });
+  const el = document.getElementById('sr-live');
+  el.textContent = '';
+  requestAnimationFrame(() => { el.textContent = msg; });
 }
 
 // ══════════════════════════════════════
 // THEME
 // ══════════════════════════════════════
 const themeBtns = document.querySelectorAll('.theme-btn');
+let themeColor = { r: 255, g: 123, b: 0 };
 
 function switchTheme(t) {
-  const ov = document.getElementById('transition-overlay');
-  ov.classList.add('active');
-  setTimeout(() => {
-    document.body.setAttribute('data-theme', t);
-    updateParticleColors(t);
-    themeBtns.forEach(b => {
-      const isActive = b.dataset.theme === t;
-      b.setAttribute('aria-checked', isActive ? 'true' : 'false');
-    });
-    localStorage.setItem('preferredTheme', t);
-    announce('Farbschema gewechselt: ' + (t === 'orange' ? 'Analyse Mode' : t === 'blue' ? 'Scan Mode' : 'Data Mode'));
-    setTimeout(() => ov.classList.remove('active'), 400);
-  }, 300);
+  const fl = document.getElementById('theme-flash');
+  fl.classList.add('active');
+  setTimeout(() => {
+    document.body.setAttribute('data-theme', t);
+    if (t === 'orange') themeColor = { r: 255, g: 123, b: 0 };
+    if (t === 'blue')   themeColor = { r: 0, g: 212, b: 255 };
+    if (t === 'green')  themeColor = { r: 0, g: 255, b: 136 };
+    themeBtns.forEach(b => b.setAttribute('aria-checked', b.dataset.theme === t ? 'true' : 'false'));
+    localStorage.setItem('preferredTheme', t);
+    announce('Farbschema: ' + (t === 'orange' ? 'Orange' : t === 'blue' ? 'Blau' : 'Grün'));
+    setTimeout(() => fl.classList.remove('active'), 350);
+  }, 250);
 }
 
 themeBtns.forEach(btn => {
-  btn.addEventListener('click', () => switchTheme(btn.dataset.theme));
-  btn.addEventListener('keydown', (e) => {
-    const btnsArr = Array.from(themeBtns);
-    const idx = btnsArr.indexOf(btn);
-    let next = -1;
-    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-      e.preventDefault();
-      next = (idx + 1) % btnsArr.length;
-    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-      e.preventDefault();
-      next = (idx - 1 + btnsArr.length) % btnsArr.length;
-    }
-    if (next >= 0) {
-      btnsArr[next].focus();
-      switchTheme(btnsArr[next].dataset.theme);
-    }
-  });
+  btn.addEventListener('click', () => switchTheme(btn.dataset.theme));
+  btn.addEventListener('keydown', (e) => {
+    const arr = Array.from(themeBtns);
+    const i = arr.indexOf(btn);
+    let n = -1;
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); n = (i + 1) % arr.length; }
+    else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); n = (i - 1 + arr.length) % arr.length; }
+    if (n >= 0) { arr[n].focus(); switchTheme(arr[n].dataset.theme); }
+  });
 });
 
-window.addEventListener('DOMContentLoaded', () => {
-  const t = localStorage.getItem('preferredTheme') || 'orange';
-  document.body.setAttribute('data-theme', t);
-  updateParticleColors(t);
-  themeBtns.forEach(b => {
-    b.setAttribute('aria-checked', b.dataset.theme === t ? 'true' : 'false');
-  });
-});
+(function initTheme() {
+  const t = localStorage.getItem('preferredTheme') || 'orange';
+  document.body.setAttribute('data-theme', t);
+  if (t === 'blue') themeColor = { r: 0, g: 212, b: 255 };
+  else if (t === 'green') themeColor = { r: 0, g: 255, b: 136 };
+  themeBtns.forEach(b => b.setAttribute('aria-checked', b.dataset.theme === t ? 'true' : 'false'));
+})();
 
 // ══════════════════════════════════════
-// REFERENCE PANEL (mobile accordion)
+// REFERENCE BOTTOM SHEET
 // ══════════════════════════════════════
-const refToggleBtn = document.getElementById('ref-toggle-btn');
-refToggleBtn.addEventListener('click', () => {
-  const panel = document.getElementById('ref-panel');
-  const expanded = panel.getAttribute('aria-expanded') === 'true';
-  panel.setAttribute('aria-expanded', !expanded);
-  refToggleBtn.setAttribute('aria-expanded', !expanded);
+const refSheet = document.getElementById('ref-sheet');
+const refOverlay = document.getElementById('ref-overlay');
+
+function openRef() {
+  refSheet.classList.add('open');
+  refSheet.setAttribute('aria-hidden', 'false');
+  refOverlay.classList.add('open');
+  refOverlay.setAttribute('aria-hidden', 'false');
+  document.getElementById('ref-close').focus();
+  document.body.style.overflow = 'hidden';
+}
+function closeRef() {
+  refSheet.classList.remove('open');
+  refSheet.setAttribute('aria-hidden', 'true');
+  refOverlay.classList.remove('open');
+  refOverlay.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+  document.getElementById('ref-trigger').focus();
+}
+
+document.getElementById('ref-trigger').addEventListener('click', openRef);
+document.getElementById('ref-close').addEventListener('click', closeRef);
+refOverlay.addEventListener('click', closeRef);
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && refSheet.classList.contains('open')) closeRef();
 });
 
 // ══════════════════════════════════════
 // DATA
 // ══════════════════════════════════════
 const STUFEN = {
-  1: { label: "Regelbedarfsstufe 1", amount: 563 },
-  2: { label: "Regelbedarfsstufe 2", amount: 506 },
-  3: { label: "Regelbedarfsstufe 3", amount: 471 },
-  4: { label: "Regelbedarfsstufe 4", amount: 471 },
-  5: { label: "Regelbedarfsstufe 5", amount: 390 },
-  6: { label: "Regelbedarfsstufe 6", amount: 357 },
+  1: { label: "Regelbedarfsstufe 1", amount: 563 },
+  2: { label: "Regelbedarfsstufe 2", amount: 506 },
+  3: { label: "Regelbedarfsstufe 3", amount: 471 },
+  4: { label: "Regelbedarfsstufe 4", amount: 471 },
+  5: { label: "Regelbedarfsstufe 5", amount: 390 },
+  6: { label: "Regelbedarfsstufe 6", amount: 357 },
 };
 
 const cases = [
-  {
-    id: 1,
-    title: "Bedarfsgemeinschaft Brandt — 4 Personen",
-    text: "Henrik Brandt (42) lebt mit seiner Partnerin Petra (39) sowie den gemeinsamen Kindern Felix (8) und Marie (14) in einer Wohnung. Alle vier Personen sind hilfebedürftig und bilden eine Bedarfsgemeinschaft. Beide Erwachsene sind in der Lage, täglich mindestens 3 Stunden erwerbstätig zu sein.",
-    persons: [
-      { name: "Henrik Brandt", tag: "42 Jahre", s1Correct: 1, s1Reason: "Henrik (42) hat das 15. Lebensjahr vollendet und ist erwerbsfähig (≥ 3 Stunden täglich). Er ist erwerbsfähiger Leistungsberechtigter (eLb) → § 19 Abs. 1 S. 1 SGB II.", s1Hint: null, correctStufe: 2, s2Reason: "Als volljähriger Partner in einer BG (§ 20 Abs. 4 SGB II) → Regelbedarfsstufe 2 → 506,00 €" },
-      { name: "Petra Brandt", tag: "39 Jahre", s1Correct: 1, s1Reason: "Petra (39) ist erwerbsfähig und hat das 15. Lebensjahr vollendet. → eLb → § 19 Abs. 1 S. 1 SGB II.", s1Hint: null, correctStufe: 2, s2Reason: "Als volljährige Partnerin in einer BG (§ 20 Abs. 4 SGB II) → Regelbedarfsstufe 2 → 506,00 €" },
-      { name: "Felix Brandt", tag: "8 Jahre", s1Correct: 2, s1Reason: "Felix (8) hat das 15. Lebensjahr noch nicht vollendet und kann daher nicht erwerbsfähig sein. Er ist nicht erwerbsfähiger Leistungsberechtigter (Nicht-eLb) → § 19 Abs. 1 S. 2 SGB II.", s1Hint: null, correctStufe: 5, s2Reason: "Felix ist 8 Jahre alt (Altersgruppe 6–13 Jahre, § 23 Nr. 1 SGB II) → Regelbedarfsstufe 5 → 390,00 €" },
-      { name: "Marie Brandt", tag: "14 Jahre", s1Correct: 2, s1Reason: "Marie (14) hat das 15. Lebensjahr noch nicht vollendet → nicht erwerbsfähig → Nicht-eLb → § 19 Abs. 1 S. 2 SGB II.", s1Hint: "Regelbedarfsstufe 4 gilt bei Nicht-eLb für 14–Jährige. Marie ist Nicht-eLb und befindet sich im 15. Lebensjahr. Lebensjahr voraussetzt.", correctStufe: 4, s2Reason: "Marie ist 14 Jahre alt (Altersgruppe 14, § 23 Nr. 1 SGB II) → Regelbedarfsstufe 4 → 471,00 €" }
-    ]
-  },
-  {
-    id: 2,
-    title: "Bedarfsgemeinschaft Özdemir — 5 Personen",
-    text: "Yusuf Özdemir (36) und seine Partnerin Fatma (33) leben mit ihren Kindern Cem (4), Zeynep (10) und Tarık (15) in einer Bedarfsgemeinschaft. Laut Sachverhalt sind Yusuf, Fatma und Tarık in der Lage, täglich mindestens 3 Stunden erwerbstätig zu sein.",
-    persons: [
-      { name: "Emir Özdemir", tag: "36 Jahre", s1Correct: 1, s1Reason: "Yusuf (36) ist erwerbsfähig und hat das 15. Lebensjahr vollendet. → eLb → § 19 Abs. 1 S. 1 SGB II.", s1Hint: null, correctStufe: 2, s2Reason: "Als volljähriger Partner in einer BG (§ 20 Abs. 4 SGB II) → Regelbedarfsstufe 2 → 506,00 €" },
-      { name: "Fatma Özdemir", tag: "33 Jahre", s1Correct: 1, s1Reason: "Fatma (33) ist erwerbsfähig. → eLb → § 19 Abs. 1 S. 1 SGB II.", s1Hint: null, correctStufe: 2, s2Reason: "Als volljährige Partnerin in einer BG (§ 20 Abs. 4 SGB II) → Regelbedarfsstufe 2 → 506,00 €" },
-      { name: "Ahmet Özdemir", tag: "4 Jahre", s1Correct: 2, s1Reason: "Cem (4) hat das 15. Lebensjahr nicht vollendet → nicht erwerbsfähig → Nicht-eLb → § 19 Abs. 1 S. 2 SGB II.", s1Hint: null, correctStufe: 6, s2Reason: "Cem ist 4 Jahre alt (Altersgruppe 0–5 Jahre, § 23 Nr. 1 SGB II) → Regelbedarfsstufe 6 → 357,00 €" },
-      { name: "Zeynep Özdemir", tag: "10 Jahre", s1Correct: 2, s1Reason: "Zeynep (10) hat das 15. Lebensjahr nicht vollendet → Nicht-eLb → § 19 Abs. 1 S. 2 SGB II.", s1Hint: null, correctStufe: 5, s2Reason: "Zeynep ist 10 Jahre alt (Altersgruppe 6–13 Jahre, § 23 Nr. 1 SGB II) → Regelbedarfsstufe 5 → 390,00 €" },
-      { name: "Tarık Özdemir", tag: "15 Jahre", s1Correct: 1, s1Reason: "Tarık (15) hat das 15. Lebensjahr vollendet und ist laut Sachverhalt erwerbsfähig (≥ 3 Stunden täglich). → eLb → § 19 Abs. 1 S. 1 SGB II.", s1Hint: "Mit Vollendung des 15. Lebensjahres kann Erwerbsfähigkeit vorliegen. Tarık unterscheidet sich damit vom 14-jährigen Familienmitglied in Fall 1.", correctStufe: 4, s2Reason: "Tarık ist 15 Jahre alt (sonstiger erwerbsfähiger Angehöriger der BG, der das 18. Lebensjahr noch nicht vollendet hat, § 20 Abs. 2 S. 2 Nr. 1 SGB II) → Regelbedarfsstufe 4 → 471,00 €" }
-    ]
-  },
-  {
-    id: 3,
-    title: "Bedarfsgemeinschaft Koch — Nicht-eLb-Erwachsene",
-    text: "Dieter Koch (51) lebt mit seiner Partnerin Renate (48) und ihrem Sohn Tim (11) zusammen. Renate ist aufgrund einer dauerhaften Erkrankung nicht in der Lage, täglich mindestens 3 Stunden erwerbstätig zu sein. Dieter ist erwerbsfähig.",
-    persons: [
-      { name: "Dieter Koch", tag: "51 Jahre", s1Correct: 1, s1Reason: "Dieter (51) ist erwerbsfähig. → eLb → § 19 Abs. 1 S. 1 SGB II.", s1Hint: null, correctStufe: 2, s2Reason: "Als volljähriger Partner in einer BG (§ 20 Abs. 4 SGB II) → Regelbedarfsstufe 2 → 506,00 €" },
-      { name: "Renate Koch", tag: "48 Jahre · dauerhaft erkrankt", s1Correct: 2, s1Reason: "Renate (48) kann aufgrund ihrer Erkrankung nicht täglich mindestens 3 Stunden erwerbstätig sein → nicht erwerbsfähig → Nicht-eLb → § 19 Abs. 1 S. 2 SGB II.", s1Hint: null, correctStufe: 2, s2Reason: "Renate ist volljährig und lebt als Partnerin in der BG. § 20 Abs. 4 SGB II gilt auch für Nicht-eLb-Partner. → Regelbedarfsstufe 2 → 506,00 €\n⚡ Die Rechtsgrundlage für den Anspruch (§ 19 I S. 2) ändert nichts an der Höhe der Regelbedarfsstufe." },
-      { name: "Tim Koch", tag: "11 Jahre", s1Correct: 2, s1Reason: "Tim (11) hat das 15. Lebensjahr nicht vollendet → Nicht-eLb → § 19 Abs. 1 S. 2 SGB II.", s1Hint: null, correctStufe: 5, s2Reason: "Tim ist 11 Jahre alt (Altersgruppe 6–13 Jahre, § 23 Nr. 1 SGB II) → Regelbedarfsstufe 5 → 390,00 €" }
-    ]
-  },
-  {
-    id: 4,
-    title: "Bedarfsgemeinschaft Schulz — U25 im Elternhaushalt",
-    text: "Andrea Schulz (44) lebt mit ihrem Sohn Leon (22) und ihrer Tochter Lena (7) in einer Bedarfsgemeinschaft. Leon ist nach seinem Ausbildungsabschluss vorübergehend zu seiner Mutter zurückgezogen und führt keinen eigenen Haushalt. Alle Erwachsenen sind erwerbsfähig.",
-    persons: [
-      { name: "Andrea Schulz", tag: "44 Jahre · Alleinerziehend", s1Correct: 1, s1Reason: "Andrea (44) ist erwerbsfähig. → eLb → § 19 Abs. 1 S. 1 SGB II.", s1Hint: null, correctStufe: 1, s2Reason: "Andrea führt den Haushalt alleine (§ 20 Abs. 2 S. 1 SGB II) → Regelbedarfsstufe 1 → 563,00 €" },
-      { name: "Leon Schulz", tag: "22 Jahre · U25, kein eigener HH", s1Correct: 1, s1Reason: "Leon (22) hat das 15. Lebensjahr vollendet und ist erwerbsfähig. → eLb → § 19 Abs. 1 S. 1 SGB II.", s1Hint: null, correctStufe: 3, s2Reason: "Leon ist 22 Jahre alt (unter 25), volljährig, lebt im Haushalt seiner Mutter ohne eigene Haushaltsführung (§ 20 Abs. 2 S. 2 Nr. 2 SGB II) → Regelbedarfsstufe 3 → 451,00 €" },
-      { name: "Lena Schulz", tag: "7 Jahre", s1Correct: 2, s1Reason: "Lena (7) hat das 15. Lebensjahr nicht vollendet → Nicht-eLb → § 19 Abs. 1 S. 2 SGB II.", s1Hint: null, correctStufe: 5, s2Reason: "Lena ist 7 Jahre alt (Altersgruppe 6–13 Jahre, § 23 Nr. 1 SGB II) → Regelbedarfsstufe 5 → 390,00 €" }
-    ]
-  },
-  {
-    id: 5,
-    title: "Bedarfsgemeinschaft Wagner — U25 als Paar",
-    text: "Maja Wagner (17) und ihr Partner Florian Richter (19) leben gemeinsam in einer eigenen Wohnung. Sie führen gemeinsam den Haushalt. Beide sind erwerbsfähig und hilfebedürftig.",
-    persons: [
-      { name: "Maja Wagner", tag: "17 Jahre · U25, eigener HH", s1Correct: 1, s1Reason: "Maja (17) ist erwerbsfähig und hat das 15. Lebensjahr vollendet. → eLb → § 19 Abs. 1 S. 1 SGB II.", s1Hint: null, correctStufe: 4, s2Reason: "Maja lebt als minderjährige Partnerin in einer BG (§ 20 Abs. 2 S. 2 Nr. 1 SGB II) → Regelbedarfsstufe 4 → 471,00 €\n⚡." },
-      { name: "Florian Richter", tag: "19 Jahre", s1Correct: 1, s1Reason: "Florian (27) ist erwerbsfähig. → eLb → § 19 Abs. 1 S. 1 SGB II.", s1Hint: null, correctStufe: 1, s2Reason: "Als volljähriger Partner in einer BG mit minderjähriger Partnerin (§ 20 Abs. 2 SGB II) → Regelbedarfsstufe 1 → 563,00 €" }
-    ]
-  }
+  {
+    id: 1,
+    title: "Bedarfsgemeinschaft Brandt — 4 Personen",
+    text: "Henrik Brandt (42) lebt mit seiner Partnerin Petra (39) sowie den gemeinsamen Kindern Felix (8) und Marie (14) in einer Wohnung. Alle vier Personen sind hilfebedürftig und bilden eine Bedarfsgemeinschaft. Beide Erwachsene sind in der Lage, täglich mindestens 3 Stunden erwerbstätig zu sein.",
+    persons: [
+      { name: "Henrik Brandt", tag: "42 Jahre", s1Correct: 1, s1Reason: "Henrik (42) hat das 15. Lebensjahr vollendet und ist erwerbsfähig (≥ 3 Stunden täglich). Er ist erwerbsfähiger Leistungsberechtigter (eLb) → § 19 Abs. 1 S. 1 SGB II.", s1Hint: null, correctStufe: 2, s2Reason: "Als volljähriger Partner in einer BG (§ 20 Abs. 4 SGB II) → Regelbedarfsstufe 2 → 506,00 €" },
+      { name: "Petra Brandt", tag: "39 Jahre", s1Correct: 1, s1Reason: "Petra (39) ist erwerbsfähig und hat das 15. Lebensjahr vollendet. → eLb → § 19 Abs. 1 S. 1 SGB II.", s1Hint: null, correctStufe: 2, s2Reason: "Als volljährige Partnerin in einer BG (§ 20 Abs. 4 SGB II) → Regelbedarfsstufe 2 → 506,00 €" },
+      { name: "Felix Brandt", tag: "8 Jahre", s1Correct: 2, s1Reason: "Felix (8) hat das 15. Lebensjahr noch nicht vollendet und kann daher nicht erwerbsfähig sein. Er ist nicht erwerbsfähiger Leistungsberechtigter (Nicht-eLb) → § 19 Abs. 1 S. 2 SGB II.", s1Hint: null, correctStufe: 5, s2Reason: "Felix ist 8 Jahre alt (Altersgruppe 6–13 Jahre, § 23 Nr. 1 SGB II) → Regelbedarfsstufe 5 → 390,00 €" },
+      { name: "Marie Brandt", tag: "14 Jahre", s1Correct: 2, s1Reason: "Marie (14) hat das 15. Lebensjahr noch nicht vollendet → nicht erwerbsfähig → Nicht-eLb → § 19 Abs. 1 S. 2 SGB II.", s1Hint: "Regelbedarfsstufe 4 gilt bei Nicht-eLb für 14–Jährige. Marie ist Nicht-eLb und befindet sich im 15. Lebensjahr. Lebensjahr voraussetzt.", correctStufe: 4, s2Reason: "Marie ist 14 Jahre alt (Altersgruppe 14, § 23 Nr. 1 SGB II) → Regelbedarfsstufe 4 → 471,00 €" }
+    ]
+  },
+  {
+    id: 2,
+    title: "Bedarfsgemeinschaft Özdemir — 5 Personen",
+    text: "Yusuf Özdemir (36) und seine Partnerin Fatma (33) leben mit ihren Kindern Cem (4), Zeynep (10) und Tarık (15) in einer Bedarfsgemeinschaft. Laut Sachverhalt sind Yusuf, Fatma und Tarık in der Lage, täglich mindestens 3 Stunden erwerbstätig zu sein.",
+    persons: [
+      { name: "Emir Özdemir", tag: "36 Jahre", s1Correct: 1, s1Reason: "Yusuf (36) ist erwerbsfähig und hat das 15. Lebensjahr vollendet. → eLb → § 19 Abs. 1 S. 1 SGB II.", s1Hint: null, correctStufe: 2, s2Reason: "Als volljähriger Partner in einer BG (§ 20 Abs. 4 SGB II) → Regelbedarfsstufe 2 → 506,00 €" },
+      { name: "Fatma Özdemir", tag: "33 Jahre", s1Correct: 1, s1Reason: "Fatma (33) ist erwerbsfähig. → eLb → § 19 Abs. 1 S. 1 SGB II.", s1Hint: null, correctStufe: 2, s2Reason: "Als volljährige Partnerin in einer BG (§ 20 Abs. 4 SGB II) → Regelbedarfsstufe 2 → 506,00 €" },
+      { name: "Ahmet Özdemir", tag: "4 Jahre", s1Correct: 2, s1Reason: "Cem (4) hat das 15. Lebensjahr nicht vollendet → nicht erwerbsfähig → Nicht-eLb → § 19 Abs. 1 S. 2 SGB II.", s1Hint: null, correctStufe: 6, s2Reason: "Cem ist 4 Jahre alt (Altersgruppe 0–5 Jahre, § 23 Nr. 1 SGB II) → Regelbedarfsstufe 6 → 357,00 €" },
+      { name: "Zeynep Özdemir", tag: "10 Jahre", s1Correct: 2, s1Reason: "Zeynep (10) hat das 15. Lebensjahr nicht vollendet → Nicht-eLb → § 19 Abs. 1 S. 2 SGB II.", s1Hint: null, correctStufe: 5, s2Reason: "Zeynep ist 10 Jahre alt (Altersgruppe 6–13 Jahre, § 23 Nr. 1 SGB II) → Regelbedarfsstufe 5 → 390,00 €" },
+      { name: "Tarık Özdemir", tag: "15 Jahre", s1Correct: 1, s1Reason: "Tarık (15) hat das 15. Lebensjahr vollendet und ist laut Sachverhalt erwerbsfähig (≥ 3 Stunden täglich). → eLb → § 19 Abs. 1 S. 1 SGB II.", s1Hint: "Mit Vollendung des 15. Lebensjahres kann Erwerbsfähigkeit vorliegen. Tarık unterscheidet sich damit vom 14-jährigen Familienmitglied in Fall 1.", correctStufe: 4, s2Reason: "Tarık ist 15 Jahre alt (sonstiger erwerbsfähiger Angehöriger der BG, der das 18. Lebensjahr noch nicht vollendet hat, § 20 Abs. 2 S. 2 Nr. 1 SGB II) → Regelbedarfsstufe 4 → 471,00 €" }
+    ]
+  },
+  {
+    id: 3,
+    title: "Bedarfsgemeinschaft Koch — Nicht-eLb-Erwachsene",
+    text: "Dieter Koch (51) lebt mit seiner Partnerin Renate (48) und ihrem Sohn Tim (11) zusammen. Renate ist aufgrund einer dauerhaften Erkrankung nicht in der Lage, täglich mindestens 3 Stunden erwerbstätig zu sein. Dieter ist erwerbsfähig.",
+    persons: [
+      { name: "Dieter Koch", tag: "51 Jahre", s1Correct: 1, s1Reason: "Dieter (51) ist erwerbsfähig. → eLb → § 19 Abs. 1 S. 1 SGB II.", s1Hint: null, correctStufe: 2, s2Reason: "Als volljähriger Partner in einer BG (§ 20 Abs. 4 SGB II) → Regelbedarfsstufe 2 → 506,00 €" },
+      { name: "Renate Koch", tag: "48 Jahre · dauerhaft erkrankt", s1Correct: 2, s1Reason: "Renate (48) kann aufgrund ihrer Erkrankung nicht täglich mindestens 3 Stunden erwerbstätig sein → nicht erwerbsfähig → Nicht-eLb → § 19 Abs. 1 S. 2 SGB II.", s1Hint: null, correctStufe: 2, s2Reason: "Renate ist volljährig und lebt als Partnerin in der BG. § 20 Abs. 4 SGB II gilt auch für Nicht-eLb-Partner. → Regelbedarfsstufe 2 → 506,00 €\n⚡ Die Rechtsgrundlage für den Anspruch (§ 19 I S. 2) ändert nichts an der Höhe der Regelbedarfsstufe." },
+      { name: "Tim Koch", tag: "11 Jahre", s1Correct: 2, s1Reason: "Tim (11) hat das 15. Lebensjahr nicht vollendet → Nicht-eLb → § 19 Abs. 1 S. 2 SGB II.", s1Hint: null, correctStufe: 5, s2Reason: "Tim ist 11 Jahre alt (Altersgruppe 6–13 Jahre, § 23 Nr. 1 SGB II) → Regelbedarfsstufe 5 → 390,00 €" }
+    ]
+  },
+  {
+    id: 4,
+    title: "Bedarfsgemeinschaft Schulz — U25 im Elternhaushalt",
+    text: "Andrea Schulz (44) lebt mit ihrem Sohn Leon (22) und ihrer Tochter Lena (7) in einer Bedarfsgemeinschaft. Leon ist nach seinem Ausbildungsabschluss vorübergehend zu seiner Mutter zurückgezogen und führt keinen eigenen Haushalt. Alle Erwachsenen sind erwerbsfähig.",
+    persons: [
+      { name: "Andrea Schulz", tag: "44 Jahre · Alleinerziehend", s1Correct: 1, s1Reason: "Andrea (44) ist erwerbsfähig. → eLb → § 19 Abs. 1 S. 1 SGB II.", s1Hint: null, correctStufe: 1, s2Reason: "Andrea führt den Haushalt alleine (§ 20 Abs. 2 S. 1 SGB II) → Regelbedarfsstufe 1 → 563,00 €" },
+      { name: "Leon Schulz", tag: "22 Jahre · U25, kein eigener HH", s1Correct: 1, s1Reason: "Leon (22) hat das 15. Lebensjahr vollendet und ist erwerbsfähig. → eLb → § 19 Abs. 1 S. 1 SGB II.", s1Hint: null, correctStufe: 3, s2Reason: "Leon ist 22 Jahre alt (unter 25), volljährig, lebt im Haushalt seiner Mutter ohne eigene Haushaltsführung (§ 20 Abs. 2 S. 2 Nr. 2 SGB II) → Regelbedarfsstufe 3 → 451,00 €" },
+      { name: "Lena Schulz", tag: "7 Jahre", s1Correct: 2, s1Reason: "Lena (7) hat das 15. Lebensjahr nicht vollendet → Nicht-eLb → § 19 Abs. 1 S. 2 SGB II.", s1Hint: null, correctStufe: 5, s2Reason: "Lena ist 7 Jahre alt (Altersgruppe 6–13 Jahre, § 23 Nr. 1 SGB II) → Regelbedarfsstufe 5 → 390,00 €" }
+    ]
+  },
+  {
+    id: 5,
+    title: "Bedarfsgemeinschaft Wagner — U25 als Paar",
+    text: "Maja Wagner (17) und ihr Partner Florian Richter (19) leben gemeinsam in einer eigenen Wohnung. Sie führen gemeinsam den Haushalt. Beide sind erwerbsfähig und hilfebedürftig.",
+    persons: [
+      { name: "Maja Wagner", tag: "17 Jahre · U25, eigener HH", s1Correct: 1, s1Reason: "Maja (17) ist erwerbsfähig und hat das 15. Lebensjahr vollendet. → eLb → § 19 Abs. 1 S. 1 SGB II.", s1Hint: null, correctStufe: 4, s2Reason: "Maja lebt als minderjährige Partnerin in einer BG (§ 20 Abs. 2 S. 2 Nr. 1 SGB II) → Regelbedarfsstufe 4 → 471,00 €\n⚡." },
+      { name: "Florian Richter", tag: "19 Jahre", s1Correct: 1, s1Reason: "Florian (27) ist erwerbsfähig. → eLb → § 19 Abs. 1 S. 1 SGB II.", s1Hint: null, correctStufe: 1, s2Reason: "Als volljähriger Partner in einer BG mit minderjähriger Partnerin (§ 20 Abs. 2 SGB II) → Regelbedarfsstufe 1 → 563,00 €" }
+    ]
+  }
 ];
 
 // ══════════════════════════════════════
@@ -1646,388 +1205,366 @@ const cases = [
 // ══════════════════════════════════════
 let currentCaseIdx = 0;
 let personStates = [];
+let openCardIdx = 0;
 
 // ══════════════════════════════════════
-// PROGRESS RENDERING
+// PROGRESS
 // ══════════════════════════════════════
-function renderProgressBar(idx) {
-  // Mobile bar
-  const bar = document.getElementById('progress-bar');
-  bar.innerHTML = '';
-  bar.setAttribute('aria-valuenow', idx + 1);
-  for (let i = 0; i < cases.length; i++) {
-    const seg = document.createElement('div');
-    seg.classList.add('progress-seg');
-    if (i < idx) seg.classList.add('filled');
-    bar.appendChild(seg);
-  }
-  document.getElementById('prog-count').textContent = (idx + 1) + ' / ' + cases.length;
-
-  // Desktop top bar progress
-  const topbar = document.getElementById('topbar-progress');
-  topbar.innerHTML = '';
-  topbar.setAttribute('aria-valuenow', idx + 1);
-  for (let i = 0; i < cases.length; i++) {
-    const seg = document.createElement('div');
-    seg.classList.add('top-bar-progress-seg');
-    if (i < idx) seg.classList.add('filled');
-    topbar.appendChild(seg);
-  }
-  document.getElementById('topbar-count').textContent = (idx + 1) + ' / ' + cases.length;
+function renderProgress(idx) {
+  for (let i = 0; i < cases.length; i++) {
+    document.getElementById(`pseg-${i}`).classList.toggle('filled', i < idx);
+  }
+  document.getElementById('prog-label').textContent = (idx + 1) + ' / ' + cases.length;
+  document.getElementById('progress-strip').setAttribute('aria-valuenow', idx + 1);
 }
 
 // ══════════════════════════════════════
-// SCAN-WIPE ANIMATION
+// SCAN WIPE
 // ══════════════════════════════════════
 function playScanWipe() {
-  const wipe = document.getElementById('scan-wipe');
-  wipe.classList.remove('active');
-  void wipe.offsetWidth;
-  wipe.classList.add('active');
-  setTimeout(() => wipe.classList.remove('active'), 800);
+  const w = document.getElementById('scan-wipe');
+  w.classList.remove('active');
+  void w.offsetWidth;
+  w.classList.add('active');
+  setTimeout(() => w.classList.remove('active'), 700);
 }
 
 // ══════════════════════════════════════
-// RENDER CASE
+// TOGGLE CARD ACCORDION
+// ══════════════════════════════════════
+function toggleCard(pi) {
+  const cards = document.querySelectorAll('.pcard');
+  cards.forEach((c, i) => {
+    if (i === pi) {
+      c.classList.toggle('pcard-open');
+    } else {
+      c.classList.remove('pcard-open');
+    }
+  });
+  openCardIdx = pi;
+}
+
+// ══════════════════════════════════════
+// LOAD CASE
 // ══════════════════════════════════════
 function loadCase(idx) {
-  const c = cases[idx];
-  personStates = c.persons.map(() => ({ s1Correct: false, s1Locked: false, rbsSelected: null }));
+  const c = cases[idx];
+  personStates = c.persons.map(() => ({ s1Correct: false, s1Locked: false, rbsSelected: null }));
 
-  renderProgressBar(idx);
+  renderProgress(idx);
 
-  document.getElementById('case-meta').textContent = `Fall ${idx + 1} von ${cases.length} — ${c.title}`;
-  document.getElementById('case-text').textContent = c.text;
-  document.getElementById('bg-count').innerHTML = `Bedarfsgemeinschaft: <span>${c.persons.length} Personen</span> — Ermittle Rechtsgrundlage und Regelbedarf für jede Person.`;
+  document.getElementById('case-meta').textContent = `Fall ${idx + 1} / ${cases.length} — ${c.title}`;
+  document.getElementById('case-text').textContent = c.text;
+  document.getElementById('bg-count').innerHTML = `BG: <span>${c.persons.length} Personen</span> — Rechtsgrundlage und Regelbedarf ermitteln.`;
 
-  const cardsEl = document.getElementById('person-cards');
-  cardsEl.innerHTML = '';
-  // 2-col on desktop if >= 4 persons
-  cardsEl.classList.toggle('two-col', c.persons.length >= 4);
+  const cardsEl = document.getElementById('person-cards');
+  cardsEl.innerHTML = '';
 
-  document.getElementById('global-feedback').innerHTML = '';
-  document.getElementById('check-btn').disabled = true;
-  document.getElementById('check-btn').style.display = '';
-  document.getElementById('check-btn').textContent = 'Regelbedarfe prüfen';
-  document.getElementById('next-btn').disabled = true;
-  document.getElementById('next-btn').style.display = '';
-  document.getElementById('check-helper').textContent = '';
+  document.getElementById('global-feedback').innerHTML = '';
 
-  c.persons.forEach((p, pi) => renderPersonCard(p, pi));
-  updateCheckBtn();
+  const checkBtn = document.getElementById('check-btn');
+  const nextBtn = document.getElementById('next-btn');
+  checkBtn.disabled = true;
+  checkBtn.style.display = '';
+  checkBtn.textContent = 'Prüfen';
+  nextBtn.disabled = true;
+  nextBtn.style.display = '';
+  document.getElementById('bar-status').textContent = '';
 
-  announce(`Fall ${idx + 1} von ${cases.length}: ${c.title}`);
-}
+  c.persons.forEach((p, pi) => renderPersonCard(p, pi));
 
-function handleEnter(e) {
-  if (e.key === 'Enter') {
-    const checkBtn = document.getElementById('check-btn');
-    if (!checkBtn.disabled) checkBtn.click();
-  }
+  // Auto-open first card
+  setTimeout(() => toggleCard(0), 50);
+  updateCheckBtn();
+  announce(`Fall ${idx + 1}: ${c.title}`);
 }
 
 function renderPersonCard(p, pi) {
-  const wrap = document.createElement('article');
-  wrap.classList.add('pcard');
-  wrap.dataset.person = pi;
-  wrap.setAttribute('aria-label', `${p.name}, ${p.tag}`);
+  const wrap = document.createElement('article');
+  wrap.classList.add('pcard');
+  wrap.dataset.person = pi;
+  wrap.setAttribute('aria-label', `${p.name}, ${p.tag}`);
 
-  wrap.innerHTML = `
-    <div class="pcard-head">
-      <div class="pcard-info">
-        <div class="pcard-name">${p.name}</div>
-        <div class="pcard-tag">${p.tag}</div>
-      </div>
-      <div class="pcard-badges" aria-label="Status-Anzeigen">
-        <span class="pbadge pbadge-pending" id="badge-s1-${pi}" aria-label="Schritt 1: offen">§ 19 offen</span>
-        <span class="pbadge pbadge-pending" id="badge-rbs-${pi}" aria-label="Schritt 2: offen">RBS offen</span>
-      </div>
-    </div>
+  wrap.innerHTML = `
+    <div class="pcard-head" role="button" tabindex="0" aria-expanded="false" aria-controls="pcard-body-${pi}">
+      <div class="pcard-info">
+        <div class="pcard-name">${p.name}</div>
+        <div class="pcard-tag">${p.tag}</div>
+      </div>
+      <div class="pcard-badges">
+        <span class="pbadge pbadge-pending" id="badge-s1-${pi}">§ 19</span>
+        <span class="pbadge pbadge-pending" id="badge-rbs-${pi}">RBS</span>
+      </div>
+      <span class="pcard-expand-icon" aria-hidden="true">▼</span>
+    </div>
 
-    <div class="step-block" id="step1-${pi}" role="group" aria-label="Schritt 1: Rechtsgrundlage für ${p.name}">
-      <div class="step-hdr">
-        <span class="s-num" aria-hidden="true">1</span>
-        <span class="step-hdr-label">Rechtsgrundlage — § 19 Abs. 1 SGB II</span>
-      </div>
-      <div class="s19-grid" role="group" aria-label="Rechtsgrundlage wählen">
-        <button class="s19-btn" id="s19-s1-${pi}" aria-label="§ 19 Absatz 1 Satz 1 — Erwerbsfähige Leistungsberechtigte">
-          <span class="s19-para">§ 19 Abs. 1 Satz 1</span>
-          <span class="s19-sub">Erwerbsfähige Leistungsberechtigte<br>(eLb)</span>
-        </button>
-        <button class="s19-btn" id="s19-s2-${pi}" aria-label="§ 19 Absatz 1 Satz 2 — Nicht erwerbsfähige Leistungsberechtigte">
-          <span class="s19-para">§ 19 Abs. 1 Satz 2</span>
-          <span class="s19-sub">Nicht erwerbsfähige Leistungsberechtigte<br>(Nicht-eLb)</span>
-        </button>
-      </div>
-      <div class="s19-feedback" id="s19-fb-${pi}" role="alert"></div>
-    </div>
+    <div class="pcard-body" id="pcard-body-${pi}">
+      <div class="step-block" id="step1-${pi}" role="group" aria-label="Schritt 1 für ${p.name}">
+        <div class="step-hdr">
+          <span class="s-num" aria-hidden="true">1</span>
+          <span class="step-hdr-label">§ 19 Abs. 1 SGB II</span>
+        </div>
+        <div class="s19-grid" role="group" aria-label="Rechtsgrundlage wählen">
+          <button class="s19-btn" id="s19-s1-${pi}" aria-label="§ 19 Abs. 1 Satz 1 — eLb">
+            <span class="s19-para">§ 19 Abs. 1 Satz 1</span>
+            <span class="s19-sub">Erwerbsfähige Leistungsberechtigte (eLb)</span>
+          </button>
+          <button class="s19-btn" id="s19-s2-${pi}" aria-label="§ 19 Abs. 1 Satz 2 — Nicht-eLb">
+            <span class="s19-para">§ 19 Abs. 1 Satz 2</span>
+            <span class="s19-sub">Nicht erwerbsfähige Leistungsberechtigte (Nicht-eLb)</span>
+          </button>
+        </div>
+        <div class="s19-feedback" id="s19-fb-${pi}" role="alert"></div>
+      </div>
 
-    <div class="step-block" id="step2-${pi}" aria-disabled="true" role="group" aria-label="Schritt 2: Regelbedarfsstufe für ${p.name}">
-      <div class="step-hdr">
-        <span class="s-num" aria-hidden="true">2</span>
-        <span class="step-hdr-label">Regelbedarfsstufe und Betrag</span>
-      </div>
-      <div class="rbs-grid" id="rbs-grid-${pi}" role="group" aria-label="Regelbedarfsstufe wählen">
-        ${[1,2,3,4,5,6].map(s => `<button class="rbs-btn" data-stufe="${s}" aria-pressed="false" aria-label="Stufe ${s}" ${`aria-disabled="true"`}>Stufe ${s}</button>`).join('')}
-      </div>
-      <div class="amount-row" id="amount-row-${pi}">
-        <label class="amount-label" for="amount-${pi}">Betrag:</label>
-        <div class="input-wrapper">
-          <input type="number" step="0.01" min="0" class="calc-input" id="amount-${pi}" placeholder="0,00" aria-label="Regelbedarf in Euro für ${p.name}">
-        </div>
-      </div>
-    </div>
-  `;
+      <div class="step-block" id="step2-${pi}" aria-disabled="true" role="group" aria-label="Schritt 2 für ${p.name}">
+        <div class="step-hdr">
+          <span class="s-num" aria-hidden="true">2</span>
+          <span class="step-hdr-label">Regelbedarfsstufe & Betrag</span>
+        </div>
+        <div class="rbs-grid" id="rbs-grid-${pi}" role="group" aria-label="Stufe wählen">
+          ${[1,2,3,4,5,6].map(s => `<button class="rbs-btn" data-stufe="${s}" aria-pressed="false" aria-label="Stufe ${s}" aria-disabled="true">Stufe ${s}</button>`).join('')}
+        </div>
+        <div class="amount-row" id="amount-row-${pi}">
+          <label class="amount-label" for="amount-${pi}">Betrag:</label>
+          <div class="input-wrapper">
+            <input type="number" step="0.01" min="0" class="calc-input" id="amount-${pi}" placeholder="0,00" inputmode="decimal" aria-label="Betrag in Euro">
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
 
-  // Wire up events
-  document.getElementById('person-cards').appendChild(wrap);
+  document.getElementById('person-cards').appendChild(wrap);
 
-  document.getElementById(`s19-s1-${pi}`).addEventListener('click', () => handleS1(pi, 1));
-  document.getElementById(`s19-s2-${pi}`).addEventListener('click', () => handleS1(pi, 2));
+  // Head toggle
+  const head = wrap.querySelector('.pcard-head');
+  head.addEventListener('click', () => {
+    toggleCard(pi);
+    head.setAttribute('aria-expanded', wrap.classList.contains('pcard-open'));
+  });
+  head.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); head.click(); }
+  });
 
-  document.querySelectorAll(`#rbs-grid-${pi} .rbs-btn`).forEach(btn => {
-    btn.addEventListener('click', () => handleRbs(pi, parseInt(btn.dataset.stufe)));
-  });
+  // S19 buttons
+  document.getElementById(`s19-s1-${pi}`).addEventListener('click', () => handleS1(pi, 1));
+  document.getElementById(`s19-s2-${pi}`).addEventListener('click', () => handleS1(pi, 2));
 
-  const amountInput = document.getElementById(`amount-${pi}`);
-  amountInput.addEventListener('input', updateCheckBtn);
-  amountInput.addEventListener('keydown', handleEnter);
+  // RBS buttons
+  document.querySelectorAll(`#rbs-grid-${pi} .rbs-btn`).forEach(btn => {
+    btn.addEventListener('click', () => handleRbs(pi, parseInt(btn.dataset.stufe)));
+  });
+
+  // Amount input
+  const amountInput = document.getElementById(`amount-${pi}`);
+  amountInput.addEventListener('input', updateCheckBtn);
+  amountInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { const cb = document.getElementById('check-btn'); if (!cb.disabled) cb.click(); }
+  });
 }
 
 // ══════════════════════════════════════
-// STEP 1 — § 19
+// STEP 1
 // ══════════════════════════════════════
 function handleS1(pi, selected) {
-  const ps = personStates[pi];
-  if (ps.s1Locked) return;
+  const ps = personStates[pi];
+  if (ps.s1Locked) return;
 
-  const c = cases[currentCaseIdx];
-  const p = c.persons[pi];
-  const btn1 = document.getElementById(`s19-s1-${pi}`);
-  const btn2 = document.getElementById(`s19-s2-${pi}`);
-  const fb = document.getElementById(`s19-fb-${pi}`);
-  const clickedBtn = selected === 1 ? btn1 : btn2;
-  const otherBtn = selected === 1 ? btn2 : btn1;
-  const isCorrect = selected === p.s1Correct;
+  const c = cases[currentCaseIdx];
+  const p = c.persons[pi];
+  const btn1 = document.getElementById(`s19-s1-${pi}`);
+  const btn2 = document.getElementById(`s19-s2-${pi}`);
+  const fb = document.getElementById(`s19-fb-${pi}`);
+  const clickedBtn = selected === 1 ? btn1 : btn2;
+  const otherBtn = selected === 1 ? btn2 : btn1;
 
-  if (isCorrect) {
-    clickedBtn.classList.add('s-correct');
-    clickedBtn.setAttribute('aria-disabled', 'true');
-    otherBtn.classList.add('s-dim');
-    otherBtn.setAttribute('aria-disabled', 'true');
-    ps.s1Correct = true;
-    ps.s1Locked = true;
+  if (selected === p.s1Correct) {
+    clickedBtn.classList.add('s-correct');
+    clickedBtn.setAttribute('aria-disabled', 'true');
+    otherBtn.classList.add('s-dim');
+    otherBtn.setAttribute('aria-disabled', 'true');
+    ps.s1Correct = true;
+    ps.s1Locked = true;
 
-    fb.className = 's19-feedback fb-ok';
-    fb.innerHTML = `✅ Korrekt. ${p.s1Reason}` + (p.s1Hint ? `<span class="s19-hint">⚡ ${p.s1Hint}</span>` : '');
+    fb.className = 's19-feedback fb-ok';
+    fb.innerHTML = `✅ Korrekt. ${p.s1Reason}` + (p.s1Hint ? `<span class="s19-hint">⚡ ${p.s1Hint}</span>` : '');
 
-    const badge = document.getElementById(`badge-s1-${pi}`);
-    badge.className = 'pbadge pbadge-s1';
-    badge.textContent = selected === 1 ? '§ 19 I S.1' : '§ 19 I S.2';
-    badge.setAttribute('aria-label', 'Schritt 1: ' + badge.textContent);
+    const badge = document.getElementById(`badge-s1-${pi}`);
+    badge.className = 'pbadge pbadge-s1';
+    badge.textContent = selected === 1 ? 'S.1' : 'S.2';
 
-    document.getElementById(`step1-${pi}`).classList.add('step-done');
-    const step2 = document.getElementById(`step2-${pi}`);
-    step2.setAttribute('aria-disabled', 'false');
-    step2.classList.add('unlock-anim');
+    document.getElementById(`step1-${pi}`).classList.add('step-done');
+    const step2 = document.getElementById(`step2-${pi}`);
+    step2.setAttribute('aria-disabled', 'false');
+    step2.classList.add('unlock-anim');
+    document.querySelectorAll(`#rbs-grid-${pi} .rbs-btn`).forEach(b => b.removeAttribute('aria-disabled'));
 
-    // Enable RBS buttons
-    document.querySelectorAll(`#rbs-grid-${pi} .rbs-btn`).forEach(b => b.removeAttribute('aria-disabled'));
+    setTimeout(() => document.querySelector(`#rbs-grid-${pi} .rbs-btn`).focus(), 100);
+    announce(`${p.name}: Korrekt. Schritt 2 freigeschaltet.`);
+    updateCheckBtn();
+  } else {
+    clickedBtn.classList.add('s-wrong');
+    fb.className = 's19-feedback fb-err';
+    fb.textContent = '❌ Nicht korrekt — erneut versuchen.';
+    announce(`${p.name}: Falsch. Erneut versuchen.`);
 
-    // Focus management: move to first RBS button
-    setTimeout(() => {
-      const firstRbs = document.querySelector(`#rbs-grid-${pi} .rbs-btn`);
-      if (firstRbs) firstRbs.focus();
-    }, 100);
+    // Vibrate on error (mobile)
+    if (navigator.vibrate) navigator.vibrate(80);
 
-    announce(`${p.name}: Korrekt, ${selected === 1 ? '§ 19 Absatz 1 Satz 1' : '§ 19 Absatz 1 Satz 2'}. Schritt 2 freigeschaltet.`);
-    updateCheckBtn();
-  } else {
-    clickedBtn.classList.add('s-wrong');
-    fb.className = 's19-feedback fb-err';
-    fb.textContent = '❌ Nicht korrekt — überdenke den Sachverhalt und versuche es erneut.';
-    announce(`${p.name}: Falsche Auswahl. Bitte erneut versuchen.`);
-    setTimeout(() => {
-      clickedBtn.classList.remove('s-wrong');
-      fb.className = 's19-feedback';
-    }, 2000);
-  }
+    setTimeout(() => { clickedBtn.classList.remove('s-wrong'); fb.className = 's19-feedback'; }, 2000);
+  }
 }
 
 // ══════════════════════════════════════
-// STEP 2 — RBS
+// STEP 2
 // ══════════════════════════════════════
 function handleRbs(pi, stufe) {
-  const ps = personStates[pi];
-  if (!ps.s1Correct) return;
+  const ps = personStates[pi];
+  if (!ps.s1Correct) return;
+  ps.rbsSelected = stufe;
 
-  ps.rbsSelected = stufe;
+  document.querySelectorAll(`#rbs-grid-${pi} .rbs-btn`).forEach(btn => {
+    btn.setAttribute('aria-pressed', parseInt(btn.dataset.stufe) === stufe ? 'true' : 'false');
+  });
 
-  document.querySelectorAll(`#rbs-grid-${pi} .rbs-btn`).forEach(btn => {
-    const isSel = parseInt(btn.dataset.stufe) === stufe;
-    btn.setAttribute('aria-pressed', isSel ? 'true' : 'false');
-  });
+  const ar = document.getElementById(`amount-row-${pi}`);
+  if (!ar.classList.contains('vis')) {
+    ar.classList.add('vis');
+    setTimeout(() => document.getElementById(`amount-${pi}`).focus(), 80);
+  }
 
-  const ar = document.getElementById(`amount-row-${pi}`);
-  if (!ar.classList.contains('vis')) {
-    ar.classList.add('vis');
-    setTimeout(() => document.getElementById(`amount-${pi}`).focus(), 80);
-  }
-
-  announce(`Stufe ${stufe} gewählt. Bitte Betrag eingeben.`);
-  updateCheckBtn();
+  announce(`Stufe ${stufe} gewählt.`);
+  updateCheckBtn();
 }
 
 // ══════════════════════════════════════
-// CHECK BUTTON STATE
+// CHECK BUTTON
 // ══════════════════════════════════════
 function updateCheckBtn() {
-  const c = cases[currentCaseIdx];
-  let done = 0;
-  c.persons.forEach((p, pi) => {
-    const ps = personStates[pi];
-    const amountEl = document.getElementById(`amount-${pi}`);
-    const val = amountEl ? amountEl.value.replace(',', '.') : '0';
-    const hasAmount = amountEl && val && parseFloat(val) > 0;
-    if (ps.s1Correct && ps.rbsSelected !== null && hasAmount) done++;
-  });
-  const allDone = done === c.persons.length;
-  document.getElementById('check-btn').disabled = !allDone;
-  document.getElementById('check-helper').textContent =
-    allDone ? 'Bereit für die Auswertung' : `${done} von ${c.persons.length} Personen vollständig`;
+  const c = cases[currentCaseIdx];
+  let done = 0;
+  c.persons.forEach((p, pi) => {
+    const ps = personStates[pi];
+    const el = document.getElementById(`amount-${pi}`);
+    const val = el ? el.value.replace(',', '.') : '0';
+    if (ps.s1Correct && ps.rbsSelected !== null && el && val && parseFloat(val) > 0) done++;
+  });
+  const all = done === c.persons.length;
+  document.getElementById('check-btn').disabled = !all;
+  document.getElementById('bar-status').textContent = all ? 'Bereit' : `${done} / ${c.persons.length}`;
 }
 
 // ══════════════════════════════════════
-// GLOBAL CHECK
+// CHECK
 // ══════════════════════════════════════
 document.getElementById('check-btn').addEventListener('click', () => {
-  const c = cases[currentCaseIdx];
-  const checkBtn = document.getElementById('check-btn');
-  checkBtn.disabled = true;
-  checkBtn.textContent = 'Systemanalyse läuft...';
-  document.getElementById('check-helper').textContent = '';
+  const c = cases[currentCaseIdx];
+  const checkBtn = document.getElementById('check-btn');
+  checkBtn.disabled = true;
+  checkBtn.textContent = 'Analyse...';
+  document.getElementById('bar-status').textContent = '';
 
-  c.persons.forEach((p, pi) => {
-    document.querySelectorAll(`#rbs-grid-${pi} .rbs-btn`).forEach(b => b.setAttribute('aria-disabled', 'true'));
-    const amountEl = document.getElementById(`amount-${pi}`);
-    if (amountEl) amountEl.disabled = true;
-  });
+  // Open all cards and lock inputs
+  document.querySelectorAll('.pcard').forEach(card => card.classList.add('pcard-open'));
+  c.persons.forEach((p, pi) => {
+    document.querySelectorAll(`#rbs-grid-${pi} .rbs-btn`).forEach(b => b.setAttribute('aria-disabled', 'true'));
+    const el = document.getElementById(`amount-${pi}`);
+    if (el) el.disabled = true;
+  });
 
-  let srSummary = [];
+  let srParts = [];
 
-  c.persons.forEach((p, pi) => {
-    setTimeout(() => {
-      const ps = personStates[pi];
-      const correctAmount = STUFEN[p.correctStufe].amount;
-      const amountEl = document.getElementById(`amount-${pi}`);
-      const rawValue = amountEl?.value || '0';
-      const userAmount = parseFloat(rawValue.replace(',', '.'));
-      const stufeOk = ps.rbsSelected === p.correctStufe;
-      const amountOk = userAmount === correctAmount;
+  c.persons.forEach((p, pi) => {
+    setTimeout(() => {
+      const ps = personStates[pi];
+      const correct = STUFEN[p.correctStufe].amount;
+      const el = document.getElementById(`amount-${pi}`);
+      const userAmt = parseFloat((el?.value || '0').replace(',', '.'));
+      const stufeOk = ps.rbsSelected === p.correctStufe;
+      const amtOk = userAmt === correct;
 
-      const card = document.querySelector(`[data-person="${pi}"]`);
-      const res = document.createElement('div');
-      res.classList.add('p-result');
-      res.setAttribute('role', 'alert');
+      const card = document.querySelector(`[data-person="${pi}"]`);
+      const res = document.createElement('div');
+      res.classList.add('p-result');
+      res.setAttribute('role', 'alert');
 
-      if (stufeOk && amountOk) {
-        res.classList.add('r-ok');
-        res.innerHTML = `✅ <strong>${p.name}</strong>: Korrekt!<span class="r-detail">${p.s2Reason}</span>`;
-        card.classList.add('pcard-complete');
-        const badge = document.getElementById(`badge-rbs-${pi}`);
-        badge.className = 'pbadge pbadge-done';
-        badge.textContent = `Stufe ${p.correctStufe} ✓`;
-        badge.setAttribute('aria-label', `Schritt 2: Stufe ${p.correctStufe} korrekt`);
-        srSummary.push(`${p.name}: korrekt`);
-      } else if (stufeOk && !amountOk) {
-        res.classList.add('r-partial');
-        res.innerHTML = `⚠️ <strong>${p.name}</strong>: Richtige Stufe, falscher Betrag.
-          <span class="r-detail">Deine Eingabe: ${userAmount.toFixed(2).replace('.',',')} €<br>Richtig wäre: ${correctAmount.toFixed(2).replace('.',',')} € — ${STUFEN[p.correctStufe].label}</span>`;
-        const badge = document.getElementById(`badge-rbs-${pi}`);
-        badge.className = 'pbadge pbadge-s1';
-        badge.textContent = `Betrag falsch`;
-        badge.setAttribute('aria-label', 'Schritt 2: Betrag falsch');
-        srSummary.push(`${p.name}: richtige Stufe, falscher Betrag`);
-      } else {
-        res.classList.add('r-wrong');
-        res.innerHTML = `❌ <strong>${p.name}</strong>: Falsche Regelbedarfsstufe.
-          <span class="r-detail">${p.s2Reason}</span>`;
-        const badge = document.getElementById(`badge-rbs-${pi}`);
-        badge.className = 'pbadge pbadge-pending';
-        badge.textContent = `Stufe ${p.correctStufe} — siehe Erklärung`;
-        badge.setAttribute('aria-label', `Schritt 2: Korrekt wäre Stufe ${p.correctStufe}`);
-        srSummary.push(`${p.name}: falsche Stufe, korrekt wäre Stufe ${p.correctStufe}`);
-      }
+      if (stufeOk && amtOk) {
+        res.classList.add('r-ok');
+        res.innerHTML = `✅ <strong>${p.name}</strong>: Korrekt!<span class="r-detail">${p.s2Reason}</span>`;
+        card.classList.add('pcard-complete');
+        const b = document.getElementById(`badge-rbs-${pi}`);
+        b.className = 'pbadge pbadge-done';
+        b.textContent = `S${p.correctStufe} ✓`;
+        srParts.push(`${p.name}: korrekt`);
+      } else if (stufeOk) {
+        res.classList.add('r-partial');
+        res.innerHTML = `⚠️ <strong>${p.name}</strong>: Richtige Stufe, falscher Betrag.<span class="r-detail">Eingabe: ${userAmt.toFixed(2).replace('.',',')} €<br>Richtig: ${correct.toFixed(2).replace('.',',')} €</span>`;
+        const b = document.getElementById(`badge-rbs-${pi}`);
+        b.className = 'pbadge pbadge-s1'; b.textContent = '€ ✗';
+        srParts.push(`${p.name}: Stufe richtig, Betrag falsch`);
+      } else {
+        res.classList.add('r-wrong');
+        res.innerHTML = `❌ <strong>${p.name}</strong>: Falsche Stufe.<span class="r-detail">${p.s2Reason}</span>`;
+        const b = document.getElementById(`badge-rbs-${pi}`);
+        b.className = 'pbadge pbadge-pending'; b.textContent = `S${p.correctStufe}`;
+        srParts.push(`${p.name}: falsch, korrekt Stufe ${p.correctStufe}`);
+      }
 
-      card.appendChild(res);
-      card.classList.add('pcard-s1-done');
+      card.querySelector('.pcard-body').appendChild(res);
+      card.classList.add('pcard-s1-done');
 
-      if (pi === 0) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, (pi + 1) * 300);
-  });
+      if (pi === 0) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, (pi + 1) * 300);
+  });
 
-  setTimeout(() => {
-    checkBtn.textContent = 'Regelbedarfe prüfen';
-    checkBtn.style.display = 'none';
-    const nextBtn = document.getElementById('next-btn');
-    nextBtn.disabled = false;
-    nextBtn.focus();
-    announce('Auswertung abgeschlossen. ' + srSummary.join('. ') + '. Nächster Fall verfügbar.');
-  }, c.persons.length * 300 + 400);
+  setTimeout(() => {
+    checkBtn.style.display = 'none';
+    const nextBtn = document.getElementById('next-btn');
+    nextBtn.disabled = false;
+    nextBtn.focus();
+    if (navigator.vibrate) navigator.vibrate([30, 50, 30]);
+    announce('Auswertung: ' + srParts.join('. '));
+  }, c.persons.length * 300 + 400);
 });
 
 // ══════════════════════════════════════
 // NEXT CASE
 // ══════════════════════════════════════
 document.getElementById('next-btn').addEventListener('click', () => {
-  if (currentCaseIdx < cases.length - 1) {
-    playScanWipe();
-    setTimeout(() => {
-      currentCaseIdx++;
-      loadCase(currentCaseIdx);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, 200);
-  } else {
-    // All done
-    const bar = document.getElementById('progress-bar');
-    bar.innerHTML = '';
-    for (let i = 0; i < cases.length; i++) {
-      const seg = document.createElement('div');
-      seg.classList.add('progress-seg', 'filled');
-      bar.appendChild(seg);
-    }
-    document.getElementById('prog-count').textContent = cases.length + ' / ' + cases.length;
-    // Top bar too
-    const topbar = document.getElementById('topbar-progress');
-    topbar.innerHTML = '';
-    for (let i = 0; i < cases.length; i++) {
-      const seg = document.createElement('div');
-      seg.classList.add('top-bar-progress-seg', 'filled');
-      topbar.appendChild(seg);
-    }
-    document.getElementById('topbar-count').textContent = cases.length + ' / ' + cases.length;
+  if (currentCaseIdx < cases.length - 1) {
+    playScanWipe();
+    setTimeout(() => {
+      currentCaseIdx++;
+      loadCase(currentCaseIdx);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 200);
+  } else {
+    // Complete
+    for (let i = 0; i < cases.length; i++) {
+      document.getElementById(`pseg-${i}`).classList.add('filled');
+    }
+    document.getElementById('prog-label').textContent = cases.length + ' / ' + cases.length;
+    document.getElementById('case-meta').textContent = 'Alle Fälle abgeschlossen';
+    document.getElementById('case-text').innerHTML = '';
+    document.getElementById('bg-count').innerHTML = '';
+    document.getElementById('person-cards').innerHTML = '';
+    document.getElementById('global-feedback').innerHTML = '';
+    document.getElementById('check-btn').style.display = 'none';
+    document.getElementById('next-btn').style.display = 'none';
+    document.getElementById('bar-status').textContent = '';
+    document.getElementById('ref-trigger').style.display = 'none';
 
-    document.getElementById('case-meta').textContent = 'Alle Fälle abgeschlossen';
-    document.getElementById('case-text').innerHTML = '';
-    document.getElementById('bg-count').innerHTML = '';
-    const cardsEl = document.getElementById('person-cards');
-    cardsEl.innerHTML = '';
-    cardsEl.classList.remove('two-col');
-    document.getElementById('global-feedback').innerHTML = '';
-    document.getElementById('check-btn').style.display = 'none';
-    document.getElementById('next-btn').style.display = 'none';
-    document.getElementById('check-helper').textContent = '';
-
-    const complete = document.createElement('div');
-    complete.classList.add('case-complete');
-    complete.setAttribute('role', 'alert');
-    complete.innerHTML = `
-      <h2>✓ TRAINING ABGESCHLOSSEN</h2>
-      <p>Alle ${cases.length} Bedarfsgemeinschaften wurden erfolgreich bearbeitet.</p>
-    `;
-    cardsEl.appendChild(complete);
-    announce('Training abgeschlossen! Alle ' + cases.length + ' Fälle bearbeitet.');
-  }
+    const complete = document.createElement('div');
+    complete.classList.add('case-complete');
+    complete.setAttribute('role', 'alert');
+    complete.innerHTML = `
+      <h2>✓ TRAINING ABGESCHLOSSEN</h2>
+      <p>Alle ${cases.length} Bedarfsgemeinschaften bearbeitet.</p>
+    `;
+    document.getElementById('person-cards').appendChild(complete);
+    announce('Training abgeschlossen!');
+  }
 });
 
 // ══════════════════════════════════════
@@ -2036,149 +1573,93 @@ document.getElementById('next-btn').addEventListener('click', () => {
 loadCase(0);
 
 // ══════════════════════════════════════
-// HEX GRID PARTICLE CANVAS + PARALLAX
+// BACKGROUND CANVAS (light, mobile-perf)
 // ══════════════════════════════════════
 const canvas = document.getElementById('bg-canvas');
 const ctx = canvas.getContext('2d');
 let particles = [];
 let hexGrid = [];
-let themeColor = { r: 255, g: 123, b: 0 };
-let mouseX = 0, mouseY = 0;
-
-document.addEventListener('mousemove', (e) => {
-  mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
-  mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
-});
 
 function resizeCanvas() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-  generateHexGrid();
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  generateHex();
 }
 
-function generateHexGrid() {
-  hexGrid = [];
-  const size = 32;
-  const h = size * Math.sqrt(3);
-  const cols = Math.ceil(canvas.width / (size * 1.5)) + 2;
-  const rows = Math.ceil(canvas.height / h) + 2;
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
-      const x = c * size * 1.5;
-      const y = r * h + (c % 2 === 1 ? h / 2 : 0);
-      hexGrid.push({ x, y, size: size * 0.9, pulse: Math.random() * Math.PI * 2 });
-    }
-  }
+function generateHex() {
+  hexGrid = [];
+  const size = 28;
+  const h = size * Math.sqrt(3);
+  const cols = Math.ceil(canvas.width / (size * 1.5)) + 2;
+  const rows = Math.ceil(canvas.height / h) + 2;
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      hexGrid.push({
+        x: c * size * 1.5,
+        y: r * h + (c % 2 === 1 ? h / 2 : 0),
+        size: size * 0.85,
+        pulse: Math.random() * Math.PI * 2
+      });
+    }
+  }
 }
 
 resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
 
-for (let i = 0; i < 60; i++) {
-  particles.push({
-    x: Math.random() * canvas.width,
-    y: Math.random() * canvas.height,
-    size: Math.random() * 2 + 0.5,
-    speed: Math.random() * 0.6 + 0.15,
-    opacity: Math.random() * 0.4 + 0.1,
-    drift: (Math.random() - 0.5) * 0.3
-  });
+// Fewer particles for mobile
+for (let i = 0; i < 25; i++) {
+  particles.push({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    size: Math.random() * 1.5 + 0.5,
+    speed: Math.random() * 0.4 + 0.1,
+    opacity: Math.random() * 0.3 + 0.08,
+    drift: (Math.random() - 0.5) * 0.2
+  });
 }
 
 function drawHex(cx, cy, size) {
-  ctx.beginPath();
-  for (let i = 0; i < 6; i++) {
-    const angle = (Math.PI / 3) * i - Math.PI / 6;
-    const x = cx + size * Math.cos(angle);
-    const y = cy + size * Math.sin(angle);
-    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-  }
-  ctx.closePath();
-}
-
-function updateParticleColors(t) {
-  if (t === 'orange') themeColor = { r: 255, g: 123, b: 0 };
-  if (t === 'blue')   themeColor = { r: 0, g: 212, b: 255 };
-  if (t === 'green')  themeColor = { r: 0, g: 255, b: 136 };
+  ctx.beginPath();
+  for (let i = 0; i < 6; i++) {
+    const a = (Math.PI / 3) * i - Math.PI / 6;
+    const x = cx + size * Math.cos(a);
+    const y = cy + size * Math.sin(a);
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.closePath();
 }
 
 let time = 0;
 (function animate() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  time += 0.008;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  time += 0.006;
 
-  // Parallax offset
-  const px = mouseX * 8;
-  const py = mouseY * 8;
+  // Hex grid (very subtle, no parallax on mobile)
+  const cR = themeColor.r, cG = themeColor.g, cB = themeColor.b;
+  hexGrid.forEach(h => {
+    const pulse = Math.sin(time + h.pulse) * 0.5 + 0.5;
+    const alpha = 0.012 + pulse * 0.012;
+    ctx.strokeStyle = `rgba(${cR},${cG},${cB},${alpha})`;
+    ctx.lineWidth = 0.4;
+    drawHex(h.x, h.y, h.size);
+    ctx.stroke();
+  });
 
-  hexGrid.forEach(h => {
-    const pulse = Math.sin(time + h.pulse) * 0.5 + 0.5;
-    const alpha = 0.015 + pulse * 0.015;
-    ctx.strokeStyle = `rgba(${themeColor.r},${themeColor.g},${themeColor.b},${alpha})`;
-    ctx.lineWidth = 0.5;
-    drawHex(h.x + px, h.y + py, h.size);
-    ctx.stroke();
-  });
+  particles.forEach(p => {
+    ctx.fillStyle = `rgba(${cR},${cG},${cB},${p.opacity})`;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+    ctx.fill();
+    p.y -= p.speed;
+    p.x += p.drift;
+    if (p.y < -5) { p.y = canvas.height + 5; p.x = Math.random() * canvas.width; }
+    if (p.x < -5) p.x = canvas.width + 5;
+    if (p.x > canvas.width + 5) p.x = -5;
+  });
 
-  particles.forEach(p => {
-    ctx.fillStyle = `rgba(${themeColor.r},${themeColor.g},${themeColor.b},${p.opacity})`;
-    ctx.beginPath();
-    ctx.arc(p.x + px * 0.5, p.y + py * 0.5, p.size, 0, Math.PI * 2);
-    ctx.fill();
-
-    if (p.size > 1.5) {
-      ctx.fillStyle = `rgba(${themeColor.r},${themeColor.g},${themeColor.b},${p.opacity * 0.3})`;
-      ctx.beginPath();
-      ctx.arc(p.x + px * 0.5, p.y + py * 0.5, p.size * 3, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    p.y -= p.speed;
-    p.x += p.drift;
-    if (p.y < -10) { p.y = canvas.height + 10; p.x = Math.random() * canvas.width; }
-    if (p.x < -10) p.x = canvas.width + 10;
-    if (p.x > canvas.width + 10) p.x = -10;
-  });
-
-  requestAnimationFrame(animate);
+  requestAnimationFrame(animate);
 })();
-
-// ══════════════════════════════════════
-// NOISE
-// ══════════════════════════════════════
-const noiseCanvas = document.getElementById('noise-canvas');
-const nCtx = noiseCanvas.getContext('2d');
-const NOISE_SIZE = 128;
-noiseCanvas.width = NOISE_SIZE;
-noiseCanvas.height = NOISE_SIZE;
-const imgData = nCtx.createImageData(NOISE_SIZE, NOISE_SIZE);
-const d = imgData.data;
-function drawNoise() {
-  for (let i = 0; i < d.length; i += 4) {
-    const v = Math.random() * 12;
-    d[i] = v; d[i + 1] = v; d[i + 2] = v; d[i + 3] = 8;
-  }
-  nCtx.putImageData(imgData, 0, 0);
-}
-setInterval(drawNoise, 80);
-drawNoise();
-
-// ══════════════════════════════════════
-// BACK BUTTON
-// ══════════════════════════════════════
-document.getElementById('btn-back').addEventListener('click', function(e) {
-  e.preventDefault();
-  const ripple = document.getElementById('back-ripple');
-  const btn = this;
-  const rect = btn.getBoundingClientRect();
-  ripple.style.left = (e.clientX - rect.left - 5) + 'px';
-  ripple.style.top = (e.clientY - rect.top - 5) + 'px';
-  ripple.classList.remove('active');
-  void ripple.offsetWidth;
-  ripple.classList.add('active');
-  setTimeout(() => { window.location.href = 'index.html'; }, 400);
-});
 </script>
 </body>
 </html>
-
