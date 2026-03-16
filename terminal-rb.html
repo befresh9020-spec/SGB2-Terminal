@@ -1139,7 +1139,7 @@ document.addEventListener('keydown', (e) => {
 const STUFEN = {
   1: { label: "Regelbedarfsstufe 1", amount: 563 },
   2: { label: "Regelbedarfsstufe 2", amount: 506 },
-  3: { label: "Regelbedarfsstufe 3", amount: 471 },
+  3: { label: "Regelbedarfsstufe 3", amount: 451 },
   4: { label: "Regelbedarfsstufe 4", amount: 471 },
   5: { label: "Regelbedarfsstufe 5", amount: 390 },
   6: { label: "Regelbedarfsstufe 6", amount: 357 },
@@ -1160,13 +1160,13 @@ const cases = [
   {
     id: 2,
     title: "Bedarfsgemeinschaft Özdemir — 5 Personen",
-    text: "Yusuf Özdemir (36) und seine Partnerin Fatma (33) leben mit ihren Kindern Cem (4), Zeynep (10) und Tarık (15) in einer Bedarfsgemeinschaft. Laut Sachverhalt sind Yusuf, Fatma und Tarık in der Lage, täglich mindestens 3 Stunden erwerbstätig zu sein.",
+    text: "Emir Özdemir (36) und seine Partnerin Fatma (33) leben mit ihren Kindern Ahmet (4), Zeynep (10) und Tarık (15) in einer Bedarfsgemeinschaft. Laut Sachverhalt sind Emir, Fatma und Tarık in der Lage, täglich mindestens 3 Stunden erwerbstätig zu sein.",
     persons: [
       { name: "Emir Özdemir", tag: "36 Jahre", s1Correct: 1, s1Reason: "Yusuf (36) ist erwerbsfähig und hat das 15. Lebensjahr vollendet. → eLb → § 19 Abs. 1 S. 1 SGB II.", s1Hint: null, correctStufe: 2, s2Reason: "Als volljähriger Partner in einer BG (§ 20 Abs. 4 SGB II) → Regelbedarfsstufe 2 → 506,00 €" },
       { name: "Fatma Özdemir", tag: "33 Jahre", s1Correct: 1, s1Reason: "Fatma (33) ist erwerbsfähig. → eLb → § 19 Abs. 1 S. 1 SGB II.", s1Hint: null, correctStufe: 2, s2Reason: "Als volljährige Partnerin in einer BG (§ 20 Abs. 4 SGB II) → Regelbedarfsstufe 2 → 506,00 €" },
       { name: "Ahmet Özdemir", tag: "4 Jahre", s1Correct: 2, s1Reason: "Cem (4) hat das 15. Lebensjahr nicht vollendet → nicht erwerbsfähig → Nicht-eLb → § 19 Abs. 1 S. 2 SGB II.", s1Hint: null, correctStufe: 6, s2Reason: "Cem ist 4 Jahre alt (Altersgruppe 0–5 Jahre, § 23 Nr. 1 SGB II) → Regelbedarfsstufe 6 → 357,00 €" },
       { name: "Zeynep Özdemir", tag: "10 Jahre", s1Correct: 2, s1Reason: "Zeynep (10) hat das 15. Lebensjahr nicht vollendet → Nicht-eLb → § 19 Abs. 1 S. 2 SGB II.", s1Hint: null, correctStufe: 5, s2Reason: "Zeynep ist 10 Jahre alt (Altersgruppe 6–13 Jahre, § 23 Nr. 1 SGB II) → Regelbedarfsstufe 5 → 390,00 €" },
-      { name: "Tarık Özdemir", tag: "15 Jahre", s1Correct: 1, s1Reason: "Tarık (15) hat das 15. Lebensjahr vollendet und ist laut Sachverhalt erwerbsfähig (≥ 3 Stunden täglich). → eLb → § 19 Abs. 1 S. 1 SGB II.", s1Hint: "Mit Vollendung des 15. Lebensjahres kann Erwerbsfähigkeit vorliegen. Tarık unterscheidet sich damit vom 14-jährigen Familienmitglied in Fall 1.", correctStufe: 4, s2Reason: "Tarık ist 15 Jahre alt (sonstiger erwerbsfähiger Angehöriger der BG, der das 18. Lebensjahr noch nicht vollendet hat, § 20 Abs. 2 S. 2 Nr. 1 SGB II) → Regelbedarfsstufe 4 → 471,00 €" }
+      { name: "Tarık Özdemir", tag: "15 Jahre", s1Correct: 1, s1Reason: "Tarık (15) hat das 15. Lebensjahr vollendet und ist laut Sachverhalt erwerbsfähig (≥ 3 Stunden täglich). → eLb → § 19 Abs. 1 S. 1 SGB II.", s1Hint: "Mit Vollendung des 15. Lebensjahres liegt Erwerbsfähigkeit vor. Tarık unterscheidet sich damit vom 14-jährigen Familienmitglied in Fall 1.", correctStufe: 4, s2Reason: "Tarık ist 15 Jahre alt (sonstiger erwerbsfähiger Angehöriger der BG, der das 18. Lebensjahr noch nicht vollendet hat, § 20 Abs. 2 S. 2 Nr. 1 SGB II) → Regelbedarfsstufe 4 → 471,00 €" }
     ]
   },
   {
@@ -1185,14 +1185,14 @@ const cases = [
     text: "Andrea Schulz (44) lebt mit ihrem Sohn Leon (22) und ihrer Tochter Lena (7) in einer Bedarfsgemeinschaft. Leon ist nach seinem Ausbildungsabschluss vorübergehend zu seiner Mutter zurückgezogen und führt keinen eigenen Haushalt. Alle Erwachsenen sind erwerbsfähig.",
     persons: [
       { name: "Andrea Schulz", tag: "44 Jahre · Alleinerziehend", s1Correct: 1, s1Reason: "Andrea (44) ist erwerbsfähig. → eLb → § 19 Abs. 1 S. 1 SGB II.", s1Hint: null, correctStufe: 1, s2Reason: "Andrea führt den Haushalt alleine (§ 20 Abs. 2 S. 1 SGB II) → Regelbedarfsstufe 1 → 563,00 €" },
-      { name: "Leon Schulz", tag: "22 Jahre · U25, kein eigener HH", s1Correct: 1, s1Reason: "Leon (22) hat das 15. Lebensjahr vollendet und ist erwerbsfähig. → eLb → § 19 Abs. 1 S. 1 SGB II.", s1Hint: null, correctStufe: 3, s2Reason: "Leon ist 22 Jahre alt (unter 25), volljährig, lebt im Haushalt seiner Mutter ohne eigene Haushaltsführung (§ 20 Abs. 2 S. 2 Nr. 2 SGB II) → Regelbedarfsstufe 3 → 451,00 €" },
+      { name: "Leon Schulz", tag: "22 Jahre · U25, kein eigener HH", s1Correct: 1, s1Reason: "Leon (22) hat das 15. Lebensjahr vollendet und ist erwerbsfähig. → eLb → § 19 Abs. 1 S. 1 SGB II.", s1Hint: null, correctStufe: 3, s2Reason: "Leon ist 22 Jahre alt (unter 25), volljährig, lebt im Haushalt seiner Mutter (§ 20 Abs. 2 S. 2 Nr. 2 SGB II) → Regelbedarfsstufe 3 → 451,00 €" },
       { name: "Lena Schulz", tag: "7 Jahre", s1Correct: 2, s1Reason: "Lena (7) hat das 15. Lebensjahr nicht vollendet → Nicht-eLb → § 19 Abs. 1 S. 2 SGB II.", s1Hint: null, correctStufe: 5, s2Reason: "Lena ist 7 Jahre alt (Altersgruppe 6–13 Jahre, § 23 Nr. 1 SGB II) → Regelbedarfsstufe 5 → 390,00 €" }
     ]
   },
   {
     id: 5,
     title: "Bedarfsgemeinschaft Wagner — U25 als Paar",
-    text: "Maja Wagner (17) und ihr Partner Florian Richter (19) leben gemeinsam in einer eigenen Wohnung. Sie führen gemeinsam den Haushalt. Beide sind erwerbsfähig und hilfebedürftig.",
+    text: "Maja Wagner (17) und ihr Partner Florian Richter (19) leben in einer eigenen Wohnung. Sie führen gemeinsam den Haushalt. Beide sind erwerbsfähig und hilfebedürftig.",
     persons: [
       { name: "Maja Wagner", tag: "17 Jahre · U25, eigener HH", s1Correct: 1, s1Reason: "Maja (17) ist erwerbsfähig und hat das 15. Lebensjahr vollendet. → eLb → § 19 Abs. 1 S. 1 SGB II.", s1Hint: null, correctStufe: 4, s2Reason: "Maja lebt als minderjährige Partnerin in einer BG (§ 20 Abs. 2 S. 2 Nr. 1 SGB II) → Regelbedarfsstufe 4 → 471,00 €\n⚡." },
       { name: "Florian Richter", tag: "19 Jahre", s1Correct: 1, s1Reason: "Florian (27) ist erwerbsfähig. → eLb → § 19 Abs. 1 S. 1 SGB II.", s1Hint: null, correctStufe: 1, s2Reason: "Als volljähriger Partner in einer BG mit minderjähriger Partnerin (§ 20 Abs. 2 SGB II) → Regelbedarfsstufe 1 → 563,00 €" }
