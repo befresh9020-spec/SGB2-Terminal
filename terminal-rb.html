@@ -943,13 +943,141 @@ body {
   clip: rect(0,0,0,0); white-space: nowrap; border: 0;
 }
 
-/* ─── DESKTOP SCALE-UP ─── */
+/* ─── TABLET PORTRAIT (768px+) ─── */
 @media (min-width: 768px) {
-  .main-content { max-width: 680px; margin: 0 auto; padding: 20px 16px 20px; }
+  .main-content { max-width: 720px; margin: 0 auto; padding: 24px 20px 24px; }
+
+  .case-title { font-size: 1.15rem; letter-spacing: 4px; }
+  .case-subtitle { font-size: 0.65rem; }
+  .case-meta-line { font-size: 0.58rem; }
+  .case-text { font-size: 0.88rem; padding: 18px 16px; }
+  .bg-count { font-size: 0.6rem; padding: 10px 16px; }
+
+  .visor-label { font-size: 0.58rem; }
+  .progress-strip-label { font-size: 0.55rem; }
+  .progress-strip-seg { height: 4px; }
+
   .s19-grid { flex-direction: row; }
+  .s19-btn { font-size: 0.78rem; padding: 16px 14px; }
+  .s19-para { font-size: 0.84rem; }
+  .s19-sub { font-size: 0.65rem; }
+  .s19-feedback { font-size: 0.75rem; }
+
   .rbs-grid { grid-template-columns: repeat(6, 1fr); }
-  .bottom-bar { max-width: 680px; left: 50%; transform: translateX(-50%); border-radius: 12px 12px 0 0; }
+  .rbs-btn { font-size: 0.78rem; padding: 14px 6px; min-height: 52px; }
+
+  .pcard-name { font-size: 0.88rem; }
+  .pcard-tag { font-size: 0.62rem; }
+  .pbadge { font-size: 0.52rem; padding: 4px 6px; }
+  .step-hdr-label { font-size: 0.6rem; }
+
+  .amount-label { font-size: 0.65rem; }
+  .calc-input { font-size: 1.15rem; }
+  .p-result { font-size: 0.78rem; }
+  .r-detail { font-size: 0.72rem; }
+
+  .bottom-bar { max-width: 720px; left: 50%; transform: translateX(-50%); border-radius: 12px 12px 0 0; }
   .bottom-bar-status { border-radius: 6px 6px 0 0; }
+  .btn-action { font-size: 0.75rem; min-height: 50px; }
+
+  .ref-sheet { max-height: 65vh; max-height: 65dvh; }
+  .ref-sheet .ref-table { font-size: 0.68rem; }
+  .ref-sheet .ref-table th { font-size: 0.56rem; }
+  .ref-sheet-trigger { font-size: 0.65rem; }
+}
+
+/* ─── TABLET LANDSCAPE / SMALL DESKTOP (1024px+) ─── */
+@media (min-width: 1024px) {
+  .main-content { max-width: 840px; padding: 28px 24px 28px; }
+
+  /* Top bar: single row layout */
+  .top-bar { flex-direction: row; align-items: center; gap: 12px; padding-top: calc(var(--safe-top) + 8px); padding-bottom: 8px; }
+  .top-bar-row { flex: 0 0 auto; }
+  .progress-strip { flex: 1; }
+
+  .case-title { font-size: 1.25rem; }
+  .case-text { font-size: 0.92rem; line-height: 1.75; padding: 20px 18px; }
+  .case-header { margin-bottom: 14px; }
+
+  /* Person cards: 2-column grid */
+  .person-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+
+  .s19-btn { min-height: 60px; }
+  .s19-btn:hover { background: var(--primary-dim); border-color: var(--primary); }
+  .rbs-btn:hover:not([aria-disabled="true"]) { background: var(--primary-dim); border-color: var(--primary); }
+
+  /* Reference: centered modal instead of bottom sheet */
+  .ref-sheet {
+    max-height: 70vh;
+    max-width: 600px;
+    left: 50%;
+    right: auto;
+    bottom: auto;
+    top: 50%;
+    transform: translate(-50%, 60%);
+    opacity: 0;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    border-top: 2px solid var(--primary);
+    transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.3s;
+  }
+  .ref-sheet.open {
+    transform: translate(-50%, -50%);
+    opacity: 1;
+  }
+  .ref-sheet-handle { display: none; }
+
+  .bottom-bar { max-width: 840px; }
+  .btn-action { min-height: 52px; font-size: 0.78rem; letter-spacing: 2px; }
+  .btn-back { font-size: 0.68rem; }
+}
+
+/* ─── FULL DESKTOP 16:9 (1280px+) ─── */
+@media (min-width: 1280px) {
+  .main-content { max-width: 940px; padding: 32px 28px 32px; }
+
+  .case-title { font-size: 1.35rem; letter-spacing: 5px; margin-bottom: 6px; }
+  .case-subtitle { font-size: 0.7rem; letter-spacing: 2px; }
+  .case-meta-line { font-size: 0.62rem; }
+  .case-text { font-size: 0.95rem; padding: 22px 20px; }
+  .bg-count { font-size: 0.65rem; }
+
+  .case-card::after { width: 20px; height: 20px; }
+  .case-card-corner { width: 20px; height: 20px; }
+
+  .person-cards { gap: 14px; }
+  .pcard-name { font-size: 0.92rem; }
+  .pcard-tag { font-size: 0.65rem; }
+  .pbadge { font-size: 0.55rem; padding: 4px 8px; }
+  .step-block { padding: 16px; }
+  .step-hdr-label { font-size: 0.62rem; }
+  .s-num { width: 20px; height: 20px; font-size: 0.55rem; }
+
+  .s19-btn { padding: 18px 16px; }
+  .s19-para { font-size: 0.88rem; }
+  .s19-sub { font-size: 0.68rem; }
+  .s19-feedback { font-size: 0.78rem; }
+
+  .rbs-btn { font-size: 0.82rem; min-height: 56px; }
+  .calc-input { font-size: 1.2rem; padding: 14px 36px 14px 14px; }
+  .amount-label { font-size: 0.68rem; }
+
+  .p-result { font-size: 0.82rem; padding: 12px 16px; }
+  .r-detail { font-size: 0.75rem; }
+
+  .ref-sheet { max-width: 660px; }
+  .ref-sheet-title { font-size: 0.72rem; }
+  .ref-sheet .ref-table { font-size: 0.72rem; }
+  .ref-sheet .ref-table th { font-size: 0.6rem; }
+
+  .bottom-bar { max-width: 940px; }
+  .btn-action { min-height: 54px; font-size: 0.8rem; }
+  .btn-back { font-size: 0.72rem; padding: 14px 20px; }
+
+  .theme-btn { width: 40px; height: 40px; font-size: 0.72rem; }
+  .visor-label { font-size: 0.6rem; letter-spacing: 3px; }
+  .progress-strip-seg { height: 4px; }
+  .progress-strip-label { font-size: 0.58rem; }
 }
 </style>
 </head>
