@@ -19,7 +19,7 @@ html, body {
 /* — CRT & FLICKER EFFECTS — */
 #hexBg { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
 body::after {
-content: ‘’; position: fixed; inset: 0;
+content: ''; position: fixed; inset: 0;
 background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px);
 pointer-events: none; z-index: 9999;
 }
@@ -394,7 +394,7 @@ box-shadow: 0 0 15px rgba(255, 100, 0, 0.5);
     }
     ch+='</div>';
 
-    var gh='<div class="questions-grid">';for(var row=0;row<5;row++)for(var col=0;col<5;col++){var k=col+"-"+row,pts=CATEGORIES[col].questions[row].pts,u=state.usedCells[k]?" used":"";gh+='<div class="q-cell'+u+'" data-action="open-q" data-col="'+col+'" data-row="'+row+'"><span class="points">'+pts+'</span></div>';}gh+='</div>';
+    var gh='<div class="questions-grid">';for(var row=0;row<6;row++)for(var col=0;col<5;col++){var k=col+"-"+row,pts=CATEGORIES[col].questions[row].pts,u=state.usedCells[k]?" used":"";gh+='<div class="q-cell'+u+'" data-action="open-q" data-col="'+col+'" data-row="'+row+'"><span class="points">'+pts+'</span></div>';}gh+='</div>';
 
     var rem=state.totalCells-usedCount();
     app.innerHTML=sh+'<div class="board-container">'+ch+gh+'</div><div class="footer-bar"><span>FRAGEN: '+rem+'/'+state.totalCells+'</span><button class="btn-end-game" data-action="end-game">SPIEL BEENDEN</button><span>SGB II // B\u00dcRGERGELD</span></div>';
