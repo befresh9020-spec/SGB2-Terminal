@@ -94,12 +94,12 @@ align-items: center; justify-content: center; gap: 20px;
 
 /* — BOARD — */
 .board-container { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 6px; }
-.category-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; flex-shrink: 0; }
+.category-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; flex-shrink: 0; }
 .category-header { padding: 10px 6px; text-align: center; font-size: 0.55rem; font-weight: 700; letter-spacing: 1px; color: #00f0ff; background: linear-gradient(180deg, rgba(0,240,255,0.12) 0%, rgba(0,240,255,0.04) 100%); border: 1px solid rgba(0,240,255,0.2); border-radius: 4px; text-transform: uppercase; line-height: 1.3; position: relative; overflow: hidden; transition: all 0.5s; }
 .category-header.cleared { color: #00ff78; border-color: rgba(0,255,120,0.6); background: linear-gradient(180deg, rgba(0,255,120,0.15) 0%, rgba(0,255,120,0.05) 100%); box-shadow: 0 0 15px rgba(0,255,120,0.3); }
 .cat-sub { font-size: 0.45rem; opacity: 0.5; font-weight: 400; display: block; margin-top: 2px; }
 .cat-progress { position: absolute; bottom: 0; left: 0; height: 2px; background: linear-gradient(90deg, #00f0ff, #00ff78); transition: width 0.5s ease-out; box-shadow: 0 0 6px rgba(0,240,255,0.4); }
-.questions-grid { flex: 1; display: grid; grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(5, 1fr); gap: 6px; min-height: 0; }
+.questions-grid { flex: 1; display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(5, 1fr); gap: 6px; min-height: 0; }
 
 .q-cell { display: flex; align-items: center; justify-content: center; background: linear-gradient(145deg, rgba(15,25,40,0.95) 0%, rgba(8,14,25,0.95) 100%); border: 1px solid rgba(0,240,255,0.12); border-radius: 4px; cursor: pointer; transition: all 0.25s; perspective: 600px; }
 .q-cell:hover { border-color: rgba(0,240,255,0.8); transform: scale(1.03); box-shadow: 0 0 25px 2px rgba(0,240,255,0.3), inset 0 0 15px rgba(0,240,255,0.2); z-index: 10;}
@@ -279,35 +279,42 @@ box-shadow: 0 0 15px rgba(255, 100, 0, 0.5);
   var BTN_CLASSES = ["btn-t0", "btn-t1", "btn-t2", "btn-t3"];
 
   var CATEGORIES = [
-    { name: "Kategorie 1", short: "SGB II", questions: [
+    { name: "Leistungsberechtigung", short: "eLb", questions: [
+        { q: "Wie alt muss eine Person mindestens sein, um ein erwerbsfähiger Leistungsberechtigter zu sein?", a: "Personen, die das 15. Lebensjahr vollendet haben.", pts: 100 },
+        { q: "Ist der gewöhnliche Aufenthalt immer der gemeldete Wohnsitz?", a: "Nein...", pts: 200 },
+        { q: "Kann ein Kind, das 11 Jahre alt ist, Leistungen nach dem SGB II erhalten? Begründe deine Entscheidung.", a: "Ja, wenn das Kind mit einem eLb in einer Bedarfsgemeinschaft lebt.", pts: 300 },
+        { q: "Kann ein eLb Leistungen erhalten, der zurzeit in einer JVA inhaftiert ist? Begründe deine Entscheidung.", a: "Nein, es liegt ein Leistungsausschluss nach § 7 (4) SGB II vor.", pts: 400 },
+        { q: "Frau Müller ist 64 Jahre alt, hat keine gesundheitlichen Einschränkungen, bezieht eine geringe Altersrente und wohnt in Ulm. Erfüllt sie die Voraussetzungen nach § 7 (1) S. 1 SGB II?", a: "Ja. Altersgrenze ist noch nicht erreicht.", pts: 500 }
+    ]},
+    { name: "Bedarfsgemeinschaft", short: "BG", questions: [
+        { q: "Welche Person wird für eine BG-Bildung immer benötigt?", a: "§ 7 (3) Nr. 1 SGB II: ein erwerbsfähiger Leistungsberechtigter", pts: 100 },
+        { q: "Was versteht man unter einer eheähnlichen Gemeinschaft?", a: "Antwort 200", pts: 200 },
+        { q: "Was ist eine Lebenspartnerschaft?", a: "Antwort 300", pts: 300 },
+        { q: "Vater Sven (45, nicht erwerbsfähig), Sohn Julius (16, Schüler) und Tochter Luise (9, Schülerin) wohnen gemeinsam in Balingen und sind hilfebedürftig. Bilde die Bedarfsgemeinschaft.", a: "Antwort 400", pts: 400 },
+        { q: "Mutter Elke (41, nicht erwerbsfähig), Sohn Paul (14, Schüler) und Tochter Laura (10, Schülerin) wohnen gemeinsam in Reutlingen und sind hilfebedürftig. Bilde die Bedarfsgemeinschaft.", a: "Es liegt keine Bedarfsgemeinschaft vor, da es keinen eLb gibt.", pts: 500 }
+    ]},
+    { name: "Regelbedarfe", short: "RB", questions: [
         { q: "Frage 100...?", a: "Antwort 100", pts: 100 },
         { q: "Frage 200...?", a: "Antwort 200", pts: 200 },
         { q: "Frage 300...?", a: "Antwort 300", pts: 300 },
         { q: "Frage 400...?", a: "Antwort 400", pts: 400 },
         { q: "Frage 500...?", a: "Antwort 500", pts: 500 }
     ]},
-    { name: "Kategorie 2", short: "SGB II", questions: [
+    { name: "Mehrbedarfe", short: "MB", questions: [
         { q: "Frage 100...?", a: "Antwort 100", pts: 100 },
         { q: "Frage 200...?", a: "Antwort 200", pts: 200 },
         { q: "Frage 300...?", a: "Antwort 300", pts: 300 },
         { q: "Frage 400...?", a: "Antwort 400", pts: 400 },
         { q: "Frage 500...?", a: "Antwort 500", pts: 500 }
     ]},
-    { name: "Kategorie 3", short: "SGB II", questions: [
+    { name: "Vermögen", short: "VM", questions: [
         { q: "Frage 100...?", a: "Antwort 100", pts: 100 },
         { q: "Frage 200...?", a: "Antwort 200", pts: 200 },
         { q: "Frage 300...?", a: "Antwort 300", pts: 300 },
         { q: "Frage 400...?", a: "Antwort 400", pts: 400 },
         { q: "Frage 500...?", a: "Antwort 500", pts: 500 }
     ]},
-    { name: "Kategorie 4", short: "SGB II", questions: [
-        { q: "Frage 100...?", a: "Antwort 100", pts: 100 },
-        { q: "Frage 200...?", a: "Antwort 200", pts: 200 },
-        { q: "Frage 300...?", a: "Antwort 300", pts: 300 },
-        { q: "Frage 400...?", a: "Antwort 400", pts: 400 },
-        { q: "Frage 500...?", a: "Antwort 500", pts: 500 }
-    ]},
-    { name: "Kategorie 5", short: "SGB II", questions: [
+	{ name: "???", short: "?", questions: [
         { q: "Frage 100...?", a: "Antwort 100", pts: 100 },
         { q: "Frage 200...?", a: "Antwort 200", pts: 200 },
         { q: "Frage 300...?", a: "Antwort 300", pts: 300 },
@@ -316,7 +323,7 @@ box-shadow: 0 0 15px rgba(255, 100, 0, 0.5);
     ]}
   ];
 
-  var state = { phase: "setup", teamCount: 2, teams: [], usedCells: {}, currentQ: null, answerRevealed: false, totalCells: 25, leadTeam: -1, typeInterval: null, gameTimer: null };
+  var state = { phase: "setup", teamCount: 2, teams: [], usedCells: {}, currentQ: null, answerRevealed: false, totalCells: 30, leadTeam: -1, typeInterval: null, gameTimer: null };
 
   function escHtml(s) { return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
   function usedCount() { var c=0; for(var k in state.usedCells){if(state.usedCells[k])c++;} return c; }
