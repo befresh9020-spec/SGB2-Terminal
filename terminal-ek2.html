@@ -327,41 +327,52 @@ function calcEval() {
 // --- FÄLLE (CASES) ---
 const cases = [
   {
-    text: "Fall 1: Max (21) erhält für seine Ausbildung eine monatliche Ausbildungsvergütung. Brutto: 800,00 €, ausgezahlter Nettobetrag: 640,00 €. (Gehe von Standard-Freibeträgen aus, ignoriere U25-Sonderregelungen).",
+    text: "Fall 1: Hannah (21) arbeitet als Servicekraft und erhält einen Lohn in Höhe von 700,00 € brutto. Es fallen Steuern und SV-Beiträge in Höhe von 100,00 Euro an.",
     isIncome11: true,
     isProtected11a: false,
-    brutto: 800,
-    netto: 640,
+    brutto: 700,
+    netto: 600,
     fbGrund: 100,
-    fbErwerb: 140, // 20% von (800 - 100)
-    result: 400, // Netto 640 - 100 - 140
-    feedback: "Korrekt! Ausbildungsvergütung ist normales Erwerbseinkommen. Freibeträge: 100€ Grundfreibetrag + 20% von 700€ (140€). 640€ - 240€ = 400€ anzurechnen."
+    fbErwerb: 138, // 20% von (520 - 100) // 30% von (700 - 520)
+    result: 362, // Netto 600 - 100 - 138
+    feedback: "Es liegt Erwerbseinkommen vor. Freibeträge: 100€ Grundfreibetrag + 20% von 420€ (84€) + 30% von 180€ (54€). 600€ - 238€ = 362€ anzurechnen."
   },
   {
-    text: "Fall 2: Schülerin Lea (16) macht in den Sommerferien einen vierwöchigen Ferienjob und verdient dort insgesamt 1.200,00 € netto.",
+    text: "Fall 2: Max (23, alleinstehend, keine Kinder) erhält für seine Tätigkeit als Friseur einen Lohn in Höhe von brutto: 1300,00 €, ausgezahlter Nettobetrag: 920,00 €.",
+    isIncome11: true,
+    isProtected11a: false,
+    brutto: 1300,
+    netto: 920,
+    fbGrund: 100,
+    fbErwerb: 248, // 20% von (520 - 100) // 30 % von (1000 - 520) // 10 % von (1200 - 1000)
+    result: 572, // Netto 920 - 100 - 248
+    feedback: "Es liegt Erwerbseinkommen vor. Freibeträge: 100€ Grundfreibetrag + 20% von 420€ (84€) + 30% von 480€ (144€) + 10% von 200€ (20€). 920€ - 348€ = 572€ anzurechnen."
+  },
+  {
+    text: "Fall 3: Schülerin Lea (16) macht in den Sommerferien einen vierwöchigen Ferienjob und verdient dort insgesamt 1.200,00 € netto.",
     isIncome11: true,
     isProtected11a: true,
     brutto: 1200, netto: 1200,
     fbGrund: 0, fbErwerb: 0, result: 0,
-    feedback: "Korrekt! Das Geld ist zwar Einkommen nach § 11, aber nach § 11a Abs. 1 Nr. 7 (bzw. Abs. 7) SGB II als Ferienjob von Schülern vollständig privilegiert. Anrechnung = 0,00 €."
+    feedback: "Das Geld ist zwar Einkommen nach § 11, aber nach § 11a Abs. 7 SGB II als Ferienjob von Schülern vollständig privilegiert. Anrechnung = 0,00 €."
   },
   {
-    text: "Fall 3: Auszubildende Sarah (22) befindet sich im Mutterschutz und erhält in diesem Monat 400,00 € Mutterschaftsgeld nach § 19 MuSchG.",
+    text: "Fall 4: Auszubildende Sarah (22) befindet sich im Mutterschutz und erhält in diesem Monat 400,00 € Mutterschaftsgeld nach § 19 MuSchG.",
     isIncome11: true,
     isProtected11a: true,
     brutto: 400, netto: 400,
     fbGrund: 0, fbErwerb: 0, result: 0,
-    feedback: "Korrekt! Mutterschaftsgeld nach § 19 MuSchG ist nach § 11a Abs. 1 Nr. 8 SGB II ausdrücklich nicht als Einkommen zu berücksichtigen!"
+    feedback: "Das Mutterschaftsgeld nach § 19 MuSchG ist zwar Einkommen nach § 11, aber nach § 11a Abs. 1 Nr. 6 SGB II ausdrücklich nicht als Einkommen zu berücksichtigen!"
   },
   {
-    text: "Fall 4: Tom (24) arbeitet nebenbei auf Minijob-Basis in einem Café. Er erhält diesen Monat 400,00 € brutto wie netto ausgezahlt.",
+    text: "Fall 5: Tom (33, eine 5-jährige Tochter im Haushalt) arbeitet auf Minijob-Basis in einem Café. Er erhält diesen Monat 600,00 € brutto wie netto ausgezahlt. Es wurde bereits ermittelt, dass monatlich 31,00 € Werbungskosten anfallen. Für seine Kfz-Haftpflichtversicherung zahlt er jährlich 828,00 €.",
     isIncome11: true,
     isProtected11a: false,
-    brutto: 400, netto: 400,
-    fbGrund: 100,
-    fbErwerb: 60, // 20% von (400 - 100)
-    result: 240, // 400 - 100 - 60
-    feedback: "Exakt. 100€ Grundfreibetrag + 20% von 300€ (60€). Anzurechnen sind 400€ - 160€ = 240€."
+    brutto: 600, netto: 600,
+    fbGrund: 130, // Erwerbs-EK über 400€, damit Vergleich notwendig: § 11b (1) S. 1 Nr. 3-5 (30€ Pauschale + KfZ-Haftpflichtversicherung 69€ + WK 31€ = 130€ und somit mehr als 100€
+    fbErwerb: 108, // 20% von (520 - 100) // 30 % von (600 - 520)
+    result: 362, // 600 - 130 - 108
+    feedback: "Es liegt Erwerbseinkommen über 400€ vor. Freibeträge: 130€ Grundfreibetrag (da Erwerbseinkommen über 400 Euro und Absetzungen nach § 11b (1) S. 1 Nr. 3-5 über 100 Euro betragen, sind die tatsächlichen Aufwendungen zu berücksichtigen) + 20% von 420€ (84€) + 30% von 80€ (24€). 600€ - 130 - 108€ = 362€ anzurechnen."
   }
 ];
 
