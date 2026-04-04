@@ -234,11 +234,16 @@ body {
   font-size: 0.7rem;
   position: relative;
 }
-.theme-btn:hover, .theme-btn:focus {
+
+.theme-btn:hover {
   border-color: var(--text-main);
   color: var(--text-main);
-  outline: none;
 }
+.theme-btn:focus-visible {
+  outline: 2px solid var(--text-main);
+  outline-offset: 4px;
+}
+
 .theme-btn.active {
   border-color: var(--primary);
   color: var(--primary);
@@ -448,6 +453,12 @@ body {
     0 0 20px var(--primary-mid),
     0 0 1px var(--primary);
   transform: translateY(-2px);
+}
+/* FOKUS FÜR DIE KARTEN HINZUFÜGEN (Einfach unter .module-card:hover einfügen) */
+.module-card:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 4px;
+  border-color: var(--primary);
 }
 .card-corner {
   position: absolute;
@@ -1358,6 +1369,48 @@ body {
   22% { opacity: 0.8; transform: skewX(10deg); }
 }
 
+[data-theme="override"] {
+  --primary: #ff1100; /* Alarm Rot */
+  --primary-dim: rgba(255, 17, 0, 0.1);
+  --primary-glow: rgba(255, 17, 0, 0.7);
+  --primary-mid: rgba(255, 17, 0, 0.4);
+  --text-main: #ffcccc;
+  --text-dim: #aa5555;
+  --border: rgba(255, 17, 0, 0.4);
+  --hex: rgba(255, 17, 0, 0.06);
+}
+[data-theme="override"] .visor-rim {
+  background:
+    linear-gradient(to bottom, rgba(255,17,0,0.1) 0%, transparent 8%),
+    linear-gradient(to top,    rgba(255,17,0,0.1) 0%, transparent 8%),
+    linear-gradient(to right,  rgba(255,17,0,0.06) 0%, transparent 6%),
+    linear-gradient(to left,   rgba(255,17,0,0.06) 0%, transparent 6%);
+}
+
+/* ─── REDUCED MOTION (BARRIEREFREIHEIT) ─── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  /* Entferne hochfrequentes Flimmern für betroffene Nutzer komplett */
+  #noise-overlay, .scanlines, .boot-scanlines {
+    display: none !important;
+  }
+}
+
+/* Screenreader-only Text */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
 </style>
 
 </head>
@@ -1433,7 +1486,7 @@ body {
     <div class="visor-bracket br" id="vb-br"></div>
   </div>
 
-  <div class="boot-log" id="boot-log"></div>
+  <div class="boot-log" id="boot-log" aria-live="polite" aria-atomic="false"></div>
 
   <div class="boot-progress-wrap" id="boot-progress-wrap" style="opacity:0;transition:opacity 0.3s;">
     <div class="boot-progress-label">
@@ -1454,14 +1507,14 @@ body {
 
 <!-- MAIN -->
 
-<div class="container">
+<main class="container">
 
   <div class="hero">
     <div class="hero-eyebrow">Modul-System · SGB II</div>
     <h1 class="hero-title" data-text="TERMINAL HUB">TERMINAL HUB</h1>
     <p class="hero-subtitle">Interaktive Lernmodule · <br> Sozialgesetzbuch II · <br> Created by Bjørn Fresh</p>
     <div class="hero-divider"></div>
-  </div>
+  </main>
 
   <div class="system-status">
     <span class="status-dot"></span>
@@ -1476,126 +1529,126 @@ body {
 
 ```
 <!-- Terminal BG -->
-<a class="module-card hud-frame" href="terminal-bg.html" aria-label="Modul Terminal BG starten">
+<a class="module-card hud-frame" href="terminal-bg.html"> 
   <span class="hud-corner-br"></span><span class="hud-corner-bl"></span>
   <span class="card-corner tl"></span><span class="card-corner tr"></span>
   <span class="card-corner bl"></span><span class="card-corner br"></span>
   <span class="card-status">Bereit</span>
   <div class="card-inner">
     <div class="card-icon">
-      <svg viewBox="0 0 24 24"><circle cx="9" cy="7" r="3"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><circle cx="18" cy="7" r="2.5"/><path d="M22 21v-1.5a3 3 0 0 0-2.5-2.97"/></svg>
+      <svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="9" cy="7" r="3"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><circle cx="18" cy="7" r="2.5"/><path d="M22 21v-1.5a3 3 0 0 0-2.5-2.97"/></svg>
     </div>
     <div class="card-body">
       <div class="card-tag">Modul 01</div>
-      <div class="card-title">Terminal BG</div>
+      <div class="card-title"><span class="sr-only">Modul starten: </span>Terminal BG</div>
       <div class="card-desc">Bedarfsgemeinschaft – Zusammensetzung,<br>Zugehörigkeit &amp; Sonderkonstellationen</div>
     </div>
     <div class="card-launch">
-      <svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+      <svg aria-hidden="true" viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
     </div>
   </div>
 </a>
 
 <!-- Terminal RB -->
-<a class="module-card hud-frame" href="terminal-rb.html" aria-label="Modul Terminal RB starten">
+<a class="module-card hud-frame" href="terminal-rb.html"> 
   <span class="hud-corner-br"></span><span class="hud-corner-bl"></span>
   <span class="card-corner tl"></span><span class="card-corner tr"></span>
   <span class="card-corner bl"></span><span class="card-corner br"></span>
   <span class="card-status">Bereit</span>
   <div class="card-inner">
     <div class="card-icon">
-      <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2z"/><path d="M14.5 8a4 4 0 0 0-6.5 4h5m-5 0a4 4 0 0 0 6.5 4"/><line x1="7" y1="12" x2="13" y2="12"/></svg>
+      <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2z"/><path d="M14.5 8a4 4 0 0 0-6.5 4h5m-5 0a4 4 0 0 0 6.5 4"/><line x1="7" y1="12" x2="13" y2="12"/></svg>
     </div>
     <div class="card-body">
       <div class="card-tag">Modul 02</div>
-      <div class="card-title">Terminal RB</div>
+      <div class="card-title"><span class="sr-only">Modul starten: </span>Terminal RB</div>
       <div class="card-desc">Regelbedarfe bestimmen & berechnen</div>
     </div>
     <div class="card-launch">
-      <svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+      <svg aria-hidden="true" viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
     </div>
   </div>
 </a>
 
 <!-- Terminal MB -->
-<a class="module-card hud-frame" href="terminal-mb.html" aria-label="Modul Terminal MB starten">
+<a class="module-card hud-frame" href="terminal-mb.html">
   <span class="hud-corner-br"></span><span class="hud-corner-bl"></span>
   <span class="card-corner tl"></span><span class="card-corner tr"></span>
   <span class="card-corner bl"></span><span class="card-corner br"></span>
   <span class="card-status">Bereit</span>
   <div class="card-inner">
     <div class="card-icon">
-      <svg viewBox="0 0 24 24"><path d="M22 12A10 10 0 1 1 12 2"/><path d="M14.5 8a4 4 0 0 0-6.5 4h5m-5 0a4 4 0 0 0 6.5 4"/><line x1="7" y1="12" x2="13" y2="12"/><path d="M18 2v6"/><path d="M15 5h6"/></svg>
+      <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M22 12A10 10 0 1 1 12 2"/><path d="M14.5 8a4 4 0 0 0-6.5 4h5m-5 0a4 4 0 0 0 6.5 4"/><line x1="7" y1="12" x2="13" y2="12"/><path d="M18 2v6"/><path d="M15 5h6"/></svg>
     </div>
     <div class="card-body">
       <div class="card-tag">Modul 03</div>
-      <div class="card-title">Terminal MB</div>
+      <div class="card-title"><span class="sr-only">Modul starten: </span>Terminal MB</div>
       <div class="card-desc">Mehrbedarfe bestimmen & berechnen</div>
     </div>
     <div class="card-launch">
-      <svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+      <svg aria-hidden="true" viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
     </div>
   </div>
 </a>
 
 <!-- Terminal VM -->
-<a class="module-card hud-frame" href="terminal-vm.html" aria-label="Modul Terminal VM starten">
+<a class="module-card hud-frame" href="terminal-vm.html">
   <span class="hud-corner-br"></span><span class="hud-corner-bl"></span>
   <span class="card-corner tl"></span><span class="card-corner tr"></span>
   <span class="card-corner bl"></span><span class="card-corner br"></span>
   <span class="card-status">Bereit</span>
   <div class="card-inner">
     <div class="card-icon">
-      <svg viewBox="0 0 24 24"><path d="M12 2L4 6v6c0 5.25 3.5 10.15 8 11.5C16.5 22.15 20 17.25 20 12V6L12 2z"/><polyline points="9 12 11 14 15 10"/></svg>
+      <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 2L4 6v6c0 5.25 3.5 10.15 8 11.5C16.5 22.15 20 17.25 20 12V6L12 2z"/><polyline points="9 12 11 14 15 10"/></svg>
     </div>
     <div class="card-body">
       <div class="card-tag">Modul 04</div>
-      <div class="card-title">Terminal VM</div>
+      <div class="card-title"><span class="sr-only">Modul starten: </span>Terminal VM</div>
       <div class="card-desc">Vermögensanrechnung – § 12 SGB II,<br>Schonvermögen &amp; Freibeträge</div>
     </div>
     <div class="card-launch">
-      <svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+      <svg aria-hidden="true" viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
     </div>
   </div>
 </a>
 
 <!-- Terminal EK -->
-<a class="module-card hud-frame" href="terminal-ek.html" aria-label="Modul Terminal EK starten">
+<a class="module-card hud-frame" href="terminal-ek.html">
   <span class="hud-corner-br"></span><span class="hud-corner-bl"></span>
   <span class="card-corner tl"></span><span class="card-corner tr"></span>
   <span class="card-corner bl"></span><span class="card-corner br"></span>
   <span class="card-status offline">Offline</span>
   <div class="card-inner">
     <div class="card-icon">
-      <svg viewBox="0 0 24 24"><rect x="2" y="10" width="20" height="12" rx="2"/><circle cx="12" cy="16" r="2"/><path d="M12 2v6"/><path d="M9 5l3 3 3-3"/></svg>
+      <svg aria-hidden="true" viewBox="0 0 24 24"><rect x="2" y="10" width="20" height="12" rx="2"/><circle cx="12" cy="16" r="2"/><path d="M12 2v6"/><path d="M9 5l3 3 3-3"/></svg>
     </div>
     <div class="card-body">
       <div class="card-tag">Modul 05</div>
-      <div class="card-title">Terminal EK<br>coming soon</div>
+      <div class="card-title"><span class="sr-only">Modul starten: </span>Terminal EK<br>coming soon</div>
       <div class="card-desc">Einkommensanrechnung<br>§ 11, § 11a, § 11b SGB II</div>
     </div>
     <div class="card-launch">
-      <svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+      <svg aria-hidden="true" viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
     </div>
   </div>
 </a>
 
-<a class="module-card hud-frame card-secret-anomaly" href="#" aria-label="Geheimes Modul gesperrt">
+<a class="module-card hud-frame card-secret-anomaly" href="#">
   <span class="hud-corner-br"></span><span class="hud-corner-bl"></span>
   <span class="card-corner tl"></span><span class="card-corner tr"></span>
   <span class="card-corner bl"></span><span class="card-corner br"></span>
   <span class="card-status" style="color: var(--primary);">SIGNAL LOST</span>
   <div class="card-inner">
     <div class="card-icon">
-      <svg viewBox="0 0 24 24"><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="1"/></svg>
+      <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="1"/></svg>
     </div>
     <div class="card-body">
       <div class="card-tag" style="color: var(--primary);">Modul ERROR</div>
-      <div class="card-title">SYSTEM_ANOMALIE</div>
+      <div class="card-title"><span class="sr-only">Modul starten: </span>SYSTEM_ANOMALIE</div>
       <div class="card-desc">Unbekannte Datenstruktur detektiert.<br>Stelle Fragmente wieder her...</div>
     </div>
     <div class="card-launch">
-      <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
     </div>
   </div>
 </a>
@@ -1623,6 +1676,58 @@ function setTheme(event, theme) {
   var colors = { blue: [0, 212, 255], orange: [255, 123, 0], green: [0, 255, 136] };
   currentThemeColor = colors[theme];
 }
+
+// ─── THEME ───
+var currentThemeColor = [255, 123, 0];
+
+function setTheme(event, theme) {
+  document.body.setAttribute('data-theme', theme);
+  // Alle aktiven Punkte entfernen
+  document.querySelectorAll('.theme-btn').forEach(function(b) { b.classList.remove('active'); });
+  
+  // Wenn das Event von einem echten Button kommt, diesen aktivieren
+  if (event && event.target && event.target.classList.contains('theme-btn')) {
+    event.target.classList.add('active');
+  }
+  
+  var colors = { 
+    blue: [0, 212, 255], 
+    orange: [255, 123, 0], 
+    green: [0, 255, 136],
+    override: [255, 17, 0] // Unser verstecktes Easter-Egg-Array
+  };
+  currentThemeColor = colors[theme];
+}
+
+// ─── EASTER EGG LOGIK ───
+(function initEasterEgg() {
+  var visorLabel = document.querySelector('.visor-mode');
+  if (!visorLabel) return;
+  
+  visorLabel.style.cursor = 'crosshair'; // Kleiner visueller Hinweis
+  var clickCount = 0;
+  var clickTimer;
+
+  visorLabel.addEventListener('click', function() {
+    clickCount++;
+    clearTimeout(clickTimer);
+    
+    // Zeitfenster von 1,2 Sekunden für die 3 Klicks
+    clickTimer = setTimeout(function() { 
+      clickCount = 0; 
+    }, 1200);
+
+    if (clickCount === 3) {
+      clickCount = 0; // Reset
+      setTheme(null, 'override');
+      
+      // Optional: Kleiner "Erschütterungs"-Effekt als Feedback
+      document.body.style.animation = 'glitch-a 0.3s 2';
+      setTimeout(function() { document.body.style.animation = ''; }, 600);
+    }
+  });
+})();
+
 
 // ─── ANDROID PERFORMANCE ───
 var isAndroid = /Android/i.test(navigator.userAgent);
@@ -1733,6 +1838,7 @@ requestAnimationFrame(function(now) {
   then = now;
   animateCanvas(now);
 });
+
 
 // ═══════════════════════════════════════
 // BOOT SEQUENCE
@@ -1846,7 +1952,7 @@ requestAnimationFrame(function(now) {
     // Textblitz
     var label = document.createElement('div');
     label.className = 'hit-label ' + cls;
-    label.textContent = isCorrect ? '✓ SGB II' : '✕ FALSCH';
+    label.textContent = isCorrect ? '✓ SGB II' : '✕ ERR';
     label.style.left = xPx + 'px';
     label.style.top  = yPk + 'px';
     overlay.appendChild(label);
@@ -1888,76 +1994,96 @@ requestAnimationFrame(function(now) {
     spawnHitEffect(xPx, yPx, isValid);
     updateScore();
 
-    setTimeout(function() {
-      // aus activeParagraphs entfernen
-      for (var i = 0; i < activeParagraphs.length; i++) {
-        if (activeParagraphs[i].el === el) { activeParagraphs.splice(i, 1); break; }
-      }
-      if (el.parentNode) el.parentNode.removeChild(el);
+        setTimeout(function() {
+      // Wir machen das Element unsichtbar, den Rest (zurück in den Pool) 
+      // regelt der Timeout in startDataStream, der noch läuft.
+      el.style.display = 'none';
     }, 400);
   }
 
-	  // ── Data Stream starten ──
+  // ── NEU: Setup DOM-Pool für Paragrafen ──
+  var PARAGRAPH_POOL_SIZE = 25; // 25 Elemente reichen dicke für den Screen
+  var paragraphPool = [];
+
+  // Wir bauen den Pool einmalig auf
+  for (var i = 0; i < PARAGRAPH_POOL_SIZE; i++) {
+    var p = document.createElement('div');
+    p.className = 'paragraph-drop';
+    p.style.display = 'none'; // Am Anfang unsichtbar
+    streamContainer.appendChild(p);
+    paragraphPool.push({ el: p, active: false });
+  }
+
+  // ── NEU: Event Delegation (Ein Listener für alle!) ──
+  // Klick für Desktop
+  streamContainer.addEventListener('click', function(e) {
+    var target = e.target;
+    if (target.classList.contains('paragraph-drop')) {
+      var rect = target.getBoundingClientRect();
+      handleShot(target, target.dataset.valid === '1', rect.left + rect.width / 2, rect.top + rect.height / 2);
+    }
+  });
+
+  // Touch für Mobile
+  streamContainer.addEventListener('touchend', function(e) {
+    var target = e.target;
+    if (target.classList.contains('paragraph-drop')) {
+      e.preventDefault();
+      var touch = e.changedTouches[0];
+      handleShot(target, target.dataset.valid === '1', touch.clientX, touch.clientY);
+    }
+  }, { passive: false });
+
+
+  // ── Data Stream starten ──
   function startDataStream() {
-    // Score & Instruktion einblenden
     scoreEl.classList.add('visible');
     instructionEl.classList.add('visible');
 
     streamInterval = setInterval(function() {
-      if (aborted) { clearInterval(streamInterval); return; }
+      if (aborted || document.hidden) return;
 
-      // NEU: Wenn der Tab nicht aktiv ist, spawne keine neuen Paragrafen!
-      if (document.hidden) return;
+      // 1. Suche ein freies Element im Pool
+      var poolItem = paragraphPool.find(function(item) { return !item.active; });
+      if (!poolItem) return; // Wenn der Pool voll ist (alle aktiv), spawnen wir diese Runde einfach nichts
 
-      // 65% Chance auf validen §, 35% auf Köder
+      var p = poolItem.el;
+      poolItem.active = true; // Element ist nun "vermietet"
+
       var isValid = Math.random() < 0.65;
       var pool    = isValid ? VALID_LIST : DECOY_LIST;
       var text    = pool[Math.floor(Math.random() * pool.length)];
 
-      var p = document.createElement('div');
-      p.className   = 'paragraph-drop ' + (isValid ? 'valid-para' : 'decoy-para');
+      // 2. Element "frisch" machen (Werte überschreiben, falls es vorher benutzt wurde)
+      p.className = 'paragraph-drop ' + (isValid ? 'valid-para' : 'decoy-para');
       p.textContent = text;
       p.dataset.valid = isValid ? '1' : '0';
+      p.style.display = 'block'; // Sichtbar machen
+      p.style.opacity = '0'; // Die CSS-Animation kümmert sich ums Einblenden
+      p.style.transform = ''; 
+      p.style.color = ''; 
+      p.style.textShadow = '';
+      p.style.pointerEvents = 'auto'; // Wieder antippbar machen
 
       p.style.left = (6 + Math.random() * 88) + '%';
       var duration = 2.2 + Math.random() * 2.8;
-      p.style.animationDuration = duration + 's';
       p.style.fontSize = (isValid ? 0.9 + Math.random() * 0.8 : 0.7 + Math.random() * 0.5) + 'rem';
+      
+      // Animation neu starten
+      p.style.animation = 'none';
+      void p.offsetWidth; // Reflow erzwingen (wichtig für Restart der Animation!)
+      p.style.animation = 'fly-towards ' + duration + 's linear forwards';
 
-      // ── Event-Handler: Click (Desktop) ──
-      p.addEventListener('click', function(e) {
-        e.stopPropagation();
-        var rect = this.getBoundingClientRect();
-        var cx = rect.left + rect.width / 2;
-        var cy = rect.top  + rect.height / 2;
-        handleShot(this, this.dataset.valid === '1', cx, cy);
-      });
-
-      // ── Event-Handler: Touch (Mobile) ──
-      p.addEventListener('touchend', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        var touch = e.changedTouches[0];
-        handleShot(this, this.dataset.valid === '1', touch.clientX, touch.clientY);
-      }, { passive: false });
-
-      streamContainer.appendChild(p);
-
-      var entry = { el: p, createdAt: Date.now() };
-      activeParagraphs.push(entry);
-
+      // 3. Zurück in den Pool, wenn die Animation vorbei ist
       setTimeout(function() {
-        // NEU: Wenn das Spiel schon vorbei ist, mach hier gar nichts mehr.
         if (aborted) return;
-
-        for (var i = 0; i < activeParagraphs.length; i++) {
-          if (activeParagraphs[i].el === p) { activeParagraphs.splice(i, 1); break; }
-        }
-        if (p.parentNode) p.parentNode.removeChild(p);
+        poolItem.active = false;
+        p.style.display = 'none';
       }, duration * 1000);
 
     }, 300);
   }
+
 
 	
   // ── Fortschritt langsam animieren (für die Schieß-Phase) ──
@@ -2188,6 +2314,99 @@ function initServiceWorker() {
 }
 window.addEventListener('load', initServiceWorker);
 </script>
+<script>
+// ═══════════════════════════════════════
+// EASTER EGG: PASSIERSCHEIN A38
+// ═══════════════════════════════════════
+(function initPassierscheinA38() {
+  // Wir suchen gezielt die Offline-Karte (Terminal EK)
+  var offlineCard = document.querySelector('a[href="terminal-ek.html"]');
+  if (!offlineCard) return;
+
+  var offlineTaps = 0;
+  var tapTimer;
+
+  // Der dritte Parameter 'true' ist wichtig! Er sorgt dafür, dass dieses Event
+  // VOR der normalen Start-Animation deiner Karten feuert.
+  offlineCard.addEventListener('click', function(e) {
+    if (this.querySelector('.card-status.offline')) {
+      e.preventDefault();
+      e.stopImmediatePropagation(); // Blockiert deine "CARD CLICK ANIMATION"
+
+      offlineTaps++;
+      clearTimeout(tapTimer);
+      
+      // Nutzer hat 2 Sekunden Zeit für die 3 Klicks
+      tapTimer = setTimeout(function() { offlineTaps = 0; }, 2000);
+
+      // Kleines physisches Feedback beim Drauftippen (Rütteln)
+      this.style.animation = 'glitch-a 0.2s 1';
+      var self = this;
+      setTimeout(function() { self.style.animation = ''; }, 200);
+
+      if (offlineTaps === 1) {
+        offlineTaps = 0;
+        triggerA38Madness();
+      }
+    }
+  }, true);
+
+  // Diese Funktion baut die komplette Seite um
+  function triggerA38Madness() {
+    // 1. Titel anpassen
+    var heroTitle = document.querySelector('.hero-title');
+    if (heroTitle) {
+      heroTitle.setAttribute('data-text', 'SCHALTER 1');
+      heroTitle.textContent = 'SCHALTER 1';
+      heroTitle.style.color = 'var(--warning)';
+    }
+
+    // 2. Die neuen, bürokratischen Texte
+    var a38Texts = [
+      { title: 'Formular 13-B', desc: 'Antrag auf Erteilung eines Antragsformulars. Bitte in dreifacher Ausfertigung.' },
+      { title: 'Schalter 2', desc: 'Wenden Sie sich an Schalter 1. Schalter 2 ist derzeit unbesetzt.' },
+      { title: 'Passierschein A38', desc: 'Zugriff verweigert. Sie benötigen das blaue Formular.' },
+      { title: 'Das Hafenbüro', desc: 'Der Hafen ist immer da, wo das Wasser ist!' },
+      { title: 'Rundlaufliste', desc: 'Bitte warten Sie im Flur, bis Sie aufgerufen werden.' },
+      { title: 'SYSTEM_ANOMALIE', desc: 'Vorgang wird geprüft. Geschätzte Wartezeit: 14 Wochen.' } // Für die rote Karte
+    ];
+
+    // 3. Alle Karten umschreiben und für weitere Klicks sperren
+    var cards = document.querySelectorAll('.module-card');
+    cards.forEach(function(card, index) {
+      // Wenn man ab jetzt auf EGAL WELCHE Karte klickt, rüttelt sie nur noch weigerlich
+      card.addEventListener('click', function(evt) {
+        evt.preventDefault();
+        evt.stopImmediatePropagation();
+        this.style.animation = 'glitch-a 0.2s 3';
+        var self = this;
+        setTimeout(function() { self.style.animation = ''; }, 600);
+      }, true);
+
+      // Texte austauschen
+      var titleEl = card.querySelector('.card-title');
+      var descEl = card.querySelector('.card-desc');
+      var tagEl = card.querySelector('.card-tag');
+      var statusEl = card.querySelector('.card-status');
+      
+      if (titleEl && a38Texts[index]) titleEl.innerHTML = a38Texts[index].title;
+      if (descEl && a38Texts[index]) descEl.innerHTML = a38Texts[index].desc;
+      if (tagEl) tagEl.innerHTML = 'GEBÜHREN-NR. ' + (Math.floor(Math.random() * 9000) + 1000);
+      
+      if (statusEl) {
+        statusEl.textContent = index === 2 ? 'GESPERRT' : 'FEHLT';
+        statusEl.classList.add('offline');
+        statusEl.style.color = 'var(--danger)';
+      }
+    });
+
+    // 4. Optisches Feedback: Ein dicker Glitch der ganzen Seite zum Start des Wahnsinns
+    document.body.style.animation = 'noise-flicker 0.4s 4 steps(4)';
+    setTimeout(function() { document.body.style.animation = ''; }, 1600);
+  }
+})();
+</script>
+
 
 </body>
 </html>
