@@ -1637,6 +1637,18 @@ var HEX_SIZE = 38;
 var hexes = [];
 var t = 0;
 
+// NEU: Pre-Calculation der 6 Ecken
+// Wir berechnen die Ecken eines Basis-Hexagons nur ein einziges Mal.
+var hexRadius = HEX_SIZE - 2;
+var baseCorners = [];
+for (var i = 0; i < 6; i++) {
+  var a = Math.PI / 180 * (60 * i - 30);
+  baseCorners.push({
+    x: hexRadius * Math.cos(a),
+    y: hexRadius * Math.sin(a)
+  });
+}
+
 function resize() {
   canvas.width  = window.innerWidth;
   canvas.height = window.innerHeight;
@@ -1660,42 +1672,67 @@ function buildGrid() {
   }
 }
 
-function hexPath(cx, cy, size) {
+// NEU: Optimierte Pfad-Funktion
+// Greift nur noch auf das Array der vorberechneten Ecken zu.
+function hexPath(cx, cy) {
   ctx.beginPath();
-  for (var i = 0; i < 6; i++) {
-    var a = Math.PI / 180 * (60 * i - 30);
-    var px = cx + size * Math.cos(a);
-    var py = cy + size * Math.sin(a);
-    i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+  ctx.moveTo(cx + baseCorners[0].x, cy + baseCorners[0].y);
+  for (var i = 1; i < 6; i++) {
+    ctx.lineTo(cx + baseCorners[i].x, cy + baseCorners[i].y);
   }
   ctx.closePath();
 }
 
-function animateCanvas() {
-  t += 0.008;
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  var r = currentThemeColor[0], g = currentThemeColor[1], b = currentThemeColor[2];
-  hexes.forEach(function(h) {
-    var pulse = (Math.sin(t + h.phase) + 1) / 2;
-    hexPath(h.x, h.y, HEX_SIZE - 2);
-    ctx.strokeStyle = 'rgba(' + r + ',' + g + ',' + b + ',' + (0.03 + pulse * 0.07) + ')';
-    ctx.lineWidth = 0.8;
-    ctx.stroke();
-  });
-  var sweepY = (t * 80) % canvas.height;
-  var grad = ctx.createLinearGradient(0, sweepY - 60, 0, sweepY + 60);
-  grad.addColorStop(0,   'rgba(' + r + ',' + g + ',' + b + ',0)');
-  grad.addColorStop(0.5, 'rgba(' + r + ',' + g + ',' + b + ',0.04)');
-  grad.addColorStop(1,   'rgba(' + r + ',' + g + ',' + b + ',0)');
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, sweepY - 60, canvas.width, 120);
+// NEU: Framerate-Drosselung (Throttling) setup
+var targetFPS = 30; // 30 FPS reichen für diesen Effekt völlig aus
+var fpsInterval = 1000 / targetFPS;
+var then = performance.now();
+
+// Die now-Variable wird von requestAnimationFrame automatisch übergeben
+function animateCanvas(now) {
+  // Der Loop ruft sich selbst weiterhin auf...
   requestAnimationFrame(animateCanvas);
+
+  // ...aber wir berechnen, wie viel Zeit seit dem letzten Frame vergangen ist
+  var elapsed = now - then;
+
+  // Wir zeichnen nur, wenn genug Zeit vergangen ist (also bei 30 FPS)
+  if (elapsed > fpsInterval) {
+    // Timing anpassen für den nächsten Loop
+    then = now - (elapsed % fpsInterval);
+
+    // Wir erhöhen t etwas schneller (0.016 statt 0.008), 
+    // da wir nur noch halb so oft updaten. So bleibt die Puls-Geschwindigkeit gleich.
+    t += 0.016; 
+    
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    var r = currentThemeColor[0], g = currentThemeColor[1], b = currentThemeColor[2];
+    
+    hexes.forEach(function(h) {
+      var pulse = (Math.sin(t + h.phase) + 1) / 2;
+      hexPath(h.x, h.y); // Größe müssen wir nicht mehr übergeben
+      ctx.strokeStyle = 'rgba(' + r + ',' + g + ',' + b + ',' + (0.03 + pulse * 0.07) + ')';
+      ctx.lineWidth = 0.8;
+      ctx.stroke();
+    });
+    
+    var sweepY = (t * 80) % canvas.height;
+    var grad = ctx.createLinearGradient(0, sweepY - 60, 0, sweepY + 60);
+    grad.addColorStop(0,   'rgba(' + r + ',' + g + ',' + b + ',0)');
+    grad.addColorStop(0.5, 'rgba(' + r + ',' + g + ',' + b + ',0.04)');
+    grad.addColorStop(1,   'rgba(' + r + ',' + g + ',' + b + ',0)');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, sweepY - 60, canvas.width, 120);
+  }
 }
 
 window.addEventListener('resize', resize);
 resize();
-requestAnimationFrame(animateCanvas);
-
+// Den ersten Frame mit der aktuellen Zeit starten
+requestAnimationFrame(function(now) {
+  then = now;
+  animateCanvas(now);
+});
 
 // ═══════════════════════════════════════
 // BOOT SEQUENCE
