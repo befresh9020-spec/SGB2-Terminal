@@ -205,8 +205,8 @@ body {
           - Abs. 1 Nr. 6: Mutterschaftsgeld nach § 19 MuSchG<br>
           - Abs. 7: Einnahmen von Schülern aus Ferienjobs (bis zu best. Grenzen / in der Regel privilegiert).<br><br>
           <strong>§ 11b SGB II:</strong> Absetzbeträge<br>
-          - Abs. 1: Steuern, Pflichtbeiträge zur SV, Werbungskosten<br>
-          - Abs. 2: Grundfreibetrag i.H.v. 100 EUR bei Erwerbstätigkeit<br>
+          - Abs. 1: Steuern, Pflichtbeiträge zur SV, Versicherungspauschale, gesetzlich vorgeschriebene Versicherungen, Beiträge zur privaten Altersvorsorge Werbungskosten, Unterhaltsverpflichtungen<br>
+          - Abs. 2: Grundfreibetrag i.H.v. 100 EUR bei Erwerbstätigkeit, Vergleich der Aufwendungen nach § 11b Abs. 1 S. 1 Nr. 3-5 wenn Einkommen über 400€<br>
           - Abs. 3: Erwerbstätigenfreibetrag:<br> • 20% für den Teil des Bruttos über 100 € bis 520 €,<br> • 30% für den Teil des Bruttos von 520 € bis 1000 €,<br>• 10% für den Teil des Bruttos von 1000 € bis 1200 € (oder 1500 € mit minderjährigen Kind)
         </div>
       </div>
@@ -234,23 +234,26 @@ body {
       <div class="step-block locked" id="step3">
         <div class="step-hdr"><span class="s-num">3</span><span class="step-title">Berechnung § 11b SGB II (Absetzbeträge)</span></div>
         <p style="font-size: 0.75rem; color: var(--text-dim); margin-bottom: 10px; font-family: var(--font-mono);">
-          Ermittle den Grundfreibetrag (100 €) und den Erwerbstätigenfreibetrag (20% von Brutto > 100€ bis max 1000€).
+          Ermittle den Grundfreibetrag (§ 11b Abs. 2 SGB II) und den Erwerbstätigenfreibetrag (20% vom Brutto > 100€ bis max. 520€, 30% vom Brutto > 520€ bis max. 1000€, 10% vom Brutto > 1000€ bis 1200€ oder 1500€).
         </p>
         <div class="calc-grid">
           <div class="input-group">
-            <label>Brutto-Einkommen (€)</label>
+            <label>Brutto-Einkommen (€)<br>§ 2 Abs. 1 Bürgergeld-V</label>
             <input type="text" class="amt-input" id="in-brutto" disabled>
           </div>
           <div class="input-group">
-            <label>Netto-Einkommen (€)</label>
+            <label>Netto-Einkommen (€) <br>
+						§ 11b Abs. 1 S. 1 Nr. 1 und 2 berücksichtigt</label>
             <input type="text" class="amt-input" id="in-netto" disabled>
           </div>
           <div class="input-group">
-            <label>Grundfreibetrag § 11b Abs. 2 (€)</label>
+            <label>Grundfreibetrag (€)<br>
+							§ 11b Abs. 2
+            </label>
             <input type="number" step="0.01" class="amt-input user-input" id="in-fb-grund" placeholder="0.00" oninput="checkInputs()">
           </div>
           <div class="input-group">
-            <label>Erwerbstätigenfreibetrag § 11b Abs. 3 (€)</label>
+            <label>Erwerbstätigenfreibetrag (€)<br>§ 11b Abs. 3</label>
             <input type="number" step="0.01" class="amt-input user-input" id="in-fb-erwerb" placeholder="0.00" oninput="checkInputs()">
           </div>
           <div class="input-group" style="grid-column: 1 / -1; margin-top: 10px;">
@@ -327,10 +330,12 @@ function calcEval() {
 // --- FÄLLE (CASES) ---
 const cases = [
   {
-    text: "Fall 1: Hannah (21) arbeitet als Servicekraft und erhält einen Lohn in Höhe von 700,00 € brutto. Es fallen Steuern und SV-Beiträge in Höhe von 100,00 Euro an.",
+    text: "Fall 1: Maya (21) arbeitet als Servicekraft und erhält einen Lohn in Höhe von 700,00 € brutto. Es fallen Steuern und SV-Beiträge in Höhe von 100,00 Euro an.",
     isIncome11: true,
+		hintStep1: "Arbeitslohn = Einnahme in Geld", 
     isProtected11a: false,
-    brutto: 700,
+    hintStep2: "Regulärer Arbeitslohn, nicht nach § 11a SGB II geschützt",
+		brutto: 700,
     netto: 600,
     fbGrund: 100,
     fbErwerb: 138, // 20% von (520 - 100) // 30% von (700 - 520)
@@ -436,11 +441,13 @@ function checkStep1(answer) {
   
   const fb = document.getElementById('fb-step1');
   if(isCorrect) {
-    fb.className = 'feedback-box ok'; fb.innerText = '✅ Richtig erkannt.';
+    fb.className = 'feedback-box ok'; 
+    fb.innerHTML = '✅ Richtig erkannt.';
     document.getElementById('step2').classList.remove('locked');
   } else {
-    fb.className = 'feedback-box err'; fb.innerText = '❌ Falsch. Überdenke die Definition von Einkommen in § 11.';
-    setTimeout(() => { resetStep(1); }, 1500);
+    fb.className = 'feedback-box err'; 
+    // Hier rufen wir den spezifischen Hint für Step 1 aus dem aktuellen Fall ab
+    fb.innerHTML = `❌ Falsch.<br><strong>SYSTEM-HINWEIS:</strong> ${cCase.hintStep1}`;
   }
 }
 
@@ -455,10 +462,9 @@ function checkStep2(answer) {
   const fb = document.getElementById('fb-step2');
   if(isCorrect) {
     fb.className = 'feedback-box ok'; 
-    fb.innerText = answer ? '✅ Richtig. Privilegiertes Einkommen nach § 11a.' : '✅ Richtig. Kein Schutz nach § 11a, Absetzbeträge prüfen.';
+    fb.innerHTML = answer ? '✅ Richtig. Privilegiertes Einkommen nach § 11a.' : '✅ Richtig. Kein Schutz nach § 11a, Absetzbeträge prüfen.';
     
     if(answer) {
-      // Wenn privilegiert, ist keine 11b Berechnung nötig.
       document.getElementById('btn-check').disabled = false;
       document.getElementById('btn-check').innerText = "Fall abschließen";
     } else {
@@ -467,10 +473,12 @@ function checkStep2(answer) {
       document.getElementById('btn-check').innerText = "Eingaben prüfen";
     }
   } else {
-    fb.className = 'feedback-box err'; fb.innerText = '❌ Falsch. Beachte § 11a SGB II Ausnahmen (z.B. Ferienjobs, Mutterschaftsgeld).';
-    setTimeout(() => { resetStep(2); }, 1500);
+    fb.className = 'feedback-box err'; 
+    // Hier rufen wir den spezifischen Hint für Step 2 aus dem aktuellen Fall ab
+    fb.innerHTML = `❌ Falsch.<br><strong>SYSTEM-HINWEIS:</strong> ${cCase.hintStep2}`;
   }
 }
+
 
 function checkInputs() {
   const v1 = document.getElementById('in-fb-grund').value;
@@ -502,7 +510,7 @@ function validateCase() {
     showFinalFeedback();
   } else {
     fb.className = 'feedback-box err';
-    fb.innerText = '❌ Berechnungsfehler. Bitte Grundfreibetrag und 20%-Stufe genau prüfen!';
+    fb.innerText = '❌ Berechnungsfehler. Bitte Grundfreibetrag und Erwerbstätigenfreibetrag genau prüfen!';
   }
 }
 
