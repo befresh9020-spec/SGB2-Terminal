@@ -1411,6 +1411,65 @@ body {
   clip: rect(0, 0, 0, 0);
   border: 0;
 }
+
+/* ─── AUDIO CONTROL ─── */
+.audio-control-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.audio-btn {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--border);
+  color: var(--primary);
+  width: 32px;
+  height: 32px;
+  clip-path: polygon(0 4px, 4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.audio-btn:hover, .audio-btn:focus-visible {
+  border-color: var(--primary);
+  background: var(--primary-dim);
+  box-shadow: 0 0 15px var(--primary-glow);
+  outline: none;
+}
+
+.audio-btn svg {
+  width: 12px;
+  height: 12px;
+  fill: transparent;
+  stroke: var(--primary);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  transition: filter 0.3s;
+}
+
+.audio-btn:hover svg {
+  filter: drop-shadow(0 0 4px var(--primary));
+}
+
+.audio-label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  transition: color 0.3s, text-shadow 0.3s;
+}
+
+.audio-label.playing {
+  color: var(--success);
+  text-shadow: 0 0 8px var(--success);
+}
+
 </style>
 
 </head>
@@ -1513,8 +1572,27 @@ body {
     <div class="hero-eyebrow">Modul-System · SGB II</div>
     <h1 class="hero-title" data-text="TERMINAL HUB">TERMINAL HUB</h1>
     <p class="hero-subtitle">Interaktive Lernmodule · <br> Sozialgesetzbuch II · <br> Created by Bjørn Fresh</p>
-    <div class="hero-divider"></div>
-  </main>
+       <div class="hero-divider"></div>
+  </div> <audio id="bg-audio" loop preload="none">
+    <source src="dein-lied.mp3" type="audio/mpeg">
+  </audio>
+
+  <div class="audio-control-wrapper">
+    <button id="audio-toggle-btn" class="audio-btn" aria-label="Musik abspielen/pausieren">
+      <svg class="play-icon" viewBox="0 0 24 24">
+        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+      </svg>
+      <svg class="pause-icon" viewBox="0 0 24 24" style="display:none;">
+        <rect x="6" y="4" width="4" height="16"></rect>
+        <rect x="14" y="4" width="4" height="16"></rect>
+      </svg>
+    </button>
+    <span class="audio-label">BGM OFFLINE</span>
+  </div>
+
+  <div class="system-status">
+
+  </div>
 
   <div class="system-status">
     <span class="status-dot"></span>
@@ -2404,6 +2482,42 @@ window.addEventListener('load', initServiceWorker);
     document.body.style.animation = 'noise-flicker 0.4s 4 steps(4)';
     setTimeout(function() { document.body.style.animation = ''; }, 1600);
   }
+})();
+</script>
+<script>
+// ─── AUDIO PLAYER LOGIC ───
+(function initAudioPlayer() {
+  var audio = document.getElementById('bg-audio');
+  var btn = document.getElementById('audio-toggle-btn');
+  var label = document.querySelector('.audio-label');
+  var iconPlay = btn.querySelector('.play-icon');
+  var iconPause = btn.querySelector('.pause-icon');
+
+  if (!audio || !btn) return;
+
+  // Lautstärke etwas reduzieren, damit es als Hintergrundmusik wirkt (0.5 = 50%)
+  audio.volume = 0.3;
+
+  btn.addEventListener('click', function() {
+    if (audio.paused) {
+      audio.play().then(function() {
+        iconPlay.style.display = 'none';
+        iconPause.style.display = 'block';
+        label.textContent = 'BGM ONLINE';
+        label.classList.add('playing');
+        btn.style.boxShadow = '0 0 15px var(--primary-glow), inset 0 0 8px var(--primary-dim)';
+      }).catch(function(err) {
+        console.error("Audio konnte nicht abgespielt werden:", err);
+      });
+    } else {
+      audio.pause();
+      iconPlay.style.display = 'block';
+      iconPause.style.display = 'none';
+      label.textContent = 'BGM OFFLINE';
+      label.classList.remove('playing');
+      btn.style.boxShadow = '';
+    }
+  });
 })();
 </script>
 
