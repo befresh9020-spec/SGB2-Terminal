@@ -137,11 +137,6 @@ html, body {
 .modal-points { font-size: 1.5rem; font-weight: 900; color: #ff0055; }
 
 .modal-header-container { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
-.btn-play-music {
-  width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
-  border-radius: 0;
-}
-.btn-play-music svg { width: 22px; height: 22px; pointer-events: none; }
 
 .modal-question { font-size: 1.6rem; font-weight: 900; line-height: 1.4; margin-bottom: 30px; min-height: 60px; }
 .modal-answer { 
@@ -229,9 +224,6 @@ html, body {
             <div class="modal-category" id="modalCat"></div>
             <div class="modal-points" id="modalPts"></div>
           </div>
-          <button class="brutal-btn btn-play-music" id="btnPlayMusic" data-action="toggle-music" title="Song abspielen/pausieren">
-            <svg id="musicIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-          </button>
         </div>
 
         <div class="modal-question" id="modalQ"></div>
@@ -292,7 +284,7 @@ html, body {
     ]},
     { name: "Bedarfsgemeinschaft", short: "BG", questions: [
         { q: "Welche Person wird für eine BG-Bildung immer benötigt?", a: "§ 7 (3) Nr. 1 SGB II: ein erwerbsfähiger Leistungsberechtigter", pts: 100 },
-        { q: "Was versteht man unter einer eheähnlichen Gemeinschaft?", a: "Ein auf Dauer angelegtes Zusammenleben von Paaren ohne Trauschein...", pts: 200 },
+        { q: "Paul und Anton sind nicht verheiratet und leben seit 58 Wochen zusammen. Handelt es sich um Partner?", a: "Ja, denn die beiden leben seit über einem Jahr zusammen.", pts: 200 },
         { q: "Was versteht man unter einem Probejahr?", a: "§ 7 (3a) Nr. 1 SGB II - Eine eheähnliche Gemeinschaft wird erst vermutet, wenn Partner länger als ein Jahr zusammenleben.", pts: 300 },
           { q: "Vater Sven (45, nicht erwerbsfähig), Sohn Julius (16, Schüler) und Tochter Luise (9, Schülerin) wohnen gemeinsam in Balingen und sind hilfebedürftig. Bilde die Bedarfsgemeinschaft.", a: "eLb (Nr. 1): Sohn Julius, Nicht-eLB Elternteil (Nr. 2): Vater Sven, Kind (Nr. 4): Tochter Luise", pts: 400 },
         { q: "Mutter Sofia (44, nicht erwerbsfähig), Sohn Tom (14) und Tochter Tabea (9) wohnen gemeinsam. Bilde die BG.", a: "Keine BG, da es keinen eLb gibt.", pts: 500 }
@@ -300,7 +292,7 @@ html, body {
     { name: "Regelbedarfe", short: "RB", questions: [
         { q: "In welchem Paragrafen ist das Thema Regelbedarfe im SGB II geregelt?", a: "§ 20 SGB II", pts: 100 },
         { q: "Welchen Regelbedarf erhält ein Kind in der Bedarfsgemeinschaft, das 13 Jahre alt ist?", a: "390 Euro (RBS 5)", pts: 200 },
-        { q: "Wo sind die Beträge der Regelbedarfsstufen zu finden?", a: "Anlage zu § 28 SGB XII", pts: 300 },
+        { q: "Beim Regelbedarf handelt es sich um einen pauschalisierten Betrag. Für welchen (Lebens-)Bereich ist der höchste Anteil vorgesehen (195,35€ bei Alleinstehenden)?", a: "Ernährung und alkoholfreie Getränke", pts: 300 },
         { q: "Welchen Regelbedarf erhält ein Kind in der Bedarfsgemeinschaft, das 6 Jahre alt ist?", a: "390 Euro (RBS 5)", pts: 400 },
         { q: "Wie hoch ist der Regelbedarf im April 2026 für ein Kind in der BG, dass am 14.04.2020 geboren wurde?", a: "RBS 6 (357/30x13 = 154,70 Euro) + RBS 5 (390/30x17 = 221 Euro) = 375,70", pts: 500 }
     ]},
@@ -354,25 +346,6 @@ function playJeopardyTone() {
 function stopJeopardyTone() {
   if (toneTimeout) { clearTimeout(toneTimeout); toneTimeout = null; }
   if (audioCtx) { audioCtx.close(); audioCtx = null; }
-}
-
-function toggleMusic() {
-  var audio = document.getElementById("jeopardyAudio");
-  var icon = document.getElementById("musicIcon");
-
-  if (audio.paused) {
-    audio.play().then(function() {
-      icon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
-    }).catch(function() {
-      // MP3 geht nicht → Web Audio Fallback
-      playJeopardyTone();
-      icon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
-    });
-  } else {
-    audio.pause();
-    stopJeopardyTone();
-    icon.innerHTML = '<path d="M8 5v14l11-7z"/>';
-  }
 }
 
   function escHtml(s) { return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
