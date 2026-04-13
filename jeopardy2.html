@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SGB II JEOPARDY // CANDY EDITION</title>
+<style>
+/* — NEO-BRUTALISMUS RESET & FONTS — */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+  width: 100%; height: 100%;
+  background: #fdf5e6; /* Helles Beige als Basis */
+  color: #000;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  overflow: hidden;
+  user-select: none;
+}
+
+/* — LAYOUT — */
+#app {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+  padding: 16px 24px; gap: 16px;
+  position: relative; z-index: 1;
+}
+
+/* — BUTTONS & BOXES GENERELL — */
+.brutal-box {
+  background: #fff;
+  border: 3px solid #000;
+  border-radius: 0;
+  box-shadow: 4px 4px 0 #000;
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+.brutal-btn {
+  background: #fff;
+  border: 3px solid #000;
+  border-radius: 0;
+  box-shadow: 4px 4px 0 #000;
+  font-weight: 900;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.1s;
+  font-family: inherit;
+}
+.brutal-btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 #000;
+}
+.brutal-btn:active {
+  transform: translate(4px, 4px);
+  box-shadow: 0px 0px 0 #000;
+}
+
+/* — ACTIVE TEAM BANNER — */
+.active-team-banner {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  padding: 10px 16px; flex-shrink: 0;
+  font-size: 1rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase;
+  background: #ffe600;
+  border: 3px solid #000;
+  box-shadow: 4px 4px 0 #000;
+}
+.active-team-banner .banner-icon { width: 24px; height: 24px; flex-shrink: 0; }
+
+/* — SCOREBOARD — */
+.scoreboard { display: flex; gap: 16px; flex-shrink: 0; }
+.team-score { 
+  flex: 1; display: flex; align-items: center; justify-content: space-between; 
+  padding: 12px 16px; position: relative; overflow: hidden; 
+}
+.team-score.is-active { background: #ffe600 !important; }
+.team-1 { background: #ff90e8; }
+.team-2 { background: #90f0ff; }
+.team-3 { background: #b4ff90; }
+.team-4 { background: #ffae90; }
+
+.team-label { display: flex; align-items: center; gap: 10px; }
+.team-icon { width: 28px; height: 28px; flex-shrink: 0; }
+.team-name { font-size: 1.1rem; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; }
+.team-pts { font-size: 1.8rem; font-weight: 900; }
+
+.score-btns { display: flex; gap: 6px; margin-left: 12px; }
+.score-btns button { 
+  width: 32px; height: 32px; font-size: 1.2rem; font-weight: 900;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* — BOARD — */
+.board-container { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 12px; }
+.category-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; flex-shrink: 0; }
+.category-header { 
+  padding: 14px 8px; text-align: center; font-size: 1.1rem; font-weight: 900; 
+  text-transform: uppercase; background: #fff;
+  border: 3px solid #000; box-shadow: 4px 4px 0 #000;
+}
+.category-header.cleared { background: #b4ff90; }
+.cat-sub { font-size: 0.7rem; font-weight: 700; display: block; margin-top: 4px; }
+
+.questions-grid { flex: 1; display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(5, 1fr); gap: 12px; min-height: 0; }
+.q-cell { 
+  display: flex; align-items: center; justify-content: center; text-align: center;
+  background: #fff; border: 3px solid #000; box-shadow: 4px 4px 0 #000;
+  cursor: pointer; transition: all 0.1s; padding: 5px;
+}
+.q-cell:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 #000; background: #ffe600; }
+.q-cell:active { transform: translate(4px, 4px); box-shadow: 0 0 0 #000; }
+.q-cell .points { font-size: 1.2rem; font-weight: 900; }
+
+.q-cell.used { 
+  background: #e0e0e0; border-style: dashed; box-shadow: none; 
+  pointer-events: none; transform: none; opacity: 0.5;
+}
+
+/* — MODAL — */
+.modal-overlay { 
+  position: fixed; inset: 0; background: rgba(0,0,0,0.8); 
+  display: none; align-items: center; justify-content: center; z-index: 1000; 
+}
+.modal-overlay.active { display: flex; }
+.modal { 
+  width: 90%; max-width: 1000px; background: #fff; 
+  border: 4px solid #000; box-shadow: 12px 12px 0 #000; padding: 40px; 
+}
+
+.modal-split { display: flex; gap: 40px; align-items: flex-start; }
+.modal-left { width: 180px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 15px; }
+.modal-right { flex: 1; display: flex; flex-direction: column; }
+
+.modal-avatar { 
+  width: 140px; height: 140px; border-radius: 50%; border: 4px solid #000; 
+  object-fit: cover; box-shadow: 6px 6px 0 #000; background: #ff90e8;
+}
+.modal-status { font-size: 1rem; font-weight: 900; text-transform: uppercase; }
+
+.modal-category { font-size: 0.9rem; font-weight: 900; text-transform: uppercase; margin-bottom: 6px; }
+.modal-points { font-size: 1.5rem; font-weight: 900; color: #ff0055; }
+
+.modal-header-container { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
+.btn-play-music {
+  width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
+  border-radius: 0;
+}
+.btn-play-music svg { width: 22px; height: 22px; }
+
+.modal-question { font-size: 1.6rem; font-weight: 900; line-height: 1.4; margin-bottom: 30px; min-height: 60px; }
+.modal-answer { 
+  padding: 20px 24px; background: #b4ff90; border: 3px solid #000; box-shadow: 4px 4px 0 #000;
+  font-size: 1.3rem; font-weight: 700; line-height: 1.4; display: none; margin-bottom: 20px;
+}
+.modal-answer.visible { display: block; }
+
+.modal-actions { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+.modal-btn { padding: 12px 20px; font-size: 0.9rem; }
+.btn-reveal { background: #ffe600; width: 100%; text-align: center; }
+.btn-t0 { background: #ff90e8; }
+.btn-t1 { background: #90f0ff; }
+.btn-t2 { background: #b4ff90; }
+.btn-t3 { background: #ffae90; }
+.btn-nobody { background: #ccc; }
+.btn-close { background: #fff; margin-left: auto; }
+
+/* — SETUP — */
+.setup-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 30px; }
+.setup-hero { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+.setup-title { font-size: 4rem; font-weight: 900; text-transform: uppercase; text-shadow: 4px 4px 0 #ff0055; color: #fff; -webkit-text-stroke: 2px #000; }
+.setup-sub { font-size: 1.5rem; font-weight: 900; background: #ffe600; padding: 5px 15px; border: 3px solid #000; box-shadow: 4px 4px 0 #000; }
+.setup-teams label { font-size: 1.2rem; font-weight: 900; margin-right: 10px; }
+.setup-teams select { padding: 8px 16px; font-size: 1.2rem; font-weight: 900; border: 3px solid #000; box-shadow: 4px 4px 0 #000; }
+.team-names-grid { display: grid; gap: 15px; width: 600px; max-width: 90vw; }
+.team-name-input { display: flex; align-items: center; gap: 10px; }
+.team-name-input input { 
+  flex: 1; padding: 12px; font-size: 1.1rem; font-weight: 900; 
+  border: 3px solid #000; box-shadow: 4px 4px 0 #000; outline: none;
+}
+.btn-start { padding: 16px 50px; font-size: 1.2rem; background: #b4ff90; margin-top: 20px; }
+
+/* — WINNER — */
+.winner-overlay { position: fixed; inset: 0; background: #ffe600; display: none; align-items: center; justify-content: center; z-index: 2000; flex-direction: column; gap: 20px; border: 10px solid #000; }
+.winner-overlay.active { display: flex; }
+.winner-title { font-size: 2rem; font-weight: 900; background: #fff; padding: 5px 15px; border: 3px solid #000; box-shadow: 4px 4px 0 #000; }
+.winner-name { font-size: 5rem; font-weight: 900; text-transform: uppercase; -webkit-text-stroke: 2px #000; color: #fff; text-shadow: 6px 6px 0 #ff0055; }
+.winner-score { font-size: 2.5rem; font-weight: 900; }
+.btn-restart { padding: 16px 40px; font-size: 1.2rem; background: #fff; }
+
+/* — FOOTER — */
+.footer-bar { display: flex; justify-content: space-between; align-items: center; padding: 10px; flex-shrink: 0; font-weight: 900; background: #fff; border: 3px solid #000; box-shadow: 4px 4px 0 #000; }
+.footer-btns { display: flex; gap: 12px; }
+.footer-bar button { padding: 8px 16px; font-size: 0.9rem; }
+.btn-end-game { background: #ff0055; color: #fff; }
+.btn-beamer { background: #90f0ff; }
+
+/* — LEADERBOARD — */
+.leaderboard-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 1500; flex-direction: column; gap: 20px; }
+.leaderboard-overlay.active { display: flex; }
+.lb-title { font-size: 2rem; font-weight: 900; background: #ffe600; padding: 10px 20px; border: 3px solid #000; box-shadow: 6px 6px 0 #000; }
+.lb-container { width: 600px; max-width: 90vw; display: flex; flex-direction: column; gap: 15px; }
+.lb-row { display: flex; align-items: center; gap: 15px; padding: 15px 20px; background: #fff; border: 3px solid #000; box-shadow: 4px 4px 0 #000; }
+.lb-rank { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 900; border: 3px solid #000; background: #ffe600; border-radius: 50%; }
+.lb-name { flex: 1; font-size: 1.5rem; font-weight: 900; text-transform: uppercase; }
+.lb-score { font-size: 2rem; font-weight: 900; }
+.lb-close { padding: 12px 30px; font-size: 1rem; background: #fff; margin-top: 20px; }
+
+/* — BEAMER MODE — */
+.beamer-mode .category-header { font-size: 1.4rem; padding: 20px 10px; }
+.beamer-mode .q-cell .points { font-size: 1.8rem; }
+.beamer-mode .team-name { font-size: 1.5rem; }
+.beamer-mode .team-pts { font-size: 2.5rem; }
+.beamer-mode .modal-question { font-size: 2.5rem; }
+.beamer-mode .modal-answer { font-size: 1.8rem; }
+.beamer-mode .modal { max-width: 1300px; }
+</style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal brutal-box" id="modal">
+    <div class="modal-split">
+      <div class="modal-left">
+        <img id="modalAvatarImg" class="modal-avatar" src="" alt="Quizmaster">
+        <div class="modal-status" id="modalStatus">FRAGE LÄDT...</div>
+      </div>
+      <div class="modal-right">
+        
+        <div class="modal-header-container">
+          <div>
+            <div class="modal-category" id="modalCat"></div>
+            <div class="modal-points" id="modalPts"></div>
+          </div>
+          <button class="brutal-btn btn-play-music" id="btnPlayMusic" data-action="toggle-music" title="Song abspielen/pausieren">
+            <svg id="musicIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+        </div>
+
+        <div class="modal-question" id="modalQ"></div>
+        <div class="modal-answer" id="modalA"></div>
+        <div class="modal-actions" id="modalActions"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="leaderboard-overlay" id="lbOverlay">
+  <div class="lb-title">RANGLISTE</div>
+  <div class="lb-container" id="lbContainer"></div>
+  <button class="brutal-btn lb-close" data-action="close-lb">ZURÜCK ZUM BOARD</button>
+</div>
+
+<div class="winner-overlay" id="winnerOverlay">
+  <div class="winner-title">GEWINNER!</div>
+  <div class="winner-name" id="winnerName"></div>
+  <div class="winner-score" id="winnerScore"></div>
+  <img class="modal-avatar" id="winnerAvatar" alt="Quizmaster" style="margin-top:20px;">
+  <button class="brutal-btn btn-restart" id="btnRestart">NEUES SPIEL</button>
+</div>
+
+<script>
+(function() {
+  "use strict";
+
+  var questionMusic = new Audio('jeopardy.mp3'); 
+  questionMusic.loop = true;
+
+  // NEU: Süßigkeiten-Belohnungen je nach Schwierigkeitsgrad (Zeile 0 bis 4)
+  var REWARDS = [
+    "🍬 x1",
+    "🍬 x2",
+    "🍭 // 🍬 x3",
+    "🍫 Rittersport",
+    "🍫 Knoppers"
+  ];
+
+  var AVATAR = "data:image/svg+xml;charset=utf-8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="#ffe600" stroke="#000" stroke-width="4"/><circle cx="35" cy="40" r="6" fill="#000"/><circle cx="65" cy="40" r="6" fill="#000"/><path d="M 30 65 Q 50 85 70 65" stroke="#000" stroke-width="6" fill="none" stroke-linecap="round"/></svg>');
+
+  var ICONS = [
+    '<svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5"><path d="M12 2C7 2 3 6 3 11v3c0 2 1 3 3 3h1l1 3h8l1-3h1c2 0 3-1 3-3v-3c0-5-4-9-9-9z"/></svg>',
+    '<svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5"><path d="M12 2L4 6v5c0 5.5 3.4 10.7 8 12 4.6-1.3 8-6.5 8-12V6l-8-4z"/></svg>',
+    '<svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>',
+    '<svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>'
+  ];
+  
+  var TEAM_CLASSES = ["team-1", "team-2", "team-3", "team-4"];
+  var BTN_CLASSES = ["btn-t0", "btn-t1", "btn-t2", "btn-t3"];
+
+  var CATEGORIES = [
+    { name: "Leistungsberechtigung", short: "eLb", questions: [
+        { q: "Wie alt muss eine Person mindestens sein, um ein erwerbsfähiger Leistungsberechtigter zu sein?", a: "Personen, die das 15. Lebensjahr vollendet haben.", pts: 100 },
+        { q: "Wie nennt man die Person, die den Antrag auf Bürgergeld stellt? Nenne die Rechtsgrundlage.", a: "Bevollmächtigter. § 38 SGB II", pts: 200 },
+        { q: "Kann ein Kind, das 14 Jahre alt ist, Leistungen nach dem SGB II erhalten? Begründe deine Entscheidung.", a: "Ja, wenn das Kind mit einem eLb in einer Bedarfsgemeinschaft lebt.", pts: 300 },
+        { q: "Kann eine Person ein eLb sein, die zurzeit obdachlos in Konstanz lebt? Begründe deine Entscheidung.", a: "Ja, der gewöhnliche Aufenthalt liegt in Deutschland.", pts: 400 },
+        { q: "Frau Maier geb. am 14.04.1960 stellt heute einen Antrag auf Bürgergeld. Sie hat keine gesundheitlichen Einschränkungen, bezieht eine geringe Altersrente und wohnt in Albstadt. Erfüllt sie die Voraussetzungen nach § 7 (1) S. 1 SGB II? Begründe.", a: "Ja. Altersgrenze ist noch nicht erreicht.", pts: 500 }
+    ]},
+    { name: "Bedarfsgemeinschaft", short: "BG", questions: [
+        { q: "Welche Person wird für eine BG-Bildung immer benötigt?", a: "§ 7 (3) Nr. 1 SGB II: ein erwerbsfähiger Leistungsberechtigter", pts: 100 },
+        { q: "Was versteht man unter einer eheähnlichen Gemeinschaft?", a: "Ein auf Dauer angelegtes Zusammenleben von Paaren ohne Trauschein...", pts: 200 },
+        { q: "Was versteht man unter einem Probejahr?", a: "§ 7 (3a) Nr. 1 SGB II - Eine eheähnliche Gemeinschaft wird erst vermutet, wenn Partner länger als ein Jahr zusammenleben.", pts: 300 },
+          { q: "Vater Sven (45, nicht erwerbsfähig), Sohn Julius (16, Schüler) und Tochter Luise (9, Schülerin) wohnen gemeinsam in Balingen und sind hilfebedürftig. Bilde die Bedarfsgemeinschaft.", a: "eLb (Nr. 1): Sohn Julius, Nicht-eLB Elternteil (Nr. 2): Vater Sven, Kind (Nr. 4): Tochter Luise", pts: 400 },
+        { q: "Mutter Sofia (44, nicht erwerbsfähig), Sohn Tom (14) und Tochter Tabea (9) wohnen gemeinsam. Bilde die BG.", a: "Keine BG, da es keinen eLb gibt.", pts: 500 }
+    ]},
+    { name: "Regelbedarfe", short: "RB", questions: [
+        { q: "In welchem Paragrafen ist das Thema Regelbedarfe im SGB II geregelt?", a: "§ 20 SGB II", pts: 100 },
+        { q: "Welchen Regelbedarf erhält ein Kind in der Bedarfsgemeinschaft, das 13 Jahre alt ist?", a: "390 Euro (RBS 5)", pts: 200 },
+        { q: "Wo sind die Beträge der Regelbedarfsstufen zu finden?", a: "Anlage zu § 28 SGB XII", pts: 300 },
+        { q: "Welchen Regelbedarf erhält ein Kind in der Bedarfsgemeinschaft, das 6 Jahre alt ist?", a: "390 Euro (RBS 5)", pts: 400 },
+        { q: "Wie hoch ist der Regelbedarf im April 2026 für ein Kind in der BG, dass am 14.04.2020 geboren wurde?", a: "RBS 6 (357/30x13 = 154,70 Euro) + RBS 5 (390/30x17 = 221 Euro) = 375,70", pts: 500 }
+    ]},
+    { name: "Mehrbedarfe", short: "MB", questions: [
+        { q: "Wie hoch ist der Mehrbedarf für Schwangere?", a: "17% des maßgebenden Regelbedarfs", pts: 100 },
+        { q: "Bei Neurodermitis kann ein Mehrbedarf bei kostenaufwändiger Ernährung gewährt werden. Richtig oder falsch?", a: "Falsch", pts: 200 },
+        { q: "Bei einer Glutenunverträglichkeit kann ein Mehrbedarf für kostenaufwändige Ernährung gewährt werden. Richtig oder falsch?", a: "Falsch", pts: 300 },
+        { q: "Wie hoch ist der Mehrbedarf für Alleinerziehende mit zwei Kindern (8 und 17 Jahre)?", a: "24 % des maßgebenden Regelbedarfs", pts: 400 },
+        { q: "Wie hoch sind die Mehrbedarfe einer schwangeren (17. SSW) und alleinerziehenden Frau (1 Kind, 7 Jahre), in deren Wohnung das Warmwasser per Zentralheizung erzeugt wird?", a: "163,27 Euro - 17% + 12% von 563€", pts: 500 }
+    ]},
+    { name: "EK & VM", short: "EK-VM", questions: [
+        { q: "Wie hoch ist der grundsätzliche Freibetrag beim Vermögen für ein Kind in der BG?", a: "15.000 Euro", pts: 100 },
+        { q: "Handelt es sich bei einem gepfändeten Auto um verwertbares Vermögen?", a: "Nein.", pts: 200 },
+        { q: "Was bedeutet privilegiertes Einkommen? Nenne 2 Beispiele.", a: "Nicht zu berücksichtigendes Einkommen gemäß § 11a. Bsp: Mutterschaftsgeld, Einstiegsgeld nach § 16b SGB II", pts: 300 },
+        { q: "Muss ein hilfebedürftiger Landwirt seinen Traktor im Wert von 125.000 Euro verkaufen? Nenne die Rechtsgrundlage.", a: "Nein. § 7 Abs. 1 Bürgergeld-V", pts: 400 },
+        { q: "Linda erzielt Einkommen aus ihrer geringfügigen Beschäftigung in Höhe von 550 Euro. Sie macht folgende Aufwendungen geltend: KFZ-Haftpflichtversicherung (600€ jährlich), Privat-Haftpflicht+Rechtsschutz (96€ vierteljährlich) und Gewerkschaftsbeitrag (19€ monatlich). Wie hoch ist das anzurechnende Einkommen?", a: "357€ (550-100-93)", pts: 500 }
+    ]},
+    { name: "???", short: "?", questions: [
+        { q: "Das SGB II ist seit dem 1. Januar 2005 in Kraft. Nach welcher Person wurde die zugehörige Gesetzesreform benannt?", a: "Peter Hartz", pts: 500 },
+        { q: "Wie viele gemeinsame Einrichtungen gibt es im IS-Verbund Ulm?", a: "7 (Heidenheim, Ulm, Alb-Donau, Reutlingen, Tübingen, Zollernalb, Konstanz)", pts: 500 },
+        { q: "Welche politische Koalition führte das Bürgergeld ein?", a: "Ampel (SPD, Grüne, FDP)", pts: 500 },
+        { q: "Im SGB II gibt es seit 2023 Leistungsminderungen. Unter welchem Begriff waren diese Kürzungen der Leistungen vorher bekannt?", a: "Sanktionen", pts: 500 },
+        { q: "Schätzfrage: Wie hoch war der Regelbedarf für Alleinstehende im Jahr 2005, also im 1. Jahr des SGB II?", a: "345 Euro im Westen und 331 Euro im Osten", pts: 500 }
+    ]}
+  ];
+
+  var state = { phase: "setup", teamCount: 2, teams: [], usedCells: {}, currentQ: null, answerRevealed: false, totalCells: 30, activeTeam: 0, beamerMode: false };
+
+  function toggleMusic() {
+    var icon = document.getElementById("musicIcon");
+    if (questionMusic.paused) {
+      questionMusic.play().catch(function(e){});
+      icon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+    } else {
+      questionMusic.pause();
+      icon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+    }
+  }
+
+  function escHtml(s) { return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+  function usedCount() { var c=0; for(var k in state.usedCells){if(state.usedCells[k])c++;} return c; }
+
+  function toggleBeamer() {
+    state.beamerMode = !state.beamerMode;
+    document.body.classList.toggle("beamer-mode", state.beamerMode);
+    if (state.beamerMode) {
+      if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
+    } else {
+      if (document.exitFullscreen) document.exitFullscreen();
+    }
+    renderBoard();
+  }
+
+  function renderSetup(){
+    var app=document.getElementById("app");
+    app.innerHTML='<div class="setup-screen"><div class="setup-hero"><img class="modal-avatar" src="'+AVATAR+'"><div class="setup-title">SGB II JEOPARDY</div><div class="setup-sub">CANDY EDITION</div></div><div class="setup-teams"><label>TEAMS:</label><select id="teamCountSel"><option value="2">2</option><option value="3">3</option><option value="4">4</option></select></div><div class="team-names-grid" id="teamNamesGrid"></div><button class="brutal-btn btn-start" id="btnStart">SPIEL STARTEN</button></div>';
+    renderTeamInputs();
+    document.getElementById("teamCountSel").addEventListener("change", function(e){ state.teamCount=parseInt(e.target.value); renderTeamInputs(); });
+    document.getElementById("btnStart").addEventListener("click", function(){
+      state.teams=[];
+      for(var i=0;i<state.teamCount;i++){
+        var inp=document.getElementById("tname"+i);
+        state.teams.push({ name: (inp?inp.value.trim():"") || ("Team "+(i+1)), score: 0, icon: i });
+      }
+      state.phase="board"; renderBoard();
+    });
+  }
+
+  function renderTeamInputs(){
+    var g=document.getElementById("teamNamesGrid"); if(!g)return;
+    g.style.gridTemplateColumns = state.teamCount <= 2 ? "repeat(2,1fr)" : "repeat("+state.teamCount+",1fr)";
+    var h="";
+    for(var i=0; i<state.teamCount; i++){
+      h+='<div class="team-name-input"><span class="icon-pick" style="width:28px;height:28px;">'+ICONS[i]+'</span><input type="text" id="tname'+i+'" placeholder="Team '+(i+1)+'" maxlength="20"></div>';
+    }
+    g.innerHTML=h;
+  }
+
+  function renderBoard(){
+    var app=document.getElementById("app");
+    var at = state.activeTeam;
+
+    var bh = '<div class="active-team-banner"><span class="banner-icon">'+ICONS[state.teams[at].icon]+'</span>'+escHtml(state.teams[at].name)+' WÄHLT</div>';
+
+    var sh='<div class="scoreboard">';
+    for(var i=0; i<state.teams.length; i++){
+      var t=state.teams[i];
+      var isAct = i === at ? " is-active" : "";
+      sh+='<div class="brutal-box team-score '+TEAM_CLASSES[i]+isAct+'"><div class="team-label"><span class="team-icon">'+ICONS[t.icon]+'</span><span class="team-name">'+escHtml(t.name)+'</span></div><span class="team-pts">'+t.score+'</span><div class="score-btns"><button class="brutal-btn" data-action="score-minus" data-team="'+i+'">−</button><button class="brutal-btn" data-action="score-plus" data-team="'+i+'">+</button></div></div>';
+    }
+    sh+='</div>';
+
+    var ch='<div class="category-row">';
+    for(var c=0; c<CATEGORIES.length; c++){
+      ch+='<div class="category-header">'+escHtml(CATEGORIES[c].name)+'<span class="cat-sub">'+escHtml(CATEGORIES[c].short)+'</span></div>';
+    }
+    ch+='</div>';
+
+    var gh='<div class="questions-grid">';
+    for(var row=0; row<5; row++){
+      for(var col=0; col<6; col++){
+        var k=col+"-"+row;
+        var u=state.usedCells[k]?" used":"";
+        // HIER: Anzeige der Süßigkeit anstatt der Punktzahl
+        var rewardText = REWARDS[row];
+        gh+='<div class="q-cell'+u+'" data-action="open-q" data-col="'+col+'" data-row="'+row+'"><span class="points">'+rewardText+'</span></div>';
+      }
+    }
+    gh+='</div>';
+
+    app.innerHTML=bh+sh+'<div class="board-container">'+ch+gh+'</div><div class="footer-bar"><span>FRAGEN: '+(state.totalCells-usedCount())+'/'+state.totalCells+'</span><div class="footer-btns"><button class="brutal-btn btn-leaderboard" data-action="toggle-lb">RANGLISTE</button><button class="brutal-btn btn-beamer" data-action="toggle-beamer">BEAMER</button><button class="brutal-btn btn-end-game" data-action="end-game">BEENDEN</button></div><span>SGB II // CANDY EDITION</span></div>';
+  }
+
+  function openQuestion(col,row){
+    if(state.usedCells[col+"-"+row])return;
+    var cat=CATEGORIES[col], q=cat.questions[row];
+    state.currentQ={col:col, row:row, pts:q.pts}; state.answerRevealed=false;
+
+    document.getElementById("modalCat").textContent=cat.name;
+    // Belohnung im Modal anzeigen
+    document.getElementById("modalPts").textContent = "GEWINN: " + REWARDS[row] + " (" + q.pts + " Pkt)";
+    document.getElementById("modalStatus").textContent = "FRAGE:";
+    document.getElementById("modalAvatarImg").src = AVATAR;
+
+    var qEl = document.getElementById("modalQ");
+    qEl.textContent = q.q;
+    
+    var a=document.getElementById("modalA"); a.textContent=q.a; a.classList.remove("visible");
+    renderModalActions();
+
+    document.getElementById("modalOverlay").classList.add("active");
+  }
+
+  function renderModalActions(){
+    var act=document.getElementById("modalActions"), h="";
+    if(!state.answerRevealed){
+        h+='<button class="brutal-btn btn-reveal" data-action="reveal">ANTWORT ZEIGEN</button>';
+    } else {
+        for(var i=0; i<state.teams.length; i++)
+          h+='<button class="brutal-btn '+BTN_CLASSES[i]+'" data-action="award" data-team="'+i+'">'+escHtml(state.teams[i].name)+' KASSIERT</button>';
+        h+='<button class="brutal-btn btn-nobody" data-action="nobody">NIEMAND</button>';
+    }
+    h+='<button class="brutal-btn btn-close" data-action="close-modal">ABBRECHEN</button>';
+    act.innerHTML=h;
+  }
+
+  function revealAnswer(){
+    state.answerRevealed=true;
+    document.getElementById("modalA").classList.add("visible");
+    renderModalActions();
+  }
+
+  function awardPoints(ti){
+    if(state.currentQ){
+      state.teams[ti].score += state.currentQ.pts;
+      state.activeTeam = ti;
+      closeModal(true);
+    }
+  }
+
+  function nobodyGetsIt(){
+    state.activeTeam = (state.activeTeam + 1) % state.teams.length;
+    closeModal(true);
+  }
+
+  function closeModal(markUsed){
+    questionMusic.pause();
+    questionMusic.currentTime = 0;
+    document.getElementById("musicIcon").innerHTML = '<path d="M8 5v14l11-7z"/>';
+
+    document.getElementById("modalOverlay").classList.remove("active");
+    if(markUsed && state.currentQ){ 
+      state.usedCells[state.currentQ.col+"-"+state.currentQ.row]=true; 
+    }
+    state.currentQ=null;
+    renderBoard();
+    if(usedCount()>=state.totalCells) endGame();
+  }
+
+  function manualScore(ti, d){ state.teams[ti].score+=d; renderBoard(); }
+
+  function showLeaderboard() {
+    var sorted = state.teams.slice().sort(function(a,b){ return b.score - a.score; });
+    var h = "";
+    for (var i = 0; i < sorted.length; i++) {
+      h += '<div class="lb-row">';
+      h += '<div class="lb-rank">'+(i+1)+'</div>';
+      h += '<span class="lb-name">'+escHtml(sorted[i].name)+'</span>';
+      h += '<span class="lb-score">'+sorted[i].score+' PKT</span>';
+      h += '</div>';
+    }
+    document.getElementById("lbContainer").innerHTML = h;
+    document.getElementById("lbOverlay").classList.add("active");
+  }
+
+  function endGame(){
+    var m=-99999, wi=0;
+    for(var i=0; i<state.teams.length; i++){ if(state.teams[i].score > m){ m=state.teams[i].score; wi=i; } }
+    document.getElementById("winnerName").textContent=state.teams[wi].name;
+    document.getElementById("winnerScore").textContent=m+" PUNKTE";
+    document.getElementById("winnerAvatar").src=AVATAR;
+    document.getElementById("winnerOverlay").classList.add("active");
+  }
+
+  document.addEventListener("click", function(e){
+    var t=e.target; while(t && t!==document.body && !(t.dataset && t.dataset.action)) t=t.parentElement;
+    if(!t || !t.dataset || !t.dataset.action) return;
+    var a=t.dataset.action;
+    if(a==="open-q") openQuestion(parseInt(t.dataset.col), parseInt(t.dataset.row));
+    else if(a==="reveal") revealAnswer();
+    else if(a==="award") awardPoints(parseInt(t.dataset.team));
+    else if(a==="nobody") nobodyGetsIt();
+    else if(a==="close-modal") closeModal(false);
+    else if(a==="score-minus") manualScore(parseInt(t.dataset.team), -50);
+    else if(a==="score-plus") manualScore(parseInt(t.dataset.team), 50);
+    else if(a==="toggle-beamer") toggleBeamer();
+    else if(a==="toggle-lb") showLeaderboard();
+    else if(a==="close-lb") document.getElementById("lbOverlay").classList.remove("active");
+    else if(a==="end-game") if(confirm("Spiel beenden?")) endGame();
+    else if(a==="toggle-music") toggleMusic();
+  });
+
+  document.getElementById("btnRestart").addEventListener("click", function(){ location.reload(); });
+
+  renderSetup();
+})();
+</script>
+</body>
+</html>
