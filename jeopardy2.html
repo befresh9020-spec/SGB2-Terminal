@@ -329,21 +329,51 @@ html, body {
 
   var state = { phase: "setup", teamCount: 2, teams: [], usedCells: {}, currentQ: null, answerRevealed: false, totalCells: 30, activeTeam: 0, beamerMode: false };
 
-  function toggleMusic() {
-    var audio = document.getElementById("jeopardyAudio");
-    var icon = document.getElementById("musicIcon");
+var audioCtx = null;
+var toneTimeout = null;
 
-    if (audio.paused) {
-      audio.play().then(function() {
-        icon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
-      }).catch(function(e){
-        alert("Audio Fehler: " + e.message);
-      });
-    } else {
-      audio.pause();
-      icon.innerHTML = '<path d="M8 5v14l11-7z"/>';
-    }
+function playJeopardyTone() {
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  var notes = [587, 523, 440, 349, 392, 349, 294];
+  var t = audioCtx.currentTime;
+  notes.forEach(function(freq, i) {
+    var osc = audioCtx.createOscillator();
+    var gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.frequency.value = freq;
+    osc.type = "sine";
+    gain.gain.setValueAtTime(0.3, t + i * 0.4);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + i * 0.4 + 0.35);
+    osc.start(t + i * 0.4);
+    osc.stop(t + i * 0.4 + 0.35);
+  });
+  // Nach 2.8 Sekunden wiederholen
+  toneTimeout = setTimeout(playJeopardyTone, 2800);
+}
+
+function stopJeopardyTone() {
+  if (toneTimeout) { clearTimeout(toneTimeout); toneTimeout = null; }
+  if (audioCtx) { audioCtx.close(); audioCtx = null; }
+}
+
+function toggleMusic() {
+  var audio = document.getElementById("jeopardyAudio");
+  var icon = document.getElementById("musicIcon");
+
+  if (audio.paused) {
+    audio.play().then(function() {
+      icon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+    }).catch(function() {
+      // MP3 geht nicht → Web Audio Fallback
+      playJeopardyTone();
+      icon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+    });
+  } else {
+    audio.pause();
+    stopJeopardyTone();
+    icon.innerHTML = '<path d="M8 5v14l11-7z"/>';
   }
+}
 
   function escHtml(s) { return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
   function usedCount() { var c=0; for(var k in state.usedCells){if(state.usedCells[k])c++;} return c; }
@@ -470,13 +500,12 @@ html, body {
   }
 
   function closeModal(markUsed){
-    var audio = document.getElementById("jeopardyAudio");
-    if (audio) {
-      audio.pause();
-      audio.currentTime = 0; 
-    }
-    document.getElementById("musicIcon").innerHTML = '<path d="M8 5v14l11-7z"/>';
-    
+  var audio = document.getElementById("jeopardyAudio");
+  if (audio) { audio.pause(); audio.currentTime = 0; }
+  stopJeopardyTone(); // ← neu
+  document.getElementById("musicIcon").innerHTML = '<path d="M8 5v14l11-7z"/>';
+  // ... Rest bleibt gleich
+
     document.getElementById("modalOverlay").classList.remove("active");
     if(markUsed && state.currentQ){ 
       state.usedCells[state.currentQ.col+"-"+state.currentQ.row]=true; 
