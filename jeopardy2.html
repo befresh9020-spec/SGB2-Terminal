@@ -260,8 +260,7 @@ html, body {
 (function() {
   "use strict";
 
-  var questionMusic = new Audio('Jeopardy.mp3'); 
-  questionMusic.loop = true;
+ var questionMusic = null;
 
   // NEU: Süßigkeiten-Belohnungen je nach Schwierigkeitsgrad (Zeile 0 bis 4)
   var REWARDS = [
@@ -332,19 +331,22 @@ html, body {
   var state = { phase: "setup", teamCount: 2, teams: [], usedCells: {}, currentQ: null, answerRevealed: false, totalCells: 30, activeTeam: 0, beamerMode: false };
 
     function toggleMusic() {
-    var icon = document.getElementById("musicIcon");
-    if (questionMusic.paused) {
-      questionMusic.play().then(function() {
-        icon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>'; // Pause-Icon
-      }).catch(function(e){
-        console.error("Fehler bei der Musikwiedergabe:", e);
-        alert("Musik konnte nicht abgespielt werden. Prüfe die Konsole (F12).");
-      });
-    } else {
-      questionMusic.pause();
-      icon.innerHTML = '<path d="M8 5v14l11-7z"/>'; // Play-Icon
-    }
+  if (!questionMusic) {
+    questionMusic = new Audio('Jeopardy.mp3');
+    questionMusic.loop = true;
   }
+  var icon = document.getElementById("musicIcon");
+  if (questionMusic.paused) {
+    questionMusic.play().then(function() {
+      icon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+    }).catch(function(e){
+      alert("Fehler: " + e.message);
+    });
+  } else {
+    questionMusic.pause();
+    icon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+  }
+}
 
   function escHtml(s) { return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
   function usedCount() { var c=0; for(var k in state.usedCells){if(state.usedCells[k])c++;} return c; }
@@ -473,9 +475,14 @@ html, body {
   }
 
   function closeModal(markUsed){
+    function closeModal(markUsed){
+  if (questionMusic) {        // ← neu
     questionMusic.pause();
     questionMusic.currentTime = 0;
-    document.getElementById("musicIcon").innerHTML = '<path d="M8 5v14l11-7z"/>';
+  }                           // ← neu
+  document.getElementById("musicIcon").innerHTML = '<path d="M8 5v14l11-7z"/>';
+  // ... Rest bleibt gleich
+
 
     document.getElementById("modalOverlay").classList.remove("active");
     if(markUsed && state.currentQ){ 
