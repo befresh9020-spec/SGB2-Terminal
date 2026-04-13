@@ -474,25 +474,22 @@ html, body {
     closeModal(true);
   }
 
-  function closeModal(markUsed){
-    function closeModal(markUsed){
-  if (questionMusic) {        // ← neu
+  
+function closeModal(markUsed){
+  if (questionMusic) {
     questionMusic.pause();
     questionMusic.currentTime = 0;
-  }                           // ← neu
-  document.getElementById("musicIcon").innerHTML = '<path d="M8 5v14l11-7z"/>';
-  // ... Rest bleibt gleich
-
-
-    document.getElementById("modalOverlay").classList.remove("active");
-    if(markUsed && state.currentQ){ 
-      state.usedCells[state.currentQ.col+"-"+state.currentQ.row]=true; 
-    }
-    state.currentQ=null;
-    renderBoard();
-    if(usedCount()>=state.totalCells) endGame();
   }
-
+  document.getElementById("musicIcon").innerHTML = '<path d="M8 5v14l11-7z"/>';
+  document.getElementById("modalOverlay").classList.remove("active");
+  if(markUsed && state.currentQ){ 
+    state.usedCells[state.currentQ.col+"-"+state.currentQ.row]=true; 
+  }
+  state.currentQ=null;
+  renderBoard();
+  if(usedCount()>=state.totalCells) endGame();
+}
+    
   function manualScore(ti, d){ state.teams[ti].score+=d; renderBoard(); }
 
   function showLeaderboard() {
