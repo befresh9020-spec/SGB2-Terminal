@@ -256,6 +256,8 @@ html, body {
   <button class="brutal-btn btn-restart" id="btnRestart">NEUES SPIEL</button>
 </div>
 
+<audio id="jeopardyAudio" src="Jeopardy.mp3" loop preload="auto"></audio>
+
 <script>
 (function() {
   "use strict";
@@ -330,20 +332,20 @@ html, body {
 
   var state = { phase: "setup", teamCount: 2, teams: [], usedCells: {}, currentQ: null, answerRevealed: false, totalCells: 30, activeTeam: 0, beamerMode: false };
 
-    function toggleMusic() {
-  if (!questionMusic) {
-    questionMusic = new Audio('./Jeopardy.mp3');
-    questionMusic.loop = true;
-  }
+function toggleMusic() {
+  var audio = document.getElementById("jeopardyAudio");
   var icon = document.getElementById("musicIcon");
-  if (questionMusic.paused) {
-    questionMusic.play().then(function() {
+
+  if (audio.paused) {
+    audio.play().then(function() {
+      // Ändert das Icon zu Pause
       icon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
     }).catch(function(e){
-      alert("Fehler: " + e.message);
+      alert("Safari blockiert Audio: " + e.message);
     });
   } else {
-    questionMusic.pause();
+    audio.pause();
+    // Ändert das Icon zu Play
     icon.innerHTML = '<path d="M8 5v14l11-7z"/>';
   }
 }
@@ -476,11 +478,13 @@ html, body {
 
   
 function closeModal(markUsed){
-  if (questionMusic) {
-    questionMusic.pause();
-    questionMusic.currentTime = 0;
+  var audio = document.getElementById("jeopardyAudio");
+  if (audio) {
+    audio.pause();
+    audio.currentTime = 0; // Setzt den Song wieder an den Anfang
   }
   document.getElementById("musicIcon").innerHTML = '<path d="M8 5v14l11-7z"/>';
+  
   document.getElementById("modalOverlay").classList.remove("active");
   if(markUsed && state.currentQ){ 
     state.usedCells[state.currentQ.col+"-"+state.currentQ.row]=true; 
