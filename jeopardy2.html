@@ -9,7 +9,7 @@
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 html, body {
   width: 100%; height: 100%;
-  background: #fdf5e6; /* Helles Beige als Basis */
+  background: #fdf5e6; 
   color: #000;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   overflow: hidden;
@@ -141,7 +141,7 @@ html, body {
   width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
   border-radius: 0;
 }
-.btn-play-music svg { width: 22px; height: 22px; }
+.btn-play-music svg { width: 22px; height: 22px; pointer-events: none; }
 
 .modal-question { font-size: 1.6rem; font-weight: 900; line-height: 1.4; margin-bottom: 30px; min-height: 60px; }
 .modal-answer { 
@@ -262,7 +262,6 @@ html, body {
 (function() {
   "use strict";
 
-  // NEU: Süßigkeiten-Belohnungen je nach Schwierigkeitsgrad (Zeile 0 bis 4)
   var REWARDS = [
     "🍬 x1",
     "🍬 x2",
@@ -330,23 +329,21 @@ html, body {
 
   var state = { phase: "setup", teamCount: 2, teams: [], usedCells: {}, currentQ: null, answerRevealed: false, totalCells: 30, activeTeam: 0, beamerMode: false };
 
-function toggleMusic() {
-  var audio = document.getElementById("jeopardyAudio");
-  var icon = document.getElementById("musicIcon");
+  function toggleMusic() {
+    var audio = document.getElementById("jeopardyAudio");
+    var icon = document.getElementById("musicIcon");
 
-  if (audio.paused) {
-    audio.play().then(function() {
-      // Ändert das Icon zu Pause
-      icon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
-    }).catch(function(e){
-      alert("Safari blockiert Audio: " + e.message);
-    });
-  } else {
-    audio.pause();
-    // Ändert das Icon zu Play
-    icon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+    if (audio.paused) {
+      audio.play().then(function() {
+        icon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+      }).catch(function(e){
+        alert("Audio Fehler: " + e.message);
+      });
+    } else {
+      audio.pause();
+      icon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+    }
   }
-}
 
   function escHtml(s) { return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
   function usedCount() { var c=0; for(var k in state.usedCells){if(state.usedCells[k])c++;} return c; }
@@ -412,7 +409,6 @@ function toggleMusic() {
       for(var col=0; col<6; col++){
         var k=col+"-"+row;
         var u=state.usedCells[k]?" used":"";
-        // HIER: Anzeige der Süßigkeit anstatt der Punktzahl
         var rewardText = REWARDS[row];
         gh+='<div class="q-cell'+u+'" data-action="open-q" data-col="'+col+'" data-row="'+row+'"><span class="points">'+rewardText+'</span></div>';
       }
@@ -428,7 +424,6 @@ function toggleMusic() {
     state.currentQ={col:col, row:row, pts:q.pts}; state.answerRevealed=false;
 
     document.getElementById("modalCat").textContent=cat.name;
-    // Belohnung im Modal anzeigen
     document.getElementById("modalPts").textContent = "GEWINN: " + REWARDS[row] + " (" + q.pts + " Pkt)";
     document.getElementById("modalStatus").textContent = "FRAGE:";
     document.getElementById("modalAvatarImg").src = AVATAR;
@@ -474,23 +469,22 @@ function toggleMusic() {
     closeModal(true);
   }
 
-  
-function closeModal(markUsed){
-  var audio = document.getElementById("jeopardyAudio");
-  if (audio) {
-    audio.pause();
-    audio.currentTime = 0; // Setzt den Song wieder an den Anfang
+  function closeModal(markUsed){
+    var audio = document.getElementById("jeopardyAudio");
+    if (audio) {
+      audio.pause();
+      audio.currentTime = 0; 
+    }
+    document.getElementById("musicIcon").innerHTML = '<path d="M8 5v14l11-7z"/>';
+    
+    document.getElementById("modalOverlay").classList.remove("active");
+    if(markUsed && state.currentQ){ 
+      state.usedCells[state.currentQ.col+"-"+state.currentQ.row]=true; 
+    }
+    state.currentQ=null;
+    renderBoard();
+    if(usedCount()>=state.totalCells) endGame();
   }
-  document.getElementById("musicIcon").innerHTML = '<path d="M8 5v14l11-7z"/>';
-  
-  document.getElementById("modalOverlay").classList.remove("active");
-  if(markUsed && state.currentQ){ 
-    state.usedCells[state.currentQ.col+"-"+state.currentQ.row]=true; 
-  }
-  state.currentQ=null;
-  renderBoard();
-  if(usedCount()>=state.totalCells) endGame();
-}
     
   function manualScore(ti, d){ state.teams[ti].score+=d; renderBoard(); }
 
@@ -517,10 +511,12 @@ function closeModal(markUsed){
     document.getElementById("winnerOverlay").classList.add("active");
   }
 
+  /* Der kugelsichere Klick-Event-Listener für ALLES */
   document.addEventListener("click", function(e){
     var t=e.target; while(t && t!==document.body && !(t.dataset && t.dataset.action)) t=t.parentElement;
     if(!t || !t.dataset || !t.dataset.action) return;
     var a=t.dataset.action;
+    
     if(a==="open-q") openQuestion(parseInt(t.dataset.col), parseInt(t.dataset.row));
     else if(a==="reveal") revealAnswer();
     else if(a==="award") awardPoints(parseInt(t.dataset.team));
@@ -532,7 +528,7 @@ function closeModal(markUsed){
     else if(a==="toggle-lb") showLeaderboard();
     else if(a==="close-lb") document.getElementById("lbOverlay").classList.remove("active");
     else if(a==="end-game") if(confirm("Spiel beenden?")) endGame();
-    else if(a==="toggle-music") toggleMusic();
+    else if(a==="toggle-music") toggleMusic(); /* HIER ist der Befehl wieder sicher integriert! */
   });
 
   document.getElementById("btnRestart").addEventListener("click", function(){ location.reload(); });
