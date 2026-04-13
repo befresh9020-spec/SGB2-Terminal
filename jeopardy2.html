@@ -331,14 +331,18 @@ html, body {
 
   var state = { phase: "setup", teamCount: 2, teams: [], usedCells: {}, currentQ: null, answerRevealed: false, totalCells: 30, activeTeam: 0, beamerMode: false };
 
-  function toggleMusic() {
+    function toggleMusic() {
     var icon = document.getElementById("musicIcon");
     if (questionMusic.paused) {
-      questionMusic.play().catch(function(e){});
-      icon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+      questionMusic.play().then(function() {
+        icon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>'; // Pause-Icon
+      }).catch(function(e){
+        console.error("Fehler bei der Musikwiedergabe:", e);
+        alert("Musik konnte nicht abgespielt werden. Prüfe die Konsole (F12).");
+      });
     } else {
       questionMusic.pause();
-      icon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+      icon.innerHTML = '<path d="M8 5v14l11-7z"/>'; // Play-Icon
     }
   }
 
