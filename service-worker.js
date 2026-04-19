@@ -1,7 +1,7 @@
 // ─── Cache-Name ───────────────────────────────────────────────────────────────
 // Versionsnummer hochzählen (v2, v3 …), wenn sich Dateien geändert haben.
 // Das löst automatisch den Update-Mechanismus aus.
-const CACHE_NAME = “sgb2-terminal-cache-v1”;
+const CACHE_NAME = “sgb2-terminal-cache-v1.1”;
 
 // ─── Zu cachende Dateien ───────────────────────────────────────────────────────
 // Alle Pfade müssen exakt mit dem Server übereinstimmen (Groß-/Kleinschreibung!).
