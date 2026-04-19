@@ -1528,7 +1528,7 @@ body {
   <div class="boot-top-hud" id="boot-top-hud">
     <div class="boot-system-label">SGB II Trainingssystem</div>
     <div class="boot-top-divider"></div>
-    <div class="boot-system-sub">Visor Terminal Hub · v1.0.0</div>
+    <div class="boot-system-sub">Visor Terminal Hub · v1.3</div>
   </div>
 
   <div class="visor-ring-wrap">
@@ -1704,6 +1704,27 @@ body {
       <div class="card-tag">Modul 05</div>
       <div class="card-title"><span class="sr-only">Modul starten: </span>Terminal EK</div>
       <div class="card-desc">Einkommensanrechnung<br>§ 11, § 11a, § 11b SGB II</div>
+    </div>
+    <div class="card-launch">
+      <svg aria-hidden="true" viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+    </div>
+  </div>
+</a>
+
+<!-- Terminal LM -->
+<a class="module-card hud-frame" href="LM.html">
+  <span class="hud-corner-br"></span><span class="hud-corner-bl"></span>
+  <span class="card-corner tl"></span><span class="card-corner tr"></span>
+  <span class="card-corner bl"></span><span class="card-corner br"></span>
+  <span class="card-status offline">Offline</span>
+  <div class="card-inner">
+    <div class="card-icon">
+      <svg aria-hidden="true" viewBox="0 0 24 24"><rect x="2" y="10" width="20" height="12" rx="2"/><circle cx="12" cy="16" r="2"/><path d="M12 2v6"/><path d="M9 5l3 3 3-3"/></svg>
+    </div>
+    <div class="card-body">
+      <div class="card-tag">Modul 06</div>
+      <div class="card-title"><span class="sr-only">Modul starten: </span>Terminal Minderungen</div>
+      <div class="card-desc">Leistungsminderungen<br>§ 31, § 31a, § 31b, § 32 SGB II</div>
     </div>
     <div class="card-launch">
       <svg aria-hidden="true" viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
@@ -2398,7 +2419,7 @@ window.addEventListener('load', initServiceWorker);
 // ═══════════════════════════════════════
 (function initPassierscheinA38() {
   // Wir suchen gezielt die Offline-Karte (Terminal EK)
-  var offlineCard = document.querySelector('a[href="terminal-ek.html"]');
+  var offlineCard = document.querySelector('a[href="LM.html"]');
   if (!offlineCard) return;
 
   var offlineTaps = 0;
@@ -2446,7 +2467,7 @@ window.addEventListener('load', initServiceWorker);
       { title: 'Passierschein A38', desc: 'Zugriff verweigert. Sie benötigen das blaue Formular.' },
       { title: 'Das Hafenbüro', desc: 'Der Hafen ist immer da, wo das Wasser ist!' },
       { title: 'Rundlaufliste', desc: 'Bitte warten Sie im Flur, bis Sie aufgerufen werden.' },
-      { title: 'SYSTEM_ANOMALIE', desc: 'Vorgang wird geprüft. Geschätzte Wartezeit: 14 Wochen.' } // Für die rote Karte
+      { title: 'Pinkes Formular', desc: 'Vorgang wird geprüft. Geschätzte Wartezeit: 14 Wochen.' } // Für die rote Karte
     ];
 
     // 3. Alle Karten umschreiben und für weitere Klicks sperren
@@ -2520,7 +2541,6 @@ window.addEventListener('load', initServiceWorker);
   });
 })();
 </script>
-
 
 </body>
 </html>
